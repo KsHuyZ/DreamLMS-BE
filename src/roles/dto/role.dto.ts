@@ -5,5 +5,5 @@ import { Role } from '../domain/role';
 export class RoleDto implements Role {
   @ApiProperty()
   @IsNumber()
-  id: number;
+  id: string;
 }

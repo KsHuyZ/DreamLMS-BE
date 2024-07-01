@@ -194,11 +194,19 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
+    if (dto.role === RoleEnum.ADMIN) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.BAD_REQUEST,
+        errors: {
+          role: 'badRequest',
+        },
+      });
+    }
     const user = await this.usersService.create({
       ...dto,
       email: dto.email,
       role: {
-        id: RoleEnum.STUDENT,
+        id: dto.role,
       },
       status: {
         id: StatusEnum.INACTIVE,
