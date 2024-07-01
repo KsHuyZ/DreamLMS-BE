@@ -1,5 +1,5 @@
 export enum StatusEnum {
-  ACTIVE,
-  INACTIVE,
-  BLOCK,
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  BLOCK = 'BLOCK',
 }
