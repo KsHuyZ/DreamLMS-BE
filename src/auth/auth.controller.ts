@@ -10,6 +10,8 @@ import {
   Patch,
   Delete,
   SerializeOptions,
+  Query,
+  Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -24,6 +26,9 @@ import { LoginResponseDto } from './dto/login-response.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { User } from '../users/domain/user';
 import { RefreshResponseDto } from './dto/refresh-response.dto';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
+import { AllConfigType } from '../config/config.type';
 
 @ApiTags('Auth')
 @Controller({
@@ -31,7 +36,10 @@ import { RefreshResponseDto } from './dto/refresh-response.dto';
   version: '1',
 })
 export class AuthController {
-  constructor(private readonly service: AuthService) {}
+  constructor(
+    private readonly service: AuthService,
+    private readonly configService: ConfigService<AllConfigType>,
+  ) {}
 
   @SerializeOptions({
     groups: ['me'],
@@ -51,12 +59,18 @@ export class AuthController {
     return this.service.register(createUserDto);
   }
 
-  @Post('email/confirm')
+  @Get('email/confirm-email')
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmEmail(
-    @Body() confirmEmailDto: AuthConfirmEmailDto,
+    @Query('hash') hash: string,
+    @Res() res: Response,
   ): Promise<void> {
-    return this.service.confirmEmail(confirmEmailDto.hash);
+    await this.service.confirmEmail(hash);
+    const frontendDomain =
+      this.configService.getOrThrow('app.frontendDomain', {
+        infer: true,
+      }) + '/sign-in';
+    res.redirect(frontendDomain);
   }
 
   @Post('email/confirm/new')
