@@ -6,7 +6,7 @@ export class Status {
   @ApiResponseProperty({
     type: String,
   })
-  id: number;
+  id: string;
 
   @Allow()
   @ApiResponseProperty({
