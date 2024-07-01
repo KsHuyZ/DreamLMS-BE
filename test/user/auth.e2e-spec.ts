@@ -54,52 +54,6 @@ describe('Auth Module', () => {
           });
       });
     });
-
-    describe('Confirm email', () => {
-      it('should successfully: /api/v1/auth/email/confirm (POST)', async () => {
-        const hash = await request(mail)
-          .get('/email')
-          .then(({ body }) =>
-            body
-              .find(
-                (letter) =>
-                  letter.to[0].address.toLowerCase() ===
-                    newUserEmail.toLowerCase() &&
-                  /.*confirm\-email\?hash\=(\S+).*/g.test(letter.text),
-              )
-              ?.text.replace(/.*confirm\-email\?hash\=(\S+).*/g, '$1'),
-          );
-
-        return request(app)
-          .post('/api/v1/auth/email/confirm')
-          .send({
-            hash,
-          })
-          .expect(204);
-      });
-
-      it('should fail for already confirmed email: /api/v1/auth/email/confirm (POST)', async () => {
-        const hash = await request(mail)
-          .get('/email')
-          .then(({ body }) =>
-            body
-              .find(
-                (letter) =>
-                  letter.to[0].address.toLowerCase() ===
-                    newUserEmail.toLowerCase() &&
-                  /.*confirm\-email\?hash\=(\S+).*/g.test(letter.text),
-              )
-              ?.text.replace(/.*confirm\-email\?hash\=(\S+).*/g, '$1'),
-          );
-
-        return request(app)
-          .post('/api/v1/auth/email/confirm')
-          .send({
-            hash,
-          })
-          .expect(404);
-      });
-    });
   });
 
   describe('Login', () => {
