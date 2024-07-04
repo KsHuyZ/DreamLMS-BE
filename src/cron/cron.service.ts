@@ -5,8 +5,8 @@ import { Cron } from '@nestjs/schedule';
 export class CronService {
   private readonly logger = new Logger(CronService.name);
 
-  @Cron('*/3 * * * *')
+  @Cron('*/10 * * * *')
   handleCron() {
-    this.logger.debug('Cron job executed every 3 minutes');
+    return fetch('https://eduwisebe.onrender.com');
   }
 }
