@@ -24,16 +24,16 @@ import { HomeModule } from './home/home.module';
 import { AllConfigType } from './config/config.type';
 import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
-import { MongooseConfigService } from './database/mongoose-config.service';
+import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { CronService } from './cron/cron.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CoursesModule } from './courses/courses.module';
+import { EnrollsModule } from './enrolls/enrolls.module';
 
-const infrastructureDatabaseModule = MongooseModule.forRootAsync({
-  useClass: MongooseConfigService,
-});
 @Module({
   imports: [
+    TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
@@ -49,7 +49,6 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
       ],
       envFilePath: ['.env'],
     }),
-    infrastructureDatabaseModule,
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService<AllConfigType>) => ({
         fallbackLanguage: configService.getOrThrow('app.fallbackLanguage', {
@@ -84,6 +83,8 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
     MailModule,
     MailerModule,
     HomeModule,
+    CoursesModule,
+    EnrollsModule,
     ScheduleModule.forRoot(),
   ],
   providers: [CronService],

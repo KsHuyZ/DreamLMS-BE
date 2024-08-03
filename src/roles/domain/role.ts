@@ -1,15 +1,15 @@
-import { ApiResponseProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Allow } from 'class-validator';
 
 export class Role {
   @Allow()
-  @ApiResponseProperty({
+  @ApiProperty({
     type: String,
   })
   id: string;
 
   @Allow()
-  @ApiResponseProperty({
+  @ApiProperty({
     type: String,
     example: 'admin',
   })

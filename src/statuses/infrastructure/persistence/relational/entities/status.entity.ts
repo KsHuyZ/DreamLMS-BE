@@ -8,10 +8,10 @@ import { ApiResponseProperty } from '@nestjs/swagger';
 })
 export class StatusEntity extends EntityRelationalHelper {
   @ApiResponseProperty({
-    type: Number,
+    type: String,
   })
-  @PrimaryColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
   @ApiResponseProperty({
     type: String,

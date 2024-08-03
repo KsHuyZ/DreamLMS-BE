@@ -1,11 +1,14 @@
+import { ManyToMany, OneToMany } from 'typeorm';
 import { Status } from '../../statuses/domain/status';
 import { ApiResponseProperty } from '@nestjs/swagger';
+import { User } from '../../users/domain/user';
+import { Enroll } from '../../enrolls/domain/enroll';
 
 export class Course {
   @ApiResponseProperty({
     type: String,
   })
-  id: number | string;
+  id: string;
 
   @ApiResponseProperty({
     type: String,
@@ -44,10 +47,10 @@ export class Course {
   shortDescription: string;
 
   @ApiResponseProperty({
-    type: String,
+    type: () => User,
     example: 'abchsdgasdgsagdssasdaerrewr',
   })
-  createdBy: string;
+  createdBy: User;
 
   @ApiResponseProperty({
     type: String,
@@ -55,15 +58,21 @@ export class Course {
   })
   levelId: string;
 
-  @ApiResponseProperty({
-    type: () => Course,
-  })
-  related: Course;
+  @OneToMany(() => Course, (course) => course.related)
+  related: Course[];
+
+  @ManyToMany(() => Enroll, (enrolledCourse) => enrolledCourse.course)
+  enrolledCourses: Enroll[];
 
   @ApiResponseProperty({
     type: () => Status,
   })
-  status?: Status;
+  status: Status;
+
+  @ApiResponseProperty({
+    type: () => Boolean,
+  })
+  isDeleted: boolean;
 
   @ApiResponseProperty()
   createdAt: Date;
@@ -72,5 +81,5 @@ export class Course {
   updatedAt: Date;
 
   @ApiResponseProperty()
-  deletedAt: Date;
+  deletedAt?: Date | null;
 }

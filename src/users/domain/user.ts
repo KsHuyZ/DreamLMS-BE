@@ -1,8 +1,9 @@
 import { Exclude, Expose } from 'class-transformer';
-import { FileType } from '../../files/domain/file';
 import { Role } from '../../roles/domain/role';
 import { Status } from '../../statuses/domain/status';
 import { ApiResponseProperty } from '@nestjs/swagger';
+import { ManyToMany } from 'typeorm';
+import { Enroll } from '../../enrolls/domain/enroll';
 
 export class User {
   @ApiResponseProperty({
@@ -50,9 +51,9 @@ export class User {
   lastName: string | null;
 
   @ApiResponseProperty({
-    type: () => FileType,
+    type: String,
   })
-  photo?: FileType | null;
+  photo?: string | null;
 
   @ApiResponseProperty({
     type: () => Role,
@@ -63,6 +64,9 @@ export class User {
     type: () => Status,
   })
   status?: Status;
+
+  @ManyToMany(() => Enroll, (enrolledCourse) => enrolledCourse.user)
+  enrolledCourses: Enroll[];
 
   @ApiResponseProperty()
   createdAt: Date;
