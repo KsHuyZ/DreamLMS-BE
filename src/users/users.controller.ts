@@ -35,7 +35,6 @@ import { User } from './domain/user';
 import { UsersService } from './users.service';
 import { RolesGuard } from '../roles/roles.guard';
 import { infinityPagination } from '../utils/infinity-pagination';
-
 @ApiBearerAuth()
 @Roles(RoleEnum.ADMIN)
 @UseGuards(AuthGuard('jwt'), RolesGuard)

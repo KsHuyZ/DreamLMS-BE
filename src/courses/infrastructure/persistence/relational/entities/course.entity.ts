@@ -12,9 +12,11 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
-import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { EnrollEntity } from '../../../../../enrolls/infrastructure/persistence/relational/entities/enroll.entity';
+import { LessonEntity } from '../../../../../lessons/persistence/entities/lesson.entity';
+import { LevelsEnum } from '../../../../types/levels.enum';
+import { StatusEnum } from '../../../../../statuses/statuses.enum';
 
 @Entity({
   name: 'courses',
@@ -76,11 +78,11 @@ export class CourseEntity extends EntityRelationalHelper {
   createdBy: UserEntity;
 
   @ApiResponseProperty({
-    type: String,
-    example: 'abchsdgasdgsagdssasdaerrewr',
+    enum: LevelsEnum,
+    example: LevelsEnum.BEGINNER,
   })
-  @Column({ type: String })
-  levelId: string;
+  @Column({ enum: LevelsEnum })
+  level: LevelsEnum;
 
   @ApiResponseProperty({
     type: () => CourseEntity,
@@ -92,15 +94,18 @@ export class CourseEntity extends EntityRelationalHelper {
   enrolledCourses: EnrollEntity[];
 
   @ApiResponseProperty({
-    type: () => StatusEntity,
+    enum: StatusEnum,
   })
-  status: StatusEntity;
+  status: StatusEnum;
 
   @ApiProperty({
-    type: () => Boolean,
+    type: Boolean,
   })
   @Column({ type: Boolean, default: false })
   isDeleted: boolean;
+
+  @OneToMany(() => LessonEntity, (lessons) => lessons.course)
+  lessons: LessonEntity[];
 
   @ApiProperty()
   @Column({ type: Date, default: new Date() })

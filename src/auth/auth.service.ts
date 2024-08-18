@@ -135,21 +135,14 @@ export class AuthService {
     } else if (userByEmail) {
       user = userByEmail;
     } else if (socialData.id) {
-      const role = {
-        id: RoleEnum.STUDENT,
-      };
-      const status = {
-        id: StatusEnum.ACTIVE,
-      };
-
       user = await this.usersService.create({
         email: socialEmail ?? null,
         firstName: socialData.firstName ?? null,
         lastName: socialData.lastName ?? null,
         socialId: socialData.id,
         provider: authProvider,
-        role,
-        status,
+        role: RoleEnum.STUDENT,
+        status: StatusEnum.ACTIVE,
       });
 
       user = await this.usersService.findById(user.id);
@@ -194,7 +187,7 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
-    if (dto.role === RoleEnum.ADMIN) {
+    if (dto.role === RoleEnum.STUDENT) {
       throw new UnprocessableEntityException({
         status: HttpStatus.BAD_REQUEST,
         errors: {
@@ -205,12 +198,8 @@ export class AuthService {
     const user = await this.usersService.create({
       ...dto,
       email: dto.email,
-      role: {
-        id: dto.role,
-      },
-      status: {
-        id: StatusEnum.INACTIVE,
-      },
+      role: dto.role,
+      status: StatusEnum.INACTIVE,
     });
 
     const hash = await this.jwtService.signAsync(
@@ -226,6 +215,8 @@ export class AuthService {
         }),
       },
     );
+
+    console.log({ hash });
 
     await this.mailService.userSignUp({
       to: dto.email,
@@ -259,19 +250,14 @@ export class AuthService {
 
     const user = await this.usersService.findById(userId);
 
-    if (
-      !user ||
-      user?.status?.id?.toString() !== StatusEnum.INACTIVE.toString()
-    ) {
+    if (!user || user?.status !== StatusEnum.INACTIVE) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         error: `notFound`,
       });
     }
 
-    user.status = {
-      id: StatusEnum.ACTIVE,
-    };
+    user.status = StatusEnum.ACTIVE;
 
     await this.usersService.update(user.id, user);
   }
@@ -311,9 +297,7 @@ export class AuthService {
     }
 
     user.email = newEmail;
-    user.status = {
-      id: StatusEnum.ACTIVE,
-    };
+    user.status = StatusEnum.ACTIVE;
 
     await this.usersService.update(user.id, user);
   }
@@ -530,9 +514,7 @@ export class AuthService {
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: session.user.id,
-      role: {
-        id: user.role.id,
-      },
+      role: user.role,
       sessionId: session.id,
       hash,
     });

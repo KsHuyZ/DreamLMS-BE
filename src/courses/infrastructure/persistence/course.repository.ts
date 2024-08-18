@@ -1,4 +1,3 @@
-import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Course } from '../../domain/course';
@@ -15,6 +14,7 @@ export abstract class CourseRepository {
       | 'updatedAt'
       | 'isDeleted'
       | 'enrolledCourses'
+      | 'lessons'
     >,
   ): Promise<Course>;
 
@@ -34,7 +34,7 @@ export abstract class CourseRepository {
 
   abstract update(
     id: Course['id'],
-    payload: DeepPartial<Course>,
+    payload: Partial<Course>,
   ): Promise<Course | null>;
 
   abstract remove(id: Course['id']): Promise<void>;

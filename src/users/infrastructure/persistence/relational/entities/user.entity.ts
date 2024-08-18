@@ -12,14 +12,13 @@ import {
   Entity,
   Index,
   ManyToMany,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
-import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
-import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
 import { EnrollEntity } from '../../../../../enrolls/infrastructure/persistence/relational/entities/enroll.entity';
+import { RoleEnum } from '../../../../../roles/roles.enum';
+import { StatusEnum } from '../../../../../statuses/statuses.enum';
 
 @Entity({
   name: 'user',
@@ -85,25 +84,34 @@ export class UserEntity extends EntityRelationalHelper {
   lastName: string | null;
 
   @ApiProperty({
-    type: () => String,
+    type: String,
   })
+  @Column({ type: String, nullable: true })
   photo?: string | null;
 
   @ApiProperty({
-    type: () => RoleEntity,
+    enum: RoleEnum,
+    example: RoleEnum.STUDENT,
   })
-  @ManyToOne(() => RoleEntity, {
-    eager: true,
+  @Column({
+    type: 'enum',
+    enum: RoleEnum,
+    default: RoleEnum.STUDENT,
+    name: 'role',
   })
-  role?: RoleEntity | null;
+  role?: RoleEnum;
 
   @ApiProperty({
-    type: () => StatusEntity,
+    enum: StatusEnum,
+    example: StatusEnum.ACTIVE,
   })
-  @ManyToOne(() => StatusEntity, {
-    eager: true,
+  @Column({
+    type: 'enum',
+    enum: StatusEnum,
+    default: StatusEnum.INACTIVE,
+    name: 'status',
   })
-  status?: StatusEntity;
+  status?: StatusEnum;
 
   @ManyToMany(() => EnrollEntity, (enrolledCourse) => enrolledCourse.user)
   enrolledCourses: EnrollEntity[];

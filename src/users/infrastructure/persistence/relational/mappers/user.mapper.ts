@@ -1,5 +1,3 @@
-import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
-import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
 import { User } from '../../../../domain/user';
 import { UserEntity } from '../entities/user.entity';
 
@@ -24,20 +22,6 @@ export class UserMapper {
   }
 
   static toPersistence(domainEntity: User): UserEntity {
-    let role: RoleEntity | undefined = undefined;
-
-    if (domainEntity.role) {
-      role = new RoleEntity();
-      role.id = domainEntity.role.id;
-    }
-
-    let status: StatusEntity | undefined = undefined;
-
-    if (domainEntity.status) {
-      status = new StatusEntity();
-      status.id = domainEntity.status.id;
-    }
-
     const persistenceEntity = new UserEntity();
     persistenceEntity.id = domainEntity.id;
     persistenceEntity.email = domainEntity.email;
@@ -48,8 +32,8 @@ export class UserMapper {
     persistenceEntity.firstName = domainEntity.firstName;
     persistenceEntity.lastName = domainEntity.lastName;
     persistenceEntity.photo = domainEntity.photo;
-    persistenceEntity.role = role;
-    persistenceEntity.status = status;
+    persistenceEntity.role = domainEntity.role;
+    persistenceEntity.status = domainEntity.status;
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
     persistenceEntity.deletedAt = domainEntity.deletedAt;

@@ -30,6 +30,7 @@ import { CronService } from './cron/cron.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoursesModule } from './courses/courses.module';
 import { EnrollsModule } from './enrolls/enrolls.module';
+import { LessonsModule } from './lessons/lessons.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { EnrollsModule } from './enrolls/enrolls.module';
     HomeModule,
     CoursesModule,
     EnrollsModule,
+    LessonsModule,
     ScheduleModule.forRoot(),
   ],
   providers: [CronService],

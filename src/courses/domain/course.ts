@@ -1,8 +1,10 @@
 import { ManyToMany, OneToMany } from 'typeorm';
-import { Status } from '../../statuses/domain/status';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { User } from '../../users/domain/user';
 import { Enroll } from '../../enrolls/domain/enroll';
+import { Lesson } from '../../lessons/domain/lesson';
+import { LevelsEnum } from '../types/levels.enum';
+import { StatusEnum } from '../../statuses/statuses.enum';
 
 export class Course {
   @ApiResponseProperty({
@@ -53,10 +55,10 @@ export class Course {
   createdBy: User;
 
   @ApiResponseProperty({
-    type: String,
-    example: 'abchsdgasdgsagdssasdaerrewr',
+    enum: LevelsEnum,
+    example: LevelsEnum.BEGINNER,
   })
-  levelId: string;
+  level: LevelsEnum;
 
   @OneToMany(() => Course, (course) => course.related)
   related: Course[];
@@ -64,10 +66,14 @@ export class Course {
   @ManyToMany(() => Enroll, (enrolledCourse) => enrolledCourse.course)
   enrolledCourses: Enroll[];
 
+  @OneToMany(() => Lesson, (lessons) => lessons.course)
+  lessons: Lesson[];
+
   @ApiResponseProperty({
-    type: () => Status,
+    enum: StatusEnum,
+    example: StatusEnum.ACTIVE,
   })
-  status: Status;
+  status: StatusEnum;
 
   @ApiResponseProperty({
     type: () => Boolean,

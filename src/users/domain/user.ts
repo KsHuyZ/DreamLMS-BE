@@ -1,9 +1,9 @@
 import { Exclude, Expose } from 'class-transformer';
-import { Role } from '../../roles/domain/role';
-import { Status } from '../../statuses/domain/status';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { ManyToMany } from 'typeorm';
 import { Enroll } from '../../enrolls/domain/enroll';
+import { RoleEnum } from '../../roles/roles.enum';
+import { StatusEnum } from '../../statuses/statuses.enum';
 
 export class User {
   @ApiResponseProperty({
@@ -56,14 +56,14 @@ export class User {
   photo?: string | null;
 
   @ApiResponseProperty({
-    type: () => Role,
+    enum: RoleEnum,
   })
-  role?: Role | null;
+  role?: RoleEnum;
 
   @ApiResponseProperty({
-    type: () => Status,
+    enum: StatusEnum,
   })
-  status?: Status;
+  status?: StatusEnum;
 
   @ManyToMany(() => Enroll, (enrolledCourse) => enrolledCourse.user)
   enrolledCourses: Enroll[];

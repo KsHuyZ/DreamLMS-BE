@@ -1,12 +1,11 @@
-import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { lowerCaseTransformer } from '../../utils/transformers/lower-case.transformer';
-import { StatusDto } from '../../statuses/dto/status.dto';
+import { CourseDto } from './course.dto';
+import { LevelsEnum } from '../types/levels.enum';
+import { StatusEnum } from '../../statuses/statuses.enum';
 
 export class CreateCourseDto {
   @ApiProperty({ example: 'React from zero to hero', type: String })
-  @Transform(lowerCaseTransformer)
   @IsNotEmpty()
   name: string;
 
@@ -17,14 +16,20 @@ export class CreateCourseDto {
   price: number;
 
   @ApiProperty({
-    type: String,
+    description: 'Image file',
+    type: 'string',
+    format: 'binary',
   })
-  image: string;
+  @IsNotEmpty()
+  image: Express.Multer.File;
 
   @ApiProperty({
-    type: String,
+    description: 'Video file',
+    type: 'string',
+    format: 'binary',
   })
-  videoPreview: string;
+  @IsNotEmpty()
+  videoPreview: Express.Multer.File;
 
   @ApiProperty({
     type: String,
@@ -40,24 +45,28 @@ export class CreateCourseDto {
 
   @ApiProperty({
     type: String,
-    example: 'abchsdgasdgsagdssasdaerrewr',
+    example: '550e8400-e29b-41d4-a716-446655440000',
   })
   createdBy: string;
 
   @ApiProperty({
-    type: String,
-    example: 'abchsdgasdgsagdssasdaerrewr',
+    enum: LevelsEnum,
+    example: LevelsEnum.BEGINNER,
   })
-  levelId: string;
+  level: LevelsEnum;
 
   @ApiProperty({
-    type: [String],
-    example: ['abchsdgasdgsagdssasdaerrewr'],
+    type: [CourseDto],
+    example: [
+      '550e8400-e29b-41d4-a716-446655440000',
+      '550e8400-e29b-41d4-a716-446655440000',
+    ],
   })
-  related: string[];
+  related: CourseDto[];
 
   @ApiProperty({
-    type: StatusDto,
+    enum: StatusEnum,
+    example: StatusEnum.ACTIVE,
   })
-  status: StatusDto;
+  status: StatusEnum;
 }

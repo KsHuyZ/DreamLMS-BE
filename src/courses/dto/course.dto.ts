@@ -7,9 +7,11 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Status } from '../../statuses/domain/status';
 import { User } from '../../users/domain/user';
 import { Enroll } from '../../enrolls/domain/enroll';
+import { Lesson } from '../../lessons/domain/lesson';
+import { LevelsEnum } from '../types/levels.enum';
+import { StatusEnum } from '../../statuses/statuses.enum';
 
 export class CourseDto implements Course {
   @ApiProperty()
@@ -37,15 +39,18 @@ export class CourseDto implements Course {
   createdBy: User;
   @ApiProperty()
   @IsString()
-  levelId: string;
+  level: LevelsEnum;
   @ApiProperty()
   related: Course[];
+
+  @ApiProperty()
+  lessons: Lesson[];
 
   @ApiProperty()
   enrolledCourses: Enroll[];
 
   @ApiProperty()
-  status: Status;
+  status: StatusEnum;
   @ApiProperty()
   @IsBoolean()
   isDeleted: boolean;

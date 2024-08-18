@@ -1,7 +1,5 @@
 import { Course } from '../../../../domain/course';
 import { CourseEntity } from '../entities/course.entity';
-import { Status } from '../../../../../statuses/domain/status';
-import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
 
 export class CourseMapper {
   static toDomain(raw: CourseEntity): Course {
@@ -9,20 +7,19 @@ export class CourseMapper {
     course.id = raw.id;
     course.name = raw.name;
     course.price = raw.price;
-    course.related = raw.related.map((related) =>
-      CourseMapper.toDomain(related),
-    );
+    course.related = raw.related.map((related) => {
+      const relatedCourse = new Course();
+      relatedCourse.id = related.id;
+      return relatedCourse;
+    });
+    course.status = raw.status;
+    course.lessons = raw.lessons;
     course.shortDescription = raw.shortDescription;
     course.description = raw.description;
     course.videoPreview = raw.videoPreview;
     course.image = raw.image;
-    course.levelId = raw.levelId;
+    course.level = raw.level;
     course.isDeleted = raw.isDeleted;
-
-    if (raw.status) {
-      course.status = new Status();
-      course.status.id = raw.status.id;
-    }
 
     course.createdAt = raw.createdAt;
     course.updatedAt = raw.updatedAt;
@@ -31,8 +28,6 @@ export class CourseMapper {
   }
 
   static toPersistence(course: Course): CourseEntity {
-    const status = new StatusEntity();
-    status.id = course.status.id;
     const courseEntity = new CourseEntity();
     courseEntity.id = course.id;
     courseEntity.name = course.name;
@@ -41,8 +36,8 @@ export class CourseMapper {
     courseEntity.videoPreview = course.videoPreview;
     courseEntity.description = course.description;
     courseEntity.image = course.image;
-    courseEntity.levelId = course.levelId;
-    courseEntity.status = status;
+    courseEntity.level = course.level;
+    courseEntity.status = course.status;
     courseEntity.isDeleted = course.isDeleted;
     courseEntity.createdAt = course.createdAt;
     courseEntity.updatedAt = course.updatedAt;

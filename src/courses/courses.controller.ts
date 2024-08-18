@@ -11,10 +11,13 @@ import {
   HttpCode,
   SerializeOptions,
   Request,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import {
+  ApiConsumes,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
@@ -31,6 +34,7 @@ import { Course } from './domain/course';
 import { CoursesService } from './courses.service';
 import { infinityPagination } from '../utils/infinity-pagination';
 import { User } from '../users/domain/user';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Courses')
 @Controller({
@@ -48,8 +52,19 @@ export class CoursesController {
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createProfileDto: CreateCourseDto): Promise<Course> {
-    return this.coursesService.create(createProfileDto);
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 1 },
+      { name: 'videoPreview', maxCount: 1 },
+    ]),
+  )
+  @ApiConsumes('multipart/form-data')
+  create(
+    @Body() createProfileDto: CreateCourseDto,
+    @UploadedFiles()
+    files: { image: Express.Multer.File; videoPreview: Express.Multer.File },
+  ): Promise<Course> {
+    return this.coursesService.create({ ...createProfileDto, ...files });
   }
 
   @ApiOkResponse({
@@ -112,11 +127,20 @@ export class CoursesController {
     type: String,
     required: true,
   })
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 1 },
+      { name: 'videoPreview', maxCount: 1 },
+    ]),
+  )
+  @ApiConsumes('multipart/form-data')
   update(
     @Param('id') id: Course['id'],
     @Body() updateCourseDto: UpdateCourseDto,
+    @UploadedFiles()
+    files: { image?: Express.Multer.File; videoPreview?: Express.Multer.File },
   ): Promise<Course | null> {
-    return this.coursesService.update(id, updateCourseDto);
+    return this.coursesService.update(id, { ...updateCourseDto, ...files });
   }
 
   @Delete(':id')

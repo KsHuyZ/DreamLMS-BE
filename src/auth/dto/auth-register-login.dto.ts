@@ -24,5 +24,5 @@ export class AuthRegisterLoginDto {
 
   @ApiProperty({ example: 'Teacher' })
   @IsNotEmpty()
-  role: RoleEnum;
+  role?: RoleEnum;
 }
