@@ -37,6 +37,7 @@ lerna-debug.log*
 .data
 /files
 .env
+.env.local
 /ormconfig.json
 .vercel
 root.crt
