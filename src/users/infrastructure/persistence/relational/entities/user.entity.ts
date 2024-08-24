@@ -21,7 +21,7 @@ import { RoleEnum } from '../../../../../roles/roles.enum';
 import { StatusEnum } from '../../../../../statuses/statuses.enum';
 
 @Entity({
-  name: 'user',
+  name: 'users',
 })
 export class UserEntity extends EntityRelationalHelper {
   @ApiProperty({
@@ -125,6 +125,6 @@ export class UserEntity extends EntityRelationalHelper {
   updatedAt: Date;
 
   @ApiProperty()
-  @DeleteDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  deletedAt: Date;
+  @DeleteDateColumn({ type: 'timestamp' })
+  deletedAt: Date | null;
 }

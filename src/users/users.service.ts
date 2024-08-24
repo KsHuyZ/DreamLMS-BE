@@ -32,7 +32,6 @@ export class UsersService {
       const userObject = await this.usersRepository.findByEmail(
         clonedPayload.email,
       );
-      console.log({ userObject });
       if (userObject) {
         throw new UnprocessableEntityException({
           status: HttpStatus.UNPROCESSABLE_ENTITY,

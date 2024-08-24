@@ -187,11 +187,11 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
-    if (dto.role === RoleEnum.STUDENT) {
+    if (dto.role === RoleEnum.ADMIN) {
       throw new UnprocessableEntityException({
         status: HttpStatus.BAD_REQUEST,
         errors: {
-          role: 'badRequest',
+          role: 'badRoles',
         },
       });
     }
@@ -215,8 +215,6 @@ export class AuthService {
         }),
       },
     );
-
-    console.log({ hash });
 
     await this.mailService.userSignUp({
       to: dto.email,

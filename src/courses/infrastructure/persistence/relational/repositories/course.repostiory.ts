@@ -36,7 +36,6 @@ export class CoursesRelationalRepository implements CourseRepository {
     userId?: string;
   }): Promise<Course[]> {
     const where: FindOptionsWhere<CourseEntity> = {};
-    console.log({ userId });
     const coursesObjects = await this.coursesRepository.find({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
@@ -49,7 +48,7 @@ export class CoursesRelationalRepository implements CourseRepository {
         {},
       ),
     });
-
+    console.log({ userId });
     return coursesObjects.map((courseObjects) =>
       CourseMapper.toDomain(courseObjects),
     );

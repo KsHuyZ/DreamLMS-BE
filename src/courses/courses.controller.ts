@@ -35,6 +35,8 @@ import { CoursesService } from './courses.service';
 import { infinityPagination } from '../utils/infinity-pagination';
 import { User } from '../users/domain/user';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { Roles } from '../roles/roles.decorator';
+import { RoleEnum } from '../roles/roles.enum';
 
 @ApiTags('Courses')
 @Controller({
@@ -48,9 +50,10 @@ export class CoursesController {
     type: Course,
   })
   @SerializeOptions({
-    groups: ['admin'],
+    groups: ['admin', 'teacher'],
   })
   @Post()
+  @Roles(RoleEnum.TEACHER)
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(
     FileFieldsInterceptor([
@@ -118,7 +121,7 @@ export class CoursesController {
     type: Course,
   })
   @SerializeOptions({
-    groups: ['admin'],
+    groups: ['admin', 'teacher'],
   })
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
@@ -148,6 +151,9 @@ export class CoursesController {
     name: 'id',
     type: String,
     required: true,
+  })
+  @SerializeOptions({
+    groups: ['admin', 'teacher'],
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: Course['id']): Promise<void> {

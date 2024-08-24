@@ -75,5 +75,5 @@ export class User {
   updatedAt: Date;
 
   @ApiResponseProperty()
-  deletedAt: Date;
+  deletedAt: Date | null;
 }

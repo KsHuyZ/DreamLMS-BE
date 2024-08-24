@@ -37,7 +37,6 @@ export class MailService {
       }) + '/api/v1/auth/email/confirm-email',
     );
     url.searchParams.set('hash', mailData.data.hash);
-    console.log('ready to send mail');
     await this.mailerService
       .sendMail({
         to: mailData.to,
