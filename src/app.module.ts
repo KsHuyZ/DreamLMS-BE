@@ -25,6 +25,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoursesModule } from './courses/courses.module';
 import { EnrollsModule } from './enrolls/enrolls.module';
 import { LessonsModule } from './lessons/lessons.module';
+import { TagsModule } from './tags/tag.module';
+import { CategoriesModule } from './categories/category.module';
 
 @Module({
   imports: [
@@ -75,6 +77,8 @@ import { LessonsModule } from './lessons/lessons.module';
     CoursesModule,
     EnrollsModule,
     LessonsModule,
+    TagsModule,
+    CategoriesModule,
     ScheduleModule.forRoot(),
   ],
   providers: [CronService],

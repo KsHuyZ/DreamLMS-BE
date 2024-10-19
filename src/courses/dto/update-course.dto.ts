@@ -4,7 +4,7 @@ import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
 export class UpdateCourseDto extends PartialType(
-  OmitType(CreateCourseDto, ['image', 'videoPreview']),
+  OmitType(CreateCourseDto, ['image']),
 ) {
   @ApiProperty({
     type: String,

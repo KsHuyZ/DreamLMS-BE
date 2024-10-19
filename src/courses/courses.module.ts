@@ -6,9 +6,20 @@ import { CoursesService } from './courses.service';
 import { RelationalCoursePersistenceModule } from './infrastructure/persistence/relational/persistence.module';
 import { VideosModule } from '../videos/videos.module';
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
-
+import { TagsModule } from '../tags/tag.module';
+import { CategoriesModule } from '../categories/category.module';
+import { CourseTagModule } from '../course-tag/course-tag.module';
+import { CourseCategoryModule } from '../course-category/course-category.module';
 @Module({
-  imports: [RelationalCoursePersistenceModule, VideosModule, CloudinaryModule],
+  imports: [
+    RelationalCoursePersistenceModule,
+    VideosModule,
+    CloudinaryModule,
+    TagsModule,
+    CategoriesModule,
+    CourseTagModule,
+    CourseCategoryModule,
+  ],
   controllers: [CoursesController],
   providers: [CoursesService],
   exports: [CoursesService, RelationalCoursePersistenceModule],

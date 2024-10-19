@@ -17,6 +17,7 @@ import { EnrollEntity } from '../../../../../enrolls/infrastructure/persistence/
 import { LessonEntity } from '../../../../../lessons/persistence/entities/lesson.entity';
 import { LevelsEnum } from '../../../../types/levels.enum';
 import { StatusEnum } from '../../../../../statuses/statuses.enum';
+import { CourseTagEntity } from '../../../../../course-tag/infrastructure/persistence/relational/entities/course-category.entity';
 
 @Entity({
   name: 'courses',
@@ -53,7 +54,7 @@ export class CourseEntity extends EntityRelationalHelper {
     type: String,
     example: 'https://example.com/path/to/file.mp4',
   })
-  @Column({ type: String })
+  @Column({ type: String, nullable: true })
   videoPreview: string;
 
   @ApiProperty({
@@ -106,6 +107,9 @@ export class CourseEntity extends EntityRelationalHelper {
 
   @OneToMany(() => LessonEntity, (lessons) => lessons.course)
   lessons: LessonEntity[];
+
+  @OneToMany(() => CourseTagEntity, (courseTag) => courseTag.course)
+  courseTag: CourseTagEntity[];
 
   @ApiProperty()
   @Column({ type: Date, default: new Date() })

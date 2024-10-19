@@ -119,7 +119,7 @@ export class AuthController {
   @SerializeOptions({
     groups: ['me'],
   })
-  @Post('refresh')
+  @Get('refresh')
   @UseGuards(AuthGuard('jwt-refresh'))
   @HttpCode(HttpStatus.OK)
   public refresh(@Request() request): Promise<RefreshResponseDto> {

@@ -7,11 +7,12 @@ export class CourseMapper {
     course.id = raw.id;
     course.name = raw.name;
     course.price = raw.price;
-    course.related = raw.related.map((related) => {
-      const relatedCourse = new Course();
-      relatedCourse.id = related.id;
-      return relatedCourse;
-    });
+    course.related =
+      raw.related?.map((related) => {
+        const relatedCourse = new Course();
+        relatedCourse.id = related.id;
+        return relatedCourse;
+      }) ?? [];
     course.status = raw.status;
     course.lessons = raw.lessons;
     course.shortDescription = raw.shortDescription;
@@ -33,7 +34,6 @@ export class CourseMapper {
     courseEntity.name = course.name;
     courseEntity.price = course.price;
     courseEntity.shortDescription = course.shortDescription;
-    courseEntity.videoPreview = course.videoPreview;
     courseEntity.description = course.description;
     courseEntity.image = course.image;
     courseEntity.level = course.level;

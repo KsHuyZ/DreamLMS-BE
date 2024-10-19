@@ -15,6 +15,9 @@ export abstract class CourseRepository {
       | 'isDeleted'
       | 'enrolledCourses'
       | 'lessons'
+      | 'related'
+      | 'videoPreview'
+      | 'status'
     >,
   ): Promise<Course>;
 

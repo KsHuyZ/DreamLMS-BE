@@ -13,6 +13,8 @@ import {
   Request,
   UseInterceptors,
   UploadedFiles,
+  UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -34,9 +36,13 @@ import { Course } from './domain/course';
 import { CoursesService } from './courses.service';
 import { infinityPagination } from '../utils/infinity-pagination';
 import { User } from '../users/domain/user';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 import { Roles } from '../roles/roles.decorator';
 import { RoleEnum } from '../roles/roles.enum';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Courses')
 @Controller({
@@ -55,19 +61,20 @@ export class CoursesController {
   @Post()
   @Roles(RoleEnum.TEACHER)
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'image', maxCount: 1 },
-      { name: 'videoPreview', maxCount: 1 },
-    ]),
-  )
+  @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
   create(
     @Body() createProfileDto: CreateCourseDto,
-    @UploadedFiles()
-    files: { image: Express.Multer.File; videoPreview: Express.Multer.File },
+    @UploadedFile()
+    image: Express.Multer.File,
+    @Request() request,
   ): Promise<Course> {
-    return this.coursesService.create({ ...createProfileDto, ...files });
+    return this.coursesService.create({
+      ...createProfileDto,
+      image,
+      createdBy: request.user.id as string,
+    });
   }
 
   @ApiOkResponse({
