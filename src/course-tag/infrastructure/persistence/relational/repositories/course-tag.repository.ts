@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { CourseTag } from '../../../../domain/course-tag';
-import { CourseTagEntity } from '../entities/course-category.entity';
+import { CourseTagEntity } from '../entities/course-tag.entity';
 import { CourseTagRepository } from '../course-tag.repository';
 import { CourseTagMapper } from '../mappers/course-tag.mapper';
 

@@ -1,3 +1,4 @@
+import { InfinityPaginationResponseDto } from '../../../utils/dto/infinity-pagination-response.dto';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Course } from '../../domain/course';
@@ -31,7 +32,19 @@ export abstract class CourseRepository {
     sortOptions?: SortCourseDto[] | null;
     paginationOptions: IPaginationOptions;
     userId?: string;
-  }): Promise<Course[]>;
+  }): Promise<InfinityPaginationResponseDto<Course>>;
+
+  abstract findManyByTeacherWithPagination({
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+    teacherId,
+  }: {
+    filterOptions?: FilterCourseDto | null;
+    sortOptions?: SortCourseDto[] | null;
+    paginationOptions: IPaginationOptions;
+    teacherId: string;
+  });
 
   abstract findById(id: Course['id']): Promise<NullableType<Course>>;
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { FilterCourseDto, SortCourseDto } from './dto/query-course.dto';
@@ -14,6 +14,8 @@ import { validate as isValidUUID } from 'uuid';
 import { CoursesTagService } from '../course-tag/course-tag.service';
 import { CategoriesService } from '../categories/category.service';
 import { CoursesCategoryService } from '../course-category/course-category.service';
+import { InfinityPaginationResponseDto } from '../utils/dto/infinity-pagination-response.dto';
+import { UsersService } from '../users/users.service';
 @Injectable()
 export class CoursesService {
   constructor(
@@ -24,13 +26,18 @@ export class CoursesService {
     private readonly categoriesService: CategoriesService,
     private readonly courseTagService: CoursesTagService,
     private readonly courseCategoryService: CoursesCategoryService,
+    private readonly userService: UsersService,
   ) {}
 
   async create(
     createCourseDto: CreateCourseDto & { createdBy: string },
   ): Promise<Course> {
-    const createdBy = new User();
-    createdBy.id = createCourseDto.createdBy;
+    const createdBy = await this.userService.findById(
+      createCourseDto.createdBy,
+    );
+    if (!createdBy) {
+      throw new UnauthorizedException();
+    }
     const imagePayload = createCourseDto.image;
     const imageResponse =
       await this.cloudinaryService.uploadImage(imagePayload);
@@ -83,7 +90,7 @@ export class CoursesService {
     return course;
   }
 
-  findManyWithPagination({
+  async findManyWithPagination({
     filterOptions,
     sortOptions,
     paginationOptions,
@@ -93,12 +100,31 @@ export class CoursesService {
     sortOptions?: SortCourseDto[] | null;
     paginationOptions: IPaginationOptions;
     userId?: string;
-  }): Promise<Course[]> {
+  }): Promise<InfinityPaginationResponseDto<Course>> {
     return this.coursesRepository.findManyWithPagination({
       filterOptions,
       sortOptions,
       paginationOptions,
       userId,
+    });
+  }
+
+  findManyByTeacherWithPagination({
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+    teacherId,
+  }: {
+    filterOptions?: FilterCourseDto | null;
+    sortOptions?: SortCourseDto[] | null;
+    paginationOptions: IPaginationOptions;
+    teacherId: string;
+  }): Promise<InfinityPaginationResponseDto<Course>> {
+    return this.coursesRepository.findManyByTeacherWithPagination({
+      filterOptions,
+      sortOptions,
+      paginationOptions,
+      teacherId,
     });
   }
 
@@ -117,18 +143,8 @@ export class CoursesService {
       if (imageResponse.http_code) throw new Error('Something went wrong!');
       image = imageResponse.url as string;
     }
-    let videoPreview = payload.videoPreview as string;
-    if (typeof videoPreview !== 'string') {
-      const videoResponse = await this.videosService.uploadVideo({
-        title: payload.name!,
-        description: payload.description!,
-        file: videoPreview,
-      });
-      videoPreview = videoResponse;
-    }
     const clonedPayload = {
       ...payload,
-      videoPreview,
       image,
       createdBy,
     };

@@ -3,3 +3,8 @@ export enum StatusEnum {
   INACTIVE = 'INACTIVE',
   BLOCK = 'BLOCK',
 }
+
+export enum CourseStatusEnum {
+  DRAFT = 'DRAFT',
+  PUBLIC = 'PUBLIC',
+}

@@ -8,6 +8,8 @@ import { User } from '../../../../domain/user';
 import { UserRepository } from '../../user.repository';
 import { UserMapper } from '../mappers/user.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { infinityPagination } from '../../../../../utils/infinity-pagination';
+import { InfinityPaginationResponseDto } from '../../../../../utils/dto/infinity-pagination-response.dto';
 
 @Injectable()
 export class UsersRelationalRepository implements UserRepository {
@@ -32,13 +34,13 @@ export class UsersRelationalRepository implements UserRepository {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<User[]> {
+  }): Promise<InfinityPaginationResponseDto<User>> {
     const where: FindOptionsWhere<UserEntity> = {};
     if (filterOptions?.role) {
       where.role = filterOptions.role;
     }
 
-    const entities = await this.usersRepository.find({
+    const [usersEntity, total] = await this.usersRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       where: where,
@@ -50,8 +52,11 @@ export class UsersRelationalRepository implements UserRepository {
         {},
       ),
     });
-
-    return entities.map((user) => UserMapper.toDomain(user));
+    const data = usersEntity.map((user) => UserMapper.toDomain(user));
+    return infinityPagination(data, {
+      ...paginationOptions,
+      total,
+    });
   }
 
   async findById(id: User['id']): Promise<NullableType<User>> {

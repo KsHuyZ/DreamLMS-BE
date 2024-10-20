@@ -11,7 +11,7 @@ import { User } from '../../users/domain/user';
 import { Enroll } from '../../enrolls/domain/enroll';
 import { Lesson } from '../../lessons/domain/lesson';
 import { LevelsEnum } from '../types/levels.enum';
-import { StatusEnum } from '../../statuses/statuses.enum';
+import { CourseStatusEnum } from '../../statuses/statuses.enum';
 
 export class CourseDto implements Course {
   @ApiProperty()
@@ -50,7 +50,7 @@ export class CourseDto implements Course {
   enrolledCourses: Enroll[];
 
   @ApiProperty()
-  status: StatusEnum;
+  status: CourseStatusEnum;
   @ApiProperty()
   @IsBoolean()
   isDeleted: boolean;

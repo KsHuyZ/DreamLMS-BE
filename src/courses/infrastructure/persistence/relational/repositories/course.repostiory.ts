@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import { NullableType } from '../../../../../utils/types/nullable.type';
-import { SortCourseDto } from '../../../../dto/query-course.dto';
+import {
+  FilterCourseDto,
+  SortCourseDto,
+} from '../../../../dto/query-course.dto';
 import { Course } from '../../../../domain/course';
 import { CourseRepository } from '../../course.repository';
 import { CourseEntity } from '../entities/course.entity';
@@ -9,6 +12,9 @@ import { CourseMapper } from '../mappers/course.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
+import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
+import { infinityPagination } from '../../../../../utils/infinity-pagination';
+import { InfinityPaginationResponseDto } from '../../../../../utils/dto/infinity-pagination-response.dto';
 
 @Injectable()
 export class CoursesRelationalRepository implements CourseRepository {
@@ -34,10 +40,10 @@ export class CoursesRelationalRepository implements CourseRepository {
     sortOptions?: SortCourseDto[] | null;
     paginationOptions: IPaginationOptions;
     userId?: string;
-  }): Promise<Course[]> {
+  }): Promise<InfinityPaginationResponseDto<Course>> {
     console.log({ userId });
     const where: FindOptionsWhere<CourseEntity> = {};
-    const coursesObjects = await this.coursesRepository.find({
+    const [coursesEntity, total] = await this.coursesRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       where: where,
@@ -49,9 +55,50 @@ export class CoursesRelationalRepository implements CourseRepository {
         {},
       ),
     });
-    return coursesObjects.map((courseObjects) =>
-      CourseMapper.toDomain(courseObjects),
-    );
+    const data = coursesEntity.map((course) => CourseMapper.toDomain(course));
+
+    return infinityPagination(data, {
+      ...paginationOptions,
+      total,
+    });
+  }
+
+  async findManyByTeacherWithPagination({
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+    teacherId,
+  }: {
+    filterOptions?: FilterCourseDto | null;
+    sortOptions?: SortCourseDto[] | null;
+    paginationOptions: IPaginationOptions;
+    teacherId: string;
+  }): Promise<InfinityPaginationResponseDto<Course>> {
+    const createdBy = new UserEntity();
+    createdBy.id = teacherId;
+    const where: FindOptionsWhere<CourseEntity> = {
+      ...filterOptions,
+      createdBy,
+    };
+    const [coursesEntity, total] = await this.coursesRepository.findAndCount({
+      skip: (paginationOptions.page - 1) * paginationOptions.limit,
+      take: paginationOptions.limit,
+      where: where,
+      order: sortOptions?.reduce(
+        (accumulator, sort) => ({
+          ...accumulator,
+          [sort.orderBy]: sort.order,
+        }),
+        {},
+      ),
+    });
+
+    const data = coursesEntity.map((course) => CourseMapper.toDomain(course));
+
+    return infinityPagination(data, {
+      ...paginationOptions,
+      total,
+    });
   }
 
   async findById(id: Course['id']): Promise<NullableType<Course>> {

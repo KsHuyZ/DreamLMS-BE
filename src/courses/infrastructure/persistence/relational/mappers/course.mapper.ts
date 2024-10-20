@@ -1,3 +1,4 @@
+import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { Course } from '../../../../domain/course';
 import { CourseEntity } from '../entities/course.entity';
 
@@ -21,7 +22,7 @@ export class CourseMapper {
     course.image = raw.image;
     course.level = raw.level;
     course.isDeleted = raw.isDeleted;
-
+    course.createdBy = raw.createdBy;
     course.createdAt = raw.createdAt;
     course.updatedAt = raw.updatedAt;
     course.deletedAt = raw.deletedAt;
@@ -39,6 +40,9 @@ export class CourseMapper {
     courseEntity.level = course.level;
     courseEntity.status = course.status;
     courseEntity.isDeleted = course.isDeleted;
+    const userEntity = new UserEntity();
+    userEntity.id = course.createdBy.id;
+    courseEntity.createdBy = userEntity;
     courseEntity.createdAt = course.createdAt;
     courseEntity.updatedAt = course.updatedAt;
     courseEntity.deletedAt = course.deletedAt;

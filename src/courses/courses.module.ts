@@ -10,6 +10,7 @@ import { TagsModule } from '../tags/tag.module';
 import { CategoriesModule } from '../categories/category.module';
 import { CourseTagModule } from '../course-tag/course-tag.module';
 import { CourseCategoryModule } from '../course-category/course-category.module';
+import { UsersModule } from '../users/users.module';
 @Module({
   imports: [
     RelationalCoursePersistenceModule,
@@ -19,6 +20,7 @@ import { CourseCategoryModule } from '../course-category/course-category.module'
     CategoriesModule,
     CourseTagModule,
     CourseCategoryModule,
+    UsersModule,
   ],
   controllers: [CoursesController],
   providers: [CoursesService],

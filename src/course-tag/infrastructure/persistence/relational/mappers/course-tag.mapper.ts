@@ -1,7 +1,7 @@
 import { CourseEntity } from '../../../../../courses/infrastructure/persistence/relational/entities/course.entity';
 import { TagEntity } from '../../../../../tags/persistence/entities/tag.entity';
 import { CourseTag } from '../../../../domain/course-tag';
-import { CourseTagEntity } from '../entities/course-category.entity';
+import { CourseTagEntity } from '../entities/course-tag.entity';
 
 export class CourseTagMapper {
   static toDomain(raw: CourseTagEntity): CourseTag {

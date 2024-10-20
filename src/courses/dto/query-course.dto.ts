@@ -7,14 +7,18 @@ import {
 } from 'class-validator';
 import { Transform, Type, plainToInstance } from 'class-transformer';
 import { Course } from '../domain/course';
-import { RoleDto } from '../../roles/dto/role.dto';
+import { CourseStatusEnum } from '../../statuses/statuses.enum';
 
 export class FilterCourseDto {
-  @ApiPropertyOptional({ type: RoleDto })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => RoleDto)
-  roles?: RoleDto[] | null;
+  @Type(() => String)
+  name?: string;
+
+  @ApiPropertyOptional({ type: CourseStatusEnum })
+  @IsOptional()
+  @Type(() => String)
+  status?: CourseStatusEnum;
 }
 
 export class SortCourseDto {

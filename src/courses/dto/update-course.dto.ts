@@ -13,12 +13,4 @@ export class UpdateCourseDto extends PartialType(
   })
   @IsNotEmpty()
   image: string | Express.Multer.File;
-
-  @ApiProperty({
-    type: String,
-    format: 'binary',
-    required: true,
-  })
-  @IsNotEmpty()
-  videoPreview: string | Express.Multer.File;
 }

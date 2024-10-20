@@ -12,6 +12,7 @@ import bcrypt from 'bcryptjs';
 import { AuthProvidersEnum } from '../auth/auth-providers.enum';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { DeepPartial } from '../utils/types/deep-partial.type';
+import { InfinityPaginationResponseDto } from '../utils/dto/infinity-pagination-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -52,7 +53,7 @@ export class UsersService {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<User[]> {
+  }): Promise<InfinityPaginationResponseDto<User>> {
     return this.usersRepository.findManyWithPagination({
       filterOptions,
       sortOptions,

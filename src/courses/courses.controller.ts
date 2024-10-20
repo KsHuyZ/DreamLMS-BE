@@ -34,7 +34,6 @@ import { NullableType } from '../utils/types/nullable.type';
 import { QueryCourseDto } from './dto/query-course.dto';
 import { Course } from './domain/course';
 import { CoursesService } from './courses.service';
-import { infinityPagination } from '../utils/infinity-pagination';
 import { User } from '../users/domain/user';
 import {
   FileFieldsInterceptor,
@@ -93,18 +92,43 @@ export class CoursesController {
       limit = 50;
     }
 
-    return infinityPagination(
-      await this.coursesService.findManyWithPagination({
-        filterOptions: query?.filters,
-        sortOptions: query?.sort,
-        paginationOptions: {
-          page,
-          limit,
-        },
-        userId: user?.id,
-      }),
-      { page, limit },
-    );
+    return this.coursesService.findManyWithPagination({
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
+      paginationOptions: {
+        page,
+        limit,
+      },
+      userId: user?.id,
+    });
+  }
+
+  @ApiOkResponse({
+    type: InfinityPaginationResponse(Course),
+  })
+  @Get('teacher')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  async findAllByTeacher(
+    @Query() query: QueryCourseDto,
+    @Request() request,
+  ): Promise<InfinityPaginationResponseDto<Course>> {
+    const user = request.user as User | undefined;
+    const page = query?.page ?? 1;
+    let limit = query?.limit ?? 10;
+    if (limit > 50) {
+      limit = 50;
+    }
+
+    return this.coursesService.findManyByTeacherWithPagination({
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
+      paginationOptions: {
+        page,
+        limit,
+      },
+      teacherId: user?.id ?? '',
+    });
   }
 
   @ApiOkResponse({

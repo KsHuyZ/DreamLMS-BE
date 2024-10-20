@@ -5,19 +5,21 @@
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { EnrollEntity } from '../../../../../enrolls/infrastructure/persistence/relational/entities/enroll.entity';
 import { LessonEntity } from '../../../../../lessons/persistence/entities/lesson.entity';
 import { LevelsEnum } from '../../../../types/levels.enum';
-import { StatusEnum } from '../../../../../statuses/statuses.enum';
-import { CourseTagEntity } from '../../../../../course-tag/infrastructure/persistence/relational/entities/course-category.entity';
+import { CourseStatusEnum } from '../../../../../statuses/statuses.enum';
+import { CourseTagEntity } from '../../../../../course-tag/infrastructure/persistence/relational/entities/course-tag.entity';
 
 @Entity({
   name: 'courses',
@@ -75,7 +77,7 @@ export class CourseEntity extends EntityRelationalHelper {
     type: String,
     example: 'abchsdgasdgsagdssasdaerrewr',
   })
-  @ManyToOne(() => UserEntity, (user) => user.id)
+  @ManyToOne(() => UserEntity, (user) => user.id, { nullable: false })
   createdBy: UserEntity;
 
   @ApiResponseProperty({
@@ -95,9 +97,9 @@ export class CourseEntity extends EntityRelationalHelper {
   enrolledCourses: EnrollEntity[];
 
   @ApiResponseProperty({
-    enum: StatusEnum,
+    enum: CourseStatusEnum,
   })
-  status: StatusEnum;
+  status: CourseStatusEnum;
 
   @ApiProperty({
     type: Boolean,
@@ -112,11 +114,11 @@ export class CourseEntity extends EntityRelationalHelper {
   courseTag: CourseTagEntity[];
 
   @ApiProperty()
-  @Column({ type: Date, default: new Date() })
+  @CreateDateColumn()
   createdAt: Date;
 
   @ApiResponseProperty()
-  @Column({ type: Date, default: new Date() })
+  @UpdateDateColumn()
   updatedAt: Date;
 
   @ApiResponseProperty()
