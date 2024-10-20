@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { EntityRelationalHelper } from '../../../utils/relational-entity-helper';
-import { CourseTagEntity } from '../../../course-tag/infrastructure/persistence/relational/entities/course-tag.entity';
+import { CourseEntity } from '../../../courses/infrastructure/persistence/relational/entities/course.entity';
 
 @Entity({
   name: 'tags',
@@ -22,6 +22,6 @@ export class TagEntity extends EntityRelationalHelper {
   @ApiProperty({
     type: String,
   })
-  @OneToMany(() => CourseTagEntity, (courseTag) => courseTag.tag)
-  courseTag: CourseTagEntity[];
+  @ManyToMany(() => CourseEntity, (course) => course.tags)
+  courses: CourseEntity[];
 }

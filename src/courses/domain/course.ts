@@ -5,6 +5,8 @@ import { Enroll } from '../../enrolls/domain/enroll';
 import { Lesson } from '../../lessons/domain/lesson';
 import { LevelsEnum } from '../types/levels.enum';
 import { CourseStatusEnum } from '../../statuses/statuses.enum';
+import { Category } from '../../categories/domain/category';
+import { Tag } from '../../tags/domain/tag';
 
 export class Course {
   @ApiResponseProperty({
@@ -88,4 +90,10 @@ export class Course {
 
   @ApiResponseProperty()
   deletedAt?: Date | null;
+
+  @ApiResponseProperty()
+  tags: Tag[];
+
+  @ApiResponseProperty()
+  categories: Category[];
 }

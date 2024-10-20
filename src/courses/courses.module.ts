@@ -8,8 +8,6 @@ import { VideosModule } from '../videos/videos.module';
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { TagsModule } from '../tags/tag.module';
 import { CategoriesModule } from '../categories/category.module';
-import { CourseTagModule } from '../course-tag/course-tag.module';
-import { CourseCategoryModule } from '../course-category/course-category.module';
 import { UsersModule } from '../users/users.module';
 @Module({
   imports: [
@@ -18,8 +16,6 @@ import { UsersModule } from '../users/users.module';
     CloudinaryModule,
     TagsModule,
     CategoriesModule,
-    CourseTagModule,
-    CourseCategoryModule,
     UsersModule,
   ],
   controllers: [CoursesController],

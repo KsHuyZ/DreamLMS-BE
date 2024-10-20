@@ -84,6 +84,7 @@ export class CoursesRelationalRepository implements CourseRepository {
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       where: where,
+      relations: ['tags', 'categories', 'createdBy'],
       order: sortOptions?.reduce(
         (accumulator, sort) => ({
           ...accumulator,

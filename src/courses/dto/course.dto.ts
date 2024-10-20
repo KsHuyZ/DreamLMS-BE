@@ -12,6 +12,8 @@ import { Enroll } from '../../enrolls/domain/enroll';
 import { Lesson } from '../../lessons/domain/lesson';
 import { LevelsEnum } from '../types/levels.enum';
 import { CourseStatusEnum } from '../../statuses/statuses.enum';
+import { Tag } from '../../tags/domain/tag';
+import { Category } from '../../categories/domain/category';
 
 export class CourseDto implements Course {
   @ApiProperty()
@@ -45,6 +47,12 @@ export class CourseDto implements Course {
 
   @ApiProperty()
   lessons: Lesson[];
+
+  @ApiProperty()
+  tags: Tag[];
+
+  @ApiProperty()
+  categories: Category[];
 
   @ApiProperty()
   enrolledCourses: Enroll[];

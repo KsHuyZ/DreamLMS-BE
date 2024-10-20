@@ -1,3 +1,5 @@
+import { CategoryEntity } from '../../../../../categories/persistence/entities/category.entity';
+import { TagEntity } from '../../../../../tags/persistence/entities/tag.entity';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { Course } from '../../../../domain/course';
 import { CourseEntity } from '../entities/course.entity';
@@ -26,6 +28,8 @@ export class CourseMapper {
     course.createdAt = raw.createdAt;
     course.updatedAt = raw.updatedAt;
     course.deletedAt = raw.deletedAt;
+    course.tags = raw.tags;
+    course.categories = raw.categories;
     return course;
   }
 
@@ -46,6 +50,16 @@ export class CourseMapper {
     courseEntity.createdAt = course.createdAt;
     courseEntity.updatedAt = course.updatedAt;
     courseEntity.deletedAt = course.deletedAt;
+    courseEntity.tags = course.tags.map((tag) => {
+      const tagEntity = new TagEntity();
+      tagEntity.id = tag.id;
+      return tagEntity;
+    });
+    courseEntity.categories = course.categories.map((category) => {
+      const categoryEntity = new CategoryEntity();
+      categoryEntity.id = category.id;
+      return categoryEntity;
+    });
     return courseEntity;
   }
 }

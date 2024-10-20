@@ -7,6 +7,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -19,7 +20,8 @@ import { EnrollEntity } from '../../../../../enrolls/infrastructure/persistence/
 import { LessonEntity } from '../../../../../lessons/persistence/entities/lesson.entity';
 import { LevelsEnum } from '../../../../types/levels.enum';
 import { CourseStatusEnum } from '../../../../../statuses/statuses.enum';
-import { CourseTagEntity } from '../../../../../course-tag/infrastructure/persistence/relational/entities/course-tag.entity';
+import { TagEntity } from '../../../../../tags/persistence/entities/tag.entity';
+import { CategoryEntity } from '../../../../../categories/persistence/entities/category.entity';
 
 @Entity({
   name: 'courses',
@@ -99,6 +101,7 @@ export class CourseEntity extends EntityRelationalHelper {
   @ApiResponseProperty({
     enum: CourseStatusEnum,
   })
+  @Column({ enum: CourseStatusEnum, default: CourseStatusEnum.DRAFT })
   status: CourseStatusEnum;
 
   @ApiProperty({
@@ -110,8 +113,33 @@ export class CourseEntity extends EntityRelationalHelper {
   @OneToMany(() => LessonEntity, (lessons) => lessons.course)
   lessons: LessonEntity[];
 
-  @OneToMany(() => CourseTagEntity, (courseTag) => courseTag.course)
-  courseTag: CourseTagEntity[];
+  @ManyToMany(() => TagEntity)
+  @JoinTable({
+    name: 'courseTag',
+    joinColumn: {
+      name: 'courseId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'tagId',
+      referencedColumnName: 'id',
+    },
+  })
+  tags: TagEntity[];
+
+  @ManyToMany(() => CategoryEntity)
+  @JoinTable({
+    name: 'courseCategory',
+    joinColumn: {
+      name: 'courseId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'categoryId',
+      referencedColumnName: 'id',
+    },
+  })
+  categories: CategoryEntity[];
 
   @ApiProperty()
   @CreateDateColumn()

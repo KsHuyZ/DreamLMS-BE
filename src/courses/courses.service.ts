@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { FilterCourseDto, SortCourseDto } from './dto/query-course.dto';
@@ -11,11 +15,10 @@ import { VideosService } from '../videos/videos.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { TagsService } from '../tags/tag.service';
 import { validate as isValidUUID } from 'uuid';
-import { CoursesTagService } from '../course-tag/course-tag.service';
 import { CategoriesService } from '../categories/category.service';
-import { CoursesCategoryService } from '../course-category/course-category.service';
 import { InfinityPaginationResponseDto } from '../utils/dto/infinity-pagination-response.dto';
 import { UsersService } from '../users/users.service';
+import { RoleEnum } from '../roles/roles.enum';
 @Injectable()
 export class CoursesService {
   constructor(
@@ -24,8 +27,6 @@ export class CoursesService {
     private readonly cloudinaryService: CloudinaryService,
     private readonly tagsService: TagsService,
     private readonly categoriesService: CategoriesService,
-    private readonly courseTagService: CoursesTagService,
-    private readonly courseCategoryService: CoursesCategoryService,
     private readonly userService: UsersService,
   ) {}
 
@@ -38,20 +39,18 @@ export class CoursesService {
     if (!createdBy) {
       throw new UnauthorizedException();
     }
+
+    if (createdBy.role === RoleEnum.STUDENT) {
+      throw new ForbiddenException();
+    }
+
     const imagePayload = createCourseDto.image;
     const imageResponse =
       await this.cloudinaryService.uploadImage(imagePayload);
     if (imageResponse.http_code) throw new Error('Something went wrong!');
 
-    const clonedPayload = {
-      ...createCourseDto,
-      price: Number(createCourseDto.price) || 0,
-      createdBy,
-      image: imageResponse.url,
-    };
-    const course = await this.coursesRepository.create(clonedPayload);
     //tag
-    const parseTags = JSON.parse(clonedPayload.tags) as string[];
+    const parseTags = JSON.parse(createCourseDto.tags) as string[];
     const existTagIds = parseTags.filter((tag) => isValidUUID(tag));
     const newTags = parseTags.filter((tag) => !isValidUUID(tag));
     const newTagsMapper = newTags.map((tag) => ({ name: tag }));
@@ -61,11 +60,9 @@ export class CoursesService {
       ...existTagIds,
       ...newTagIds,
     ]);
-    const courseTagDto = tags.map((tag) => ({ tag, course }));
-    await this.courseTagService.createMany(courseTagDto);
 
     //category
-    const parseCategories = JSON.parse(clonedPayload.categories) as string[];
+    const parseCategories = JSON.parse(createCourseDto.categories) as string[];
     const existCategoryIds = parseCategories.filter((category) =>
       isValidUUID(category),
     );
@@ -82,11 +79,16 @@ export class CoursesService {
       ...existCategoryIds,
       ...newCategoryIds,
     ]);
-    const courseCategoryDto = categories.map((category) => ({
-      category,
-      course,
-    }));
-    await this.courseCategoryService.createMany(courseCategoryDto);
+
+    const clonedPayload = {
+      ...createCourseDto,
+      price: Number(createCourseDto.price) || 0,
+      createdBy,
+      image: imageResponse.url,
+      tags,
+      categories,
+    };
+    const course = await this.coursesRepository.create(clonedPayload);
     return course;
   }
 
@@ -143,10 +145,44 @@ export class CoursesService {
       if (imageResponse.http_code) throw new Error('Something went wrong!');
       image = imageResponse.url as string;
     }
+
+    //tag
+    const parseTags = JSON.parse(payload.tags ?? '[]') as string[];
+    const existTagIds = parseTags.filter((tag) => isValidUUID(tag));
+    const newTags = parseTags.filter((tag) => !isValidUUID(tag));
+    const newTagsMapper = newTags.map((tag) => ({ name: tag }));
+    const newTagsDto = await this.tagsService.createMany(newTagsMapper);
+    const newTagIds = newTagsDto.map((tag) => tag.id);
+    const tags = await this.tagsService.findManyByIds([
+      ...existTagIds,
+      ...newTagIds,
+    ]);
+
+    //category
+    const parseCategories = JSON.parse(payload.categories ?? '[]') as string[];
+    const existCategoryIds = parseCategories.filter((category) =>
+      isValidUUID(category),
+    );
+    const newCategories = parseCategories.filter(
+      (category) => !isValidUUID(category),
+    );
+    const newCategoryMapper = newCategories.map((category) => ({
+      name: category,
+    }));
+    const newCategoriesDto =
+      await this.categoriesService.createMany(newCategoryMapper);
+    const newCategoryIds = newCategoriesDto.map((category) => category.id);
+    const categories = await this.categoriesService.findManyByIds([
+      ...existCategoryIds,
+      ...newCategoryIds,
+    ]);
+
     const clonedPayload = {
       ...payload,
       image,
       createdBy,
+      tags,
+      categories,
     };
     return this.coursesRepository.update(id, clonedPayload);
   }
