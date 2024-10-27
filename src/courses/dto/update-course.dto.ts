@@ -2,6 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateCourseDto } from './create-course.dto';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+import { ImageDto } from '../../cloudinary/dto/image.dto';
 
 export class UpdateCourseDto extends PartialType(
   OmitType(CreateCourseDto, ['image']),
@@ -12,5 +13,5 @@ export class UpdateCourseDto extends PartialType(
     required: true,
   })
   @IsNotEmpty()
-  image: string | Express.Multer.File;
+  image: ImageDto | Express.Multer.File;
 }

@@ -3,7 +3,9 @@ import { NullableType } from '../../utils/types/nullable.type';
 import { Category } from '../domain/category';
 
 export abstract class CategoryRepository {
-  abstract createMany(data: Omit<Category, 'id'>[]): Promise<Category[]>;
+  abstract createMany(
+    data: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[],
+  ): Promise<Category[]>;
 
   abstract findById(id: Category['id']): Promise<NullableType<Category>>;
 

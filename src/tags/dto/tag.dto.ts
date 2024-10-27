@@ -8,4 +8,19 @@ export class TagDto {
   @ApiProperty({ example: 'React from zero to hero', type: String })
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty({
+    type: Date,
+  })
+  createdAt: Date;
+
+  @ApiProperty({
+    type: Date,
+  })
+  updatedAt: Date;
+
+  @ApiProperty({
+    type: Date,
+  })
+  deletedAt: Date;
 }

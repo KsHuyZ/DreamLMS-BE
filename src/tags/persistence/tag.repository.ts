@@ -3,7 +3,9 @@ import { NullableType } from '../../utils/types/nullable.type';
 import { Tag } from '../domain/tag';
 
 export abstract class TagRepository {
-  abstract create(data: Omit<Tag, 'id'>[]): Promise<Tag[]>;
+  abstract create(
+    data: Omit<Tag, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[],
+  ): Promise<Tag[]>;
 
   abstract findById(id: Tag['id']): Promise<NullableType<Tag>>;
 

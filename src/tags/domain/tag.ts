@@ -10,4 +10,19 @@ export class Tag {
     type: String,
   })
   name: string;
+
+  @ApiResponseProperty({
+    type: Date,
+  })
+  createdAt: Date;
+
+  @ApiResponseProperty({
+    type: Date,
+  })
+  updatedAt: Date;
+
+  @ApiResponseProperty({
+    type: Date,
+  })
+  deletedAt: Date;
 }

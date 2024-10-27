@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { EntityRelationalHelper } from '../../../utils/relational-entity-helper';
 import { CourseEntity } from '../../../courses/infrastructure/persistence/relational/entities/course.entity';
 
@@ -20,4 +28,16 @@ export class CategoryEntity extends EntityRelationalHelper {
   name: string;
   @OneToMany(() => CourseEntity, (course) => course.categories)
   courses: CourseEntity[];
+
+  @ApiProperty()
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @ApiProperty()
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @ApiProperty()
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

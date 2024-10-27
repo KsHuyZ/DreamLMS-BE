@@ -6,11 +6,14 @@ import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,6 +25,7 @@ import { LevelsEnum } from '../../../../types/levels.enum';
 import { CourseStatusEnum } from '../../../../../statuses/statuses.enum';
 import { TagEntity } from '../../../../../tags/persistence/entities/tag.entity';
 import { CategoryEntity } from '../../../../../categories/persistence/entities/category.entity';
+import { ImageEntity } from '../../../../../cloudinary/persistence/entities/image.entity';
 
 @Entity({
   name: 'courses',
@@ -51,8 +55,9 @@ export class CourseEntity extends EntityRelationalHelper {
     type: String,
     example: 'https://example.com/path/to/file.jpg',
   })
-  @Column({ type: String })
-  image: string;
+  @OneToOne(() => ImageEntity, (image) => image.course, { cascade: true })
+  @JoinColumn()
+  image: ImageEntity;
 
   @ApiProperty({
     type: String,
@@ -104,12 +109,6 @@ export class CourseEntity extends EntityRelationalHelper {
   @Column({ enum: CourseStatusEnum, default: CourseStatusEnum.DRAFT })
   status: CourseStatusEnum;
 
-  @ApiProperty({
-    type: Boolean,
-  })
-  @Column({ type: Boolean, default: false })
-  isDeleted: boolean;
-
   @OneToMany(() => LessonEntity, (lessons) => lessons.course)
   lessons: LessonEntity[];
 
@@ -150,6 +149,6 @@ export class CourseEntity extends EntityRelationalHelper {
   updatedAt: Date;
 
   @ApiResponseProperty()
-  @Column({ type: Date, nullable: true })
-  deletedAt?: Date | null;
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

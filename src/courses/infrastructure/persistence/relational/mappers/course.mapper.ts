@@ -1,4 +1,5 @@
 import { CategoryEntity } from '../../../../../categories/persistence/entities/category.entity';
+import { ImageEntity } from '../../../../../cloudinary/persistence/entities/image.entity';
 import { TagEntity } from '../../../../../tags/persistence/entities/tag.entity';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { Course } from '../../../../domain/course';
@@ -23,7 +24,6 @@ export class CourseMapper {
     course.videoPreview = raw.videoPreview;
     course.image = raw.image;
     course.level = raw.level;
-    course.isDeleted = raw.isDeleted;
     course.createdBy = raw.createdBy;
     course.createdAt = raw.createdAt;
     course.updatedAt = raw.updatedAt;
@@ -40,10 +40,11 @@ export class CourseMapper {
     courseEntity.price = course.price;
     courseEntity.shortDescription = course.shortDescription;
     courseEntity.description = course.description;
-    courseEntity.image = course.image;
+    const image = new ImageEntity();
+    image.id = course.image.id;
+    courseEntity.image = image;
     courseEntity.level = course.level;
     courseEntity.status = course.status;
-    courseEntity.isDeleted = course.isDeleted;
     const userEntity = new UserEntity();
     userEntity.id = course.createdBy.id;
     courseEntity.createdBy = userEntity;

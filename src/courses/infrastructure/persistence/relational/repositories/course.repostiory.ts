@@ -84,7 +84,7 @@ export class CoursesRelationalRepository implements CourseRepository {
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       where: where,
-      relations: ['tags', 'categories', 'createdBy'],
+      relations: ['tags', 'categories', 'createdBy', 'image'],
       order: sortOptions?.reduce(
         (accumulator, sort) => ({
           ...accumulator,
@@ -105,9 +105,7 @@ export class CoursesRelationalRepository implements CourseRepository {
   async findById(id: Course['id']): Promise<NullableType<Course>> {
     const entity = await this.coursesRepository.findOne({
       where: { id },
-      relations: {
-        related: true,
-      },
+      relations: ['tags', 'categories', 'image'],
     });
     return entity ? CourseMapper.toDomain(entity) : null;
   }

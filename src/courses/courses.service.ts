@@ -1,5 +1,7 @@
 import {
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -19,6 +21,9 @@ import { CategoriesService } from '../categories/category.service';
 import { InfinityPaginationResponseDto } from '../utils/dto/infinity-pagination-response.dto';
 import { UsersService } from '../users/users.service';
 import { RoleEnum } from '../roles/roles.enum';
+import { Image } from '../cloudinary/domain/image';
+import { Transactional } from 'typeorm-transactional';
+
 @Injectable()
 export class CoursesService {
   constructor(
@@ -30,6 +35,7 @@ export class CoursesService {
     private readonly userService: UsersService,
   ) {}
 
+  @Transactional()
   async create(
     createCourseDto: CreateCourseDto & { createdBy: string },
   ): Promise<Course> {
@@ -48,8 +54,15 @@ export class CoursesService {
     const imageResponse =
       await this.cloudinaryService.uploadImage(imagePayload);
     if (imageResponse.http_code) throw new Error('Something went wrong!');
-
-    //tag
+    const { original_filename, url, public_id, bytes, format } = imageResponse;
+    const image = await this.cloudinaryService.createImage({
+      name: original_filename,
+      url,
+      publicId: public_id,
+      format,
+      size: bytes,
+    });
+    //tag,
     const parseTags = JSON.parse(createCourseDto.tags) as string[];
     const existTagIds = parseTags.filter((tag) => isValidUUID(tag));
     const newTags = parseTags.filter((tag) => !isValidUUID(tag));
@@ -84,7 +97,7 @@ export class CoursesService {
       ...createCourseDto,
       price: Number(createCourseDto.price) || 0,
       createdBy,
-      image: imageResponse.url,
+      image,
       tags,
       categories,
     };
@@ -134,16 +147,33 @@ export class CoursesService {
     return this.coursesRepository.findById(id);
   }
 
+  @Transactional()
   async update(
     id: Course['id'],
     payload: UpdateCourseDto,
   ): Promise<Course | null> {
     const createdBy = new User();
-    let image = payload.image as string;
-    if (typeof image !== 'string') {
-      const imageResponse = await this.cloudinaryService.uploadImage(image);
+    const imagePayload = JSON.parse(
+      payload.image as unknown as string,
+    ) as Image;
+
+    let image = imagePayload;
+    if (!image.url) {
+      const imageResponse = await this.cloudinaryService.uploadImage(
+        image as unknown as Express.Multer.File,
+      );
       if (imageResponse.http_code) throw new Error('Something went wrong!');
-      image = imageResponse.url as string;
+      const { original_filename, url, public_id, bytes, format } =
+        imageResponse;
+      image = {
+        id: image.id,
+        name: original_filename,
+        url,
+        course: image.course,
+        publicId: public_id,
+        size: bytes,
+        format,
+      };
     }
 
     //tag
@@ -186,8 +216,13 @@ export class CoursesService {
     };
     return this.coursesRepository.update(id, clonedPayload);
   }
-
+  @Transactional()
   async remove(id: Course['id']): Promise<void> {
+    const course = await this.coursesRepository.findById(id);
+    if (!course) {
+      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+    }
     await this.coursesRepository.remove(id);
+    await this.cloudinaryService.removeImage(course.image.id);
   }
 }

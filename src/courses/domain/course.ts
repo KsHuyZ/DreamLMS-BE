@@ -7,6 +7,7 @@ import { LevelsEnum } from '../types/levels.enum';
 import { CourseStatusEnum } from '../../statuses/statuses.enum';
 import { Category } from '../../categories/domain/category';
 import { Tag } from '../../tags/domain/tag';
+import { Image } from '../../cloudinary/domain/image';
 
 export class Course {
   @ApiResponseProperty({
@@ -30,7 +31,7 @@ export class Course {
     type: String,
     example: 'https://example.com/path/to/file.jpg',
   })
-  image: string;
+  image: Image;
 
   @ApiResponseProperty({
     type: String,
@@ -77,11 +78,6 @@ export class Course {
   })
   status: CourseStatusEnum;
 
-  @ApiResponseProperty({
-    type: () => Boolean,
-  })
-  isDeleted: boolean;
-
   @ApiResponseProperty()
   createdAt: Date;
 
@@ -89,7 +85,7 @@ export class Course {
   updatedAt: Date;
 
   @ApiResponseProperty()
-  deletedAt?: Date | null;
+  deletedAt: Date;
 
   @ApiResponseProperty()
   tags: Tag[];

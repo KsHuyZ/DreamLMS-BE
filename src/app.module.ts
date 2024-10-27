@@ -27,10 +27,21 @@ import { EnrollsModule } from './enrolls/enrolls.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { TagsModule } from './tags/tag.module';
 import { CategoriesModule } from './categories/category.module';
+import { addTransactionalDataSource } from 'typeorm-transactional';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
+    TypeOrmModule.forRootAsync({
+      useClass: TypeOrmConfigService,
+      async dataSourceFactory(options) {
+        if (!options) {
+          throw new Error('Invalid options passed');
+        }
+
+        return await addTransactionalDataSource(new DataSource(options));
+      },
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [

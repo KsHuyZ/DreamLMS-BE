@@ -1,12 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Course } from '../domain/course';
-import {
-  IsBoolean,
-  IsDate,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsDate, IsNumber, IsString } from 'class-validator';
 import { User } from '../../users/domain/user';
 import { Enroll } from '../../enrolls/domain/enroll';
 import { Lesson } from '../../lessons/domain/lesson';
@@ -14,6 +8,7 @@ import { LevelsEnum } from '../types/levels.enum';
 import { CourseStatusEnum } from '../../statuses/statuses.enum';
 import { Tag } from '../../tags/domain/tag';
 import { Category } from '../../categories/domain/category';
+import { ImageDto } from '../../cloudinary/dto/image.dto';
 
 export class CourseDto implements Course {
   @ApiProperty()
@@ -27,7 +22,7 @@ export class CourseDto implements Course {
   price: number;
   @ApiProperty()
   @IsString()
-  image: string;
+  image: ImageDto;
   @ApiProperty()
   @IsString()
   videoPreview: string;
@@ -59,17 +54,16 @@ export class CourseDto implements Course {
 
   @ApiProperty()
   status: CourseStatusEnum;
-  @ApiProperty()
-  @IsBoolean()
-  isDeleted: boolean;
+
   @ApiProperty()
   @IsDate()
   createdAt: Date;
+
   @ApiProperty()
   @IsDate()
   updatedAt: Date;
+
   @ApiProperty()
   @IsDate()
-  @IsOptional()
-  deletedAt?: Date | null | undefined;
+  deletedAt: Date;
 }
