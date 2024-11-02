@@ -1,16 +1,12 @@
 import { Module } from '@nestjs/common';
 import { VideosService } from './videos.service';
-import ApiVideoClient from '@api.video/nodejs-client';
+import { VideosController } from './videos.controller';
+import { RelationalVideoPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
+
 @Module({
-  providers: [
-    VideosService,
-    {
-      provide: ApiVideoClient,
-      useFactory: () => {
-        return new ApiVideoClient({ apiKey: process.env.UPLOAD_API_KEY });
-      },
-    },
-  ],
-  exports: [VideosService],
+  imports: [RelationalVideoPersistenceModule],
+  controllers: [VideosController],
+  providers: [VideosService],
+  exports: [VideosService, RelationalVideoPersistenceModule],
 })
 export class VideosModule {}

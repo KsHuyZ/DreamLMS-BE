@@ -3,9 +3,17 @@
 // in your project and return an schema entity directly in response.
 
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { EntityRelationalHelper } from '../../../utils/relational-entity-helper';
 import { CourseEntity } from '../../../courses/infrastructure/persistence/relational/entities/course.entity';
+import { VideoEntity } from '../../../videos/infrastructure/persistence/relational/entities/video.entity';
+import { QuizEntity } from '../../../quizzes/infrastructure/persistence/relational/entities/quiz.entity';
 
 @Entity({
   name: 'lessons',
@@ -40,6 +48,14 @@ export class LessonEntity extends EntityRelationalHelper {
   })
   @ManyToOne(() => CourseEntity, (course) => course.lessons)
   course: CourseEntity;
+
+  @ApiProperty()
+  @OneToMany(() => VideoEntity, (video) => video.lesson)
+  videos: VideoEntity[];
+
+  @ApiProperty()
+  @OneToMany(() => QuizEntity, (quiz) => quiz.lesson)
+  quizzes: QuizEntity[];
 
   @ApiProperty({
     type: Boolean,

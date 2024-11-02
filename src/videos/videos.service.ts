@@ -1,32 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { NullableType } from '../utils/types/nullable.type';
-import { UploadVideoPayload } from './types/upload-video';
-import Video from '@api.video/nodejs-client/lib/model/Video';
-import ApiVideoClient from '@api.video/nodejs-client';
-import VideoUpdatePayload from '@api.video/nodejs-client/lib/model/VideoUpdatePayload';
+import { CreateVideoDto } from './dto/create-video.dto';
+import { UpdateVideoDto } from './dto/update-video.dto';
+import { VideoRepository } from './infrastructure/persistence/video.repository';
+import { Video } from './domain/video';
 
 @Injectable()
 export class VideosService {
-  constructor(private client: ApiVideoClient) {}
-  async uploadVideo(payload: UploadVideoPayload): Promise<string> {
-    const { title, description, file } = payload;
-    const videoObj = await this.client.videos.create({ title, description });
-    const video = await this.client.videos.upload(videoObj.videoId, file.path);
-    return video.videoId;
+  constructor(private readonly videoRepository: VideoRepository) {}
+
+  create(createVideoDto: CreateVideoDto) {
+    return this.videoRepository.create(createVideoDto);
   }
 
-  getVideoById(id: Video['videoId']): Promise<NullableType<Video>> {
-    return this.client.videos.get(id);
+  findOne(id: Video['id']) {
+    return this.videoRepository.findById(id);
   }
 
-  async update(
-    id: Video['videoId'],
-    payload: VideoUpdatePayload,
-  ): Promise<Video | null> {
-    return this.client.videos.update(id, payload);
+  update(id: Video['id'], updateVideoDto: UpdateVideoDto) {
+    return this.videoRepository.update(id, updateVideoDto);
   }
 
-  async remove(id: Video['videoId']): Promise<void> {
-    await this.client.videos.delete(id);
+  remove(id: Video['id']) {
+    return this.videoRepository.remove(id);
   }
 }
