@@ -1,5 +1,5 @@
 export type UploadVideoPayload = {
-  file: Express.Multer.File;
+  video: Express.Multer.File;
   title: string;
   description: string;
 };

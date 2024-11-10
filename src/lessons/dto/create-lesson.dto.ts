@@ -7,20 +7,15 @@ export class CreateLessonDto {
   name: string;
 
   @ApiProperty({
-    type: Number,
-    example: 1,
-  })
-  order: number;
-
-  @ApiProperty({
     type: String,
     example: 'this is description',
   })
+  @IsNotEmpty()
   description: string;
 
   @ApiProperty({
-    type: Boolean,
-    example: false,
+    type: String,
   })
-  isPublic: boolean;
+  @IsNotEmpty()
+  courseId: string;
 }

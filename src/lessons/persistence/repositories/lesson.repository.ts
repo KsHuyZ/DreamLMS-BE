@@ -19,6 +19,7 @@ export class LessonRelationalRepository implements LessonRepository {
       where: {
         id,
       },
+      relations: ['videos', 'quizzes'],
     });
 
     return entity ? LessonMapper.toDomain(entity) : null;
@@ -49,12 +50,18 @@ export class LessonRelationalRepository implements LessonRepository {
   ): Promise<Lesson | null> {
     const entity = await this.lessonRepository.findOne({
       where: { id },
+      relations: ['course'],
     });
 
     if (!entity) {
       throw new Error('Lesson not found');
     }
-
+    console.log({
+      entity: LessonMapper.toPersistence({
+        ...LessonMapper.toDomain(entity),
+        ...payload,
+      }),
+    });
     const updatedEntity = await this.lessonRepository.save(
       this.lessonRepository.create(
         LessonMapper.toPersistence({
@@ -68,6 +75,6 @@ export class LessonRelationalRepository implements LessonRepository {
   }
 
   async remove(id: Lesson['id']): Promise<void> {
-    await this.lessonRepository.softDelete({ id });
+    await this.lessonRepository.delete({ id });
   }
 }

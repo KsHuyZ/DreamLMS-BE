@@ -57,11 +57,15 @@ export class LessonEntity extends EntityRelationalHelper {
   @OneToMany(() => QuizEntity, (quiz) => quiz.lesson)
   quizzes: QuizEntity[];
 
+  @ApiProperty()
+  @Column({ default: false })
+  disabled: boolean;
+
   @ApiProperty({
     type: Boolean,
     example: false,
     default: true,
   })
-  @Column()
-  isPublic: boolean;
+  @Column({ type: Boolean, default: false })
+  isFree: boolean;
 }

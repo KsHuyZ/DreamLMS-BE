@@ -29,9 +29,7 @@ import { TagsModule } from './tags/tag.module';
 import { CategoriesModule } from './categories/category.module';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { DataSource } from 'typeorm';
-
 import { VideosModule } from './videos/videos.module';
-
 import { QuizzesModule } from './quizzes/quizzes.module';
 
 @Module({
@@ -91,9 +89,9 @@ import { QuizzesModule } from './quizzes/quizzes.module';
     MailModule,
     MailerModule,
     HomeModule,
+    LessonsModule,
     CoursesModule,
     EnrollsModule,
-    LessonsModule,
     TagsModule,
     CategoriesModule,
     ScheduleModule.forRoot(),

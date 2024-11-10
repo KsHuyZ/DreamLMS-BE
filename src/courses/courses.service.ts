@@ -13,7 +13,6 @@ import { Course } from './domain/course';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { User } from '../users/domain/user';
 import { UpdateCourseDto } from './dto/update-course.dto';
-import { VideosService } from '../videos/videos.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { TagsService } from '../tags/tag.service';
 import { validate as isValidUUID } from 'uuid';
@@ -28,7 +27,6 @@ import { Transactional } from 'typeorm-transactional';
 export class CoursesService {
   constructor(
     private readonly coursesRepository: CourseRepository,
-    private readonly videosService: VideosService,
     private readonly cloudinaryService: CloudinaryService,
     private readonly tagsService: TagsService,
     private readonly categoriesService: CategoriesService,

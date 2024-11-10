@@ -6,13 +6,20 @@ export abstract class LessonRepository {
   abstract create(
     data: Omit<
       Lesson,
-      'id' | 'createdAt' | 'deletedAt' | 'updatedAt' | 'course'
+      | 'id'
+      | 'createdAt'
+      | 'deletedAt'
+      | 'updatedAt'
+      | 'videos'
+      | 'quizzes'
+      | 'disabled'
     >,
   ): Promise<Lesson>;
 
   abstract findById(id: Lesson['id']): Promise<NullableType<Lesson>>;
 
   abstract findByCourseId(id: string): Promise<Lesson[]>;
+
   abstract update(
     id: Lesson['id'],
     payload: DeepPartial<Lesson>,

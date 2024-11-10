@@ -52,7 +52,7 @@ export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
   @ApiCreatedResponse({
-    type: Course,
+    type: () => Course,
   })
   @SerializeOptions({
     groups: ['admin', 'teacher'],
@@ -132,7 +132,7 @@ export class CoursesController {
   }
 
   @ApiOkResponse({
-    type: Course,
+    type: () => Course,
   })
   @SerializeOptions({
     groups: ['admin'],
@@ -149,7 +149,7 @@ export class CoursesController {
   }
 
   @ApiOkResponse({
-    type: Course,
+    type: () => Course,
   })
   @SerializeOptions({
     groups: ['admin', 'teacher'],
@@ -161,18 +161,13 @@ export class CoursesController {
     type: String,
     required: true,
   })
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'image', maxCount: 1 },
-      { name: 'videoPreview', maxCount: 1 },
-    ]),
-  )
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }]))
   @ApiConsumes('multipart/form-data')
   update(
     @Param('id') id: Course['id'],
     @Body() updateCourseDto: UpdateCourseDto,
     @UploadedFiles()
-    files: { image?: Express.Multer.File; videoPreview?: Express.Multer.File },
+    files: { image?: Express.Multer.File },
   ): Promise<Course | null> {
     return this.coursesService.update(id, { ...updateCourseDto, ...files });
   }

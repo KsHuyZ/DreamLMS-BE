@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { VideosService } from './videos.service';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
@@ -20,6 +23,9 @@ import {
 } from '@nestjs/swagger';
 import { Video } from './domain/video';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import path from 'path';
 
 @ApiTags('Videos')
 @ApiBearerAuth()
@@ -35,8 +41,27 @@ export class VideosController {
   @ApiCreatedResponse({
     type: Video,
   })
-  create(@Body() createVideoDto: CreateVideoDto) {
-    return this.videosService.create(createVideoDto);
+  @UseInterceptors(
+    FileInterceptor('video', {
+      storage: diskStorage({
+        destination: './temp',
+        filename: (req, file, cb) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = path.extname(file.originalname);
+          const filename = `${uniqueSuffix}${ext}`;
+          cb(null, filename);
+        },
+      }),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  create(
+    @Body() createVideoDto: CreateVideoDto,
+    @UploadedFile()
+    video: Express.Multer.File,
+  ) {
+    return this.videosService.create({ ...createVideoDto, video });
   }
 
   @Get(':id')

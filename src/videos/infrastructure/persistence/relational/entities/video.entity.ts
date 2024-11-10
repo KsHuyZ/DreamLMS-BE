@@ -36,8 +36,16 @@ export class VideoEntity extends EntityRelationalHelper {
   order: number;
 
   @ApiProperty()
+  @Column({ type: Number })
+  duration: number;
+
+  @ApiProperty()
   @ManyToOne(() => LessonEntity, (lesson) => lesson.videos)
   lesson: LessonEntity;
+
+  @ApiProperty()
+  @Column({ default: false })
+  isFree: boolean;
 
   @ApiProperty()
   @CreateDateColumn()

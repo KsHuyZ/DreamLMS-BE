@@ -8,6 +8,8 @@ import {
   HttpStatus,
   HttpCode,
   SerializeOptions,
+  Put,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,9 +25,10 @@ import { RolesGuard } from '../roles/roles.guard';
 import { LessonsService } from './lessons.service';
 import { Lesson } from './domain/lesson';
 import { CreateLessonDto } from './dto/create-lesson.dto';
+import { UpdateLessonDto } from './dto/update-lesson.dto';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.ADMIN)
+@Roles(RoleEnum.ADMIN, RoleEnum.TEACHER)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Lessons')
 @Controller({
@@ -36,7 +39,7 @@ export class LessonsController {
   constructor(private readonly lessonsService: LessonsService) {}
 
   @ApiCreatedResponse({
-    type: Lesson,
+    type: () => Lesson,
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -45,7 +48,31 @@ export class LessonsController {
   }
 
   @ApiOkResponse({
-    type: Lesson,
+    type: () => Lesson,
+  })
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
+  update(
+    @Body() updateLessonDto: UpdateLessonDto,
+    @Param() { id }: { id: string },
+  ): Promise<Lesson | null> {
+    return this.lessonsService.update(id, updateLessonDto);
+  }
+
+  @ApiOkResponse({
+    type: () => Lesson,
+  })
+  @Put('applicable/:id')
+  @HttpCode(HttpStatus.OK)
+  applicable(
+    @Body() payload: { disabled: boolean },
+    @Param() { id }: { id: string },
+  ): Promise<Lesson | null> {
+    return this.lessonsService.update(id, payload);
+  }
+
+  @ApiOkResponse({
+    type: () => Lesson,
   })
   @SerializeOptions({
     groups: ['admin'],
@@ -59,5 +86,19 @@ export class LessonsController {
   })
   findByCourseId(@Param('id') id: string): Promise<Lesson[]> {
     return this.lessonsService.findByCourseId(id);
+  }
+
+  @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  @SerializeOptions({
+    groups: ['admin', 'teacher'],
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id') id: Lesson['id']): Promise<void> {
+    return this.lessonsService.remove(id);
   }
 }
