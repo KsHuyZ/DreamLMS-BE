@@ -2,11 +2,13 @@
 // import { Allow } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { CreateQuestionDto } from '../../questions/dto/create-question.dto';
 
 export class CreateQuizDto {
   @ApiProperty()
   @IsString()
+  @IsNotEmpty()
   title: string;
 
   @ApiProperty()
@@ -14,6 +16,16 @@ export class CreateQuizDto {
   description: string;
 
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  lessonId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  questions: CreateQuestionDto[];
+
+  @ApiProperty()
   @IsNumber()
-  order: number;
+  @IsNotEmpty()
+  time: number;
 }

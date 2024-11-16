@@ -32,8 +32,14 @@ import { DataSource } from 'typeorm';
 import { VideosModule } from './videos/videos.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
 
+import { QuestionsModule } from './questions/questions.module';
+
+import { AnswersModule } from './answers/answers.module';
+
 @Module({
   imports: [
+    AnswersModule,
+    QuestionsModule,
     QuizzesModule,
     VideosModule,
     TypeOrmModule.forRootAsync({

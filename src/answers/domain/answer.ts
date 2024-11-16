@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Lesson } from '../../lessons/domain/lesson';
 import { Question } from '../../questions/domain/question';
 
-export class Quiz {
+export class Answer {
   @ApiProperty({
     type: String,
   })
@@ -13,24 +12,11 @@ export class Quiz {
   })
   title: string;
 
-  @ApiProperty({
-    type: String,
-  })
-  description: string;
-
-  @ApiProperty({
-    type: String,
-  })
-  order: number;
+  @ApiProperty()
+  isCorrect: boolean;
 
   @ApiProperty()
-  disabled: boolean;
-
-  @ApiProperty()
-  lesson: Lesson;
-
-  @ApiProperty()
-  questions: Question[];
+  question: Question;
 
   @ApiProperty()
   createdAt: Date;

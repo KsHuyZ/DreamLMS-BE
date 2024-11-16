@@ -1,18 +1,14 @@
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
-import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Quiz } from '../../domain/quiz';
 
 export abstract class QuizRepository {
   abstract create(
-    data: Omit<Quiz, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>,
+    data: Omit<
+      Quiz,
+      'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'disabled' | 'questions'
+    >,
   ): Promise<Quiz>;
-
-  abstract findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }): Promise<Quiz[]>;
 
   abstract findById(id: Quiz['id']): Promise<NullableType<Quiz>>;
 

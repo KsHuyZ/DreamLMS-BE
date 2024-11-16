@@ -4,19 +4,17 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
-import { LessonEntity } from '../../../../../lessons/persistence/entities/lesson.entity';
 import { QuestionEntity } from '../../../../../questions/infrastructure/persistence/relational/entities/question.entity';
 
 @Entity({
-  name: 'quiz',
+  name: 'answer',
 })
-export class QuizEntity extends EntityRelationalHelper {
+export class AnswerEntity extends EntityRelationalHelper {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -26,26 +24,12 @@ export class QuizEntity extends EntityRelationalHelper {
   title: string;
 
   @ApiProperty()
-  @Column()
-  description: string;
+  @ManyToOne(() => QuestionEntity, (question) => question.answers)
+  question: QuestionEntity;
 
   @ApiProperty()
   @Column()
-  order: number;
-
-  @ApiProperty()
-  @ManyToOne(() => LessonEntity, (lesson) => lesson.quizzes)
-  lesson: LessonEntity;
-
-  @ApiProperty()
-  @OneToMany(() => QuestionEntity, (question) => question.quiz, {
-    cascade: true,
-  })
-  questions: QuestionEntity[];
-
-  @ApiProperty()
-  @Column({ default: false })
-  disabled: boolean;
+  isCorrect: boolean;
 
   @ApiProperty()
   @CreateDateColumn()

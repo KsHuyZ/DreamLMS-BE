@@ -10,13 +10,14 @@ import {
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
-import { LessonEntity } from '../../../../../lessons/persistence/entities/lesson.entity';
-import { QuestionEntity } from '../../../../../questions/infrastructure/persistence/relational/entities/question.entity';
+import { QuizEntity } from '../../../../../quizzes/infrastructure/persistence/relational/entities/quiz.entity';
+import { AnswerEntity } from '../../../../../answers/infrastructure/persistence/relational/entities/answer.entity';
+import { QuizType } from '../../../../../quizzes/types/quiz.enum';
 
 @Entity({
-  name: 'quiz',
+  name: 'question',
 })
-export class QuizEntity extends EntityRelationalHelper {
+export class QuestionEntity extends EntityRelationalHelper {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -26,26 +27,16 @@ export class QuizEntity extends EntityRelationalHelper {
   title: string;
 
   @ApiProperty()
-  @Column()
-  description: string;
+  @ManyToOne(() => QuizEntity, (quiz) => quiz.questions)
+  quiz: QuizEntity;
 
   @ApiProperty()
-  @Column()
-  order: number;
+  @Column({ enum: QuizType })
+  type: QuizType;
 
   @ApiProperty()
-  @ManyToOne(() => LessonEntity, (lesson) => lesson.quizzes)
-  lesson: LessonEntity;
-
-  @ApiProperty()
-  @OneToMany(() => QuestionEntity, (question) => question.quiz, {
-    cascade: true,
-  })
-  questions: QuestionEntity[];
-
-  @ApiProperty()
-  @Column({ default: false })
-  disabled: boolean;
+  @OneToMany(() => AnswerEntity, (answer) => answer.question, { cascade: true })
+  answers: AnswerEntity[];
 
   @ApiProperty()
   @CreateDateColumn()

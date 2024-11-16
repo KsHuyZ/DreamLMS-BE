@@ -37,10 +37,18 @@ export class VideosService {
     if (!lesson) {
       throw new BadRequestException('Lesson not found');
     }
+    const lastVideoOrder = lesson.videos.length
+      ? lesson.videos[lesson.videos.length].order
+      : 0;
+    const lastQuizOrder = lesson.quizzes.length
+      ? lesson.quizzes[lesson.quizzes.length].order
+      : 0;
+    const newOrder =
+      lastVideoOrder > lastQuizOrder ? lastVideoOrder : lastQuizOrder;
     return this.videoRepository.create({
       ...createVideoDto,
       videoId,
-      order: lesson.videos.length ?? 1,
+      order: newOrder + 1,
       duration: duration ? Math.round(duration) : 0,
       isFree: createVideoDto.isFree === EBoolean.TRUE ? true : false,
       lesson,

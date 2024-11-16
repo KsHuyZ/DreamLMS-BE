@@ -7,8 +7,6 @@ export class CronService {
 
   @Cron('*/10 * * * *')
   handleCron() {
-    return fetch(
-      process.env.BACKEND_DOMAIN ?? 'https://eduwisebe.onrender.com',
-    );
+    return fetch('https://eduwisebe.onrender.com');
   }
 }
