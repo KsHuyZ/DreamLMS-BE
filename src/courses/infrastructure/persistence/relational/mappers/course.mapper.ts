@@ -40,27 +40,38 @@ export class CourseMapper {
     courseEntity.price = course.price;
     courseEntity.shortDescription = course.shortDescription;
     courseEntity.description = course.description;
-    const image = new ImageEntity();
-    image.id = course.image.id;
-    courseEntity.image = image;
+    if (course.image && course.image.id) {
+      const image = new ImageEntity();
+      image.id = course.image.id;
+      courseEntity.image = image;
+    }
+
     courseEntity.level = course.level;
     courseEntity.status = course.status;
-    const userEntity = new UserEntity();
-    userEntity.id = course.createdBy.id;
-    courseEntity.createdBy = userEntity;
+    if (course.createdBy) {
+      const userEntity = new UserEntity();
+      userEntity.id = course.createdBy.id;
+      courseEntity.createdBy = userEntity;
+    }
     courseEntity.createdAt = course.createdAt;
     courseEntity.updatedAt = course.updatedAt;
     courseEntity.deletedAt = course.deletedAt;
-    courseEntity.tags = course.tags.map((tag) => {
-      const tagEntity = new TagEntity();
-      tagEntity.id = tag.id;
-      return tagEntity;
-    });
-    courseEntity.categories = course.categories.map((category) => {
-      const categoryEntity = new CategoryEntity();
-      categoryEntity.id = category.id;
-      return categoryEntity;
-    });
+    if (course.tags) {
+      courseEntity.tags = course.tags.map((tag) => {
+        const tagEntity = new TagEntity();
+        tagEntity.id = tag.id;
+        return tagEntity;
+      });
+    }
+
+    if (courseEntity.categories) {
+      courseEntity.categories = course.categories.map((category) => {
+        const categoryEntity = new CategoryEntity();
+        categoryEntity.id = category.id;
+        return categoryEntity;
+      });
+    }
+
     return courseEntity;
   }
 }

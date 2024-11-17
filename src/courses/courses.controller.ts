@@ -15,6 +15,7 @@ import {
   UploadedFiles,
   UploadedFile,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -42,6 +43,7 @@ import {
 import { Roles } from '../roles/roles.decorator';
 import { RoleEnum } from '../roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
+import { CourseStatusEnum } from '../statuses/statuses.enum';
 
 @ApiTags('Courses')
 @Controller({
@@ -170,6 +172,26 @@ export class CoursesController {
     files: { image?: Express.Multer.File },
   ): Promise<Course | null> {
     return this.coursesService.update(id, { ...updateCourseDto, ...files });
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: () => Course,
+  })
+  @SerializeOptions({
+    groups: ['admin', 'teacher'],
+  })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  changeStatus(
+    @Param('id') id: Course['id'],
+    @Body() payload: { status: CourseStatusEnum },
+  ) {
+    return this.coursesService.changeStatus(id, payload);
   }
 
   @Delete(':id')

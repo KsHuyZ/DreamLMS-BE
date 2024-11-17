@@ -22,6 +22,7 @@ import { UsersService } from '../users/users.service';
 import { RoleEnum } from '../roles/roles.enum';
 import { Image } from '../cloudinary/domain/image';
 import { Transactional } from 'typeorm-transactional';
+import { CourseStatusEnum } from '../statuses/statuses.enum';
 
 @Injectable()
 export class CoursesService {
@@ -222,5 +223,12 @@ export class CoursesService {
     }
     await this.coursesRepository.remove(id);
     await this.cloudinaryService.removeImage(course.image.id);
+  }
+
+  async changeStatus(
+    id: Course['id'],
+    { status }: { status: CourseStatusEnum },
+  ) {
+    return this.coursesRepository.update(id, { status });
   }
 }
