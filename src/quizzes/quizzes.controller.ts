@@ -36,7 +36,6 @@ export class QuizzesController {
     type: Quiz,
   })
   create(@Body() createQuizDto: CreateQuizDto) {
-    console.log({ payload: createQuizDto });
     return this.quizzesService.create(createQuizDto);
   }
 

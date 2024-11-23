@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Lesson } from '../../lessons/domain/lesson';
+import { User } from '../../users/domain/user';
 
 export class Video {
   @ApiProperty({
@@ -22,22 +22,17 @@ export class Video {
   })
   videoId: string;
 
-  @ApiProperty({
-    type: Number,
-  })
-  order: number;
-
   @ApiProperty()
   duration: number;
 
   @ApiProperty()
-  lesson: Lesson;
-
-  @ApiProperty()
-  isFree: boolean;
-
-  @ApiProperty()
   createdAt: Date;
+
+  @ApiProperty()
+  size: number;
+
+  @ApiProperty()
+  createdBy: User;
 
   @ApiProperty()
   updatedAt: Date;

@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 import { Course } from '../../courses/domain/course';
 import { Image } from '../domain/image';
+import { User } from '../../users/domain/user';
 
 export class ImageDto implements Image {
   @ApiProperty()
@@ -30,4 +31,7 @@ export class ImageDto implements Image {
   @ApiProperty()
   @IsString()
   format: string;
+
+  @ApiProperty()
+  createdBy: User;
 }

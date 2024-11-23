@@ -36,8 +36,14 @@ import { QuestionsModule } from './questions/questions.module';
 
 import { AnswersModule } from './answers/answers.module';
 
+import { LessonVideosModule } from './lesson-videos/lesson-videos.module';
+
+import { CourseVideosModule } from './course-videos/course-videos.module';
+
 @Module({
   imports: [
+    CourseVideosModule,
+    LessonVideosModule,
     AnswersModule,
     QuestionsModule,
     QuizzesModule,

@@ -17,7 +17,6 @@ export abstract class CourseRepository {
       | 'enrolledCourses'
       | 'lessons'
       | 'related'
-      | 'videoPreview'
       | 'status'
     >,
   ): Promise<Course>;
@@ -54,4 +53,11 @@ export abstract class CourseRepository {
   ): Promise<Course | null>;
 
   abstract remove(id: Course['id']): Promise<void>;
+
+  abstract findExceptIds(
+    ids: Course['id'][],
+    name: Course['name'],
+  ): Promise<Course[]>;
+
+  abstract findByIds(ids: Course['id'][]): Promise<Course[]>;
 }

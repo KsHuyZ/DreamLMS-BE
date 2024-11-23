@@ -20,7 +20,6 @@ export class QuizzesService {
     if (!lesson) {
       throw new BadRequestException('Lesson not found');
     }
-    console.log({ createQuizDto });
     const lastVideoOrder =
       lesson.videos.length > 0
         ? lesson.videos[lesson.videos.length - 1].order

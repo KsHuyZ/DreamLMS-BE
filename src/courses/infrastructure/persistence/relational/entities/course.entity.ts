@@ -26,6 +26,7 @@ import { CourseStatusEnum } from '../../../../../statuses/statuses.enum';
 import { TagEntity } from '../../../../../tags/persistence/entities/tag.entity';
 import { CategoryEntity } from '../../../../../categories/persistence/entities/category.entity';
 import { ImageEntity } from '../../../../../cloudinary/persistence/entities/image.entity';
+import { CourseVideoEntity } from '../../../../../course-videos/infrastructure/persistence/relational/entities/course-video.entity';
 
 @Entity({
   name: 'courses',
@@ -61,13 +62,6 @@ export class CourseEntity extends EntityRelationalHelper {
 
   @ApiProperty({
     type: String,
-    example: 'https://example.com/path/to/file.mp4',
-  })
-  @Column({ type: String, nullable: true })
-  videoPreview: string;
-
-  @ApiProperty({
-    type: String,
     example: 'this is description',
   })
   @Column({ type: String })
@@ -97,7 +91,8 @@ export class CourseEntity extends EntityRelationalHelper {
   @ApiResponseProperty({
     type: () => CourseEntity,
   })
-  @OneToMany(() => CourseEntity, (course) => course.related)
+  @ManyToMany(() => CourseEntity, (course) => course.related)
+  @JoinTable()
   related: CourseEntity[];
 
   @ManyToMany(() => EnrollEntity, (enrolledCourse) => enrolledCourse.course)
@@ -108,6 +103,12 @@ export class CourseEntity extends EntityRelationalHelper {
   })
   @Column({ enum: CourseStatusEnum, default: CourseStatusEnum.DRAFT })
   status: CourseStatusEnum;
+
+  @OneToOne(() => CourseVideoEntity, (courseVideo) => courseVideo.course, {
+    nullable: true,
+  })
+  @JoinColumn()
+  courseVideo: CourseVideoEntity;
 
   @OneToMany(() => LessonEntity, (lessons) => lessons.course)
   lessons: LessonEntity[];

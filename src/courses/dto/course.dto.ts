@@ -25,9 +25,6 @@ export class CourseDto implements Course {
   image: ImageDto;
   @ApiProperty()
   @IsString()
-  videoPreview: string;
-  @ApiProperty()
-  @IsString()
   description: string;
   @ApiProperty()
   @IsString()

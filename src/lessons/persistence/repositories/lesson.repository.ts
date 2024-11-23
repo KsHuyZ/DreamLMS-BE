@@ -32,6 +32,7 @@ export class LessonRelationalRepository implements LessonRepository {
       },
       relations: ['videos', 'quizzes'],
     });
+
     return entities.map((entity) => LessonMapper.toDomain(entity));
   }
 

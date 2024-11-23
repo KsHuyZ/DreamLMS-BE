@@ -21,7 +21,6 @@ export class CourseMapper {
     course.lessons = raw.lessons;
     course.shortDescription = raw.shortDescription;
     course.description = raw.description;
-    course.videoPreview = raw.videoPreview;
     course.image = raw.image;
     course.level = raw.level;
     course.createdBy = raw.createdBy;
@@ -53,6 +52,15 @@ export class CourseMapper {
       userEntity.id = course.createdBy.id;
       courseEntity.createdBy = userEntity;
     }
+
+    if (course.related && course.related.length) {
+      courseEntity.related = course.related.map((related) => {
+        const courseRelated = new CourseEntity();
+        courseRelated.id = related.id;
+        return courseRelated;
+      });
+    }
+
     courseEntity.createdAt = course.createdAt;
     courseEntity.updatedAt = course.updatedAt;
     courseEntity.deletedAt = course.deletedAt;

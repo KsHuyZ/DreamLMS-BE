@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { LevelsEnum } from '../types/levels.enum';
+import { User } from '../../users/domain/user';
 
 export class CreateCourseDto {
   @ApiProperty({ example: 'React from zero to hero', type: String })
@@ -54,4 +55,7 @@ export class CreateCourseDto {
   })
   @IsNotEmpty()
   categories: string;
+
+  @ApiProperty()
+  createdBy: User;
 }

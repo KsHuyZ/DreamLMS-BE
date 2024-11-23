@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
-import { LessonEntity } from '../../../../../lessons/persistence/entities/lesson.entity';
+import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 
 @Entity({
   name: 'video',
@@ -33,19 +33,11 @@ export class VideoEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @Column({ type: Number })
-  order: number;
-
-  @ApiProperty()
-  @Column({ type: Number })
   duration: number;
 
   @ApiProperty()
-  @ManyToOne(() => LessonEntity, (lesson) => lesson.videos)
-  lesson: LessonEntity;
-
-  @ApiProperty()
-  @Column({ default: false })
-  isFree: boolean;
+  @Column('float')
+  size: number;
 
   @ApiProperty()
   @CreateDateColumn()
@@ -58,4 +50,7 @@ export class VideoEntity extends EntityRelationalHelper {
   @ApiProperty()
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @ManyToOne(() => UserEntity)
+  createdBy: UserEntity;
 }

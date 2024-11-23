@@ -507,7 +507,6 @@ export class AuthService {
       .digest('hex');
 
     const user = await this.usersService.findById(session.user.id);
-    console.log({ user });
     if (!user?.role) {
       throw new UnauthorizedException();
     }

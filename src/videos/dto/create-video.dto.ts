@@ -2,7 +2,8 @@
 // import { Allow } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
+import { UserDto } from '../../users/dto/user.dto';
 
 export enum EBoolean {
   TRUE = 'true',
@@ -20,9 +21,5 @@ export class CreateVideoDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  lessonId: string;
-
-  @ApiProperty()
-  @IsEnum(EBoolean)
-  isFree: EBoolean;
+  createdBy: UserDto;
 }

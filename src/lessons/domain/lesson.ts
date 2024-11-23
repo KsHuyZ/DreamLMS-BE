@@ -1,7 +1,7 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { Course } from '../../courses/domain/course';
-import { Video } from '../../videos/domain/video';
 import { Quiz } from '../../quizzes/domain/quiz';
+import { LessonVideo } from '../../lesson-videos/domain/lesson-video';
 
 export class Lesson {
   @ApiResponseProperty({
@@ -33,7 +33,7 @@ export class Lesson {
   disabled: boolean;
 
   @ApiResponseProperty()
-  videos: Video[];
+  videos: LessonVideo[];
 
   @ApiResponseProperty()
   quizzes: Quiz[];

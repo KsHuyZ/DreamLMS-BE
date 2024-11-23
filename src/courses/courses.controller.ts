@@ -44,6 +44,10 @@ import { Roles } from '../roles/roles.decorator';
 import { RoleEnum } from '../roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
 import { CourseStatusEnum } from '../statuses/statuses.enum';
+import { FilterCourseExceptIdsDto } from './dto/query-course-except-ids.dto';
+import path from 'path';
+import { diskStorage } from 'multer';
+import { AdditionCourseDto } from './dto/addition-course.dto';
 
 @ApiTags('Courses')
 @Controller({
@@ -74,7 +78,7 @@ export class CoursesController {
     return this.coursesService.create({
       ...createProfileDto,
       image,
-      createdBy: request.user.id as string,
+      createdBy: request.user as User,
     });
   }
 
@@ -164,14 +168,21 @@ export class CoursesController {
     required: true,
   })
   @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }]))
+  @UseGuards(AuthGuard('jwt'))
   @ApiConsumes('multipart/form-data')
   update(
     @Param('id') id: Course['id'],
     @Body() updateCourseDto: UpdateCourseDto,
     @UploadedFiles()
     files: { image?: Express.Multer.File },
+    @Request() request,
   ): Promise<Course | null> {
-    return this.coursesService.update(id, { ...updateCourseDto, ...files });
+    const createdBy = request.user as User | undefined;
+    return this.coursesService.update(id, {
+      ...updateCourseDto,
+      ...files,
+      createdBy,
+    });
   }
 
   @Put(':id')
@@ -206,5 +217,46 @@ export class CoursesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: Course['id']): Promise<void> {
     return this.coursesService.remove(id);
+  }
+
+  @ApiOkResponse({
+    type: Course,
+  })
+  @Post('except-ids')
+  @HttpCode(HttpStatus.OK)
+  findByExceptIds(@Body() payload: FilterCourseExceptIdsDto) {
+    const { ids, name } = payload;
+    return this.coursesService.findExceptIds(ids, name);
+  }
+
+  @Put('addition/:id')
+  @ApiCreatedResponse({
+    type: Course,
+  })
+  @UseInterceptors(
+    FileInterceptor('video', {
+      storage: diskStorage({
+        destination: './video-upload',
+        filename: (_, file, cb) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = path.extname(file.originalname);
+          const filename = `${uniqueSuffix}${ext}`;
+          cb(null, filename);
+        },
+      }),
+    }),
+  )
+  @UseGuards(AuthGuard('jwt'))
+  @ApiConsumes('multipart/form-data')
+  async additionInfoCourse(
+    @Request() request,
+    @UploadedFile() video: Express.Multer.File,
+    @Body() payload: AdditionCourseDto,
+    @Param('id') id: string,
+  ) {
+    const { related } = payload;
+    const createdBy = request.user as User;
+    await this.coursesService.updateAddition(id, video, related, createdBy);
   }
 }

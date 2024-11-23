@@ -1,7 +1,9 @@
 import { Course } from '../../../courses/domain/course';
 import { CourseEntity } from '../../../courses/infrastructure/persistence/relational/entities/course.entity';
+import { LessonVideoEntity } from '../../../lesson-videos/infrastructure/persistence/relational/entities/lesson-video.entity';
+import { LessonVideoMapper } from '../../../lesson-videos/infrastructure/persistence/relational/mappers/lesson-video.mapper';
 import { QuizEntity } from '../../../quizzes/infrastructure/persistence/relational/entities/quiz.entity';
-import { VideoEntity } from '../../../videos/infrastructure/persistence/relational/entities/video.entity';
+import { QuizMapper } from '../../../quizzes/infrastructure/persistence/relational/mappers/quiz.mapper';
 import { Lesson } from '../../domain/lesson';
 import { LessonEntity } from '../entities/lesson.entity';
 
@@ -19,10 +21,11 @@ export class LessonMapper {
     domainEntity.course = course;
     domainEntity.disabled = raw.disabled;
     if (raw.quizzes) {
-      domainEntity.quizzes = raw.quizzes;
+      domainEntity.quizzes = raw.quizzes.map(QuizMapper.toDomain);
     }
     if (raw.videos) {
-      domainEntity.videos = raw.videos;
+      const videos = raw.videos.map(LessonVideoMapper.toDomain);
+      domainEntity.videos = videos;
     }
     return domainEntity;
   }
@@ -40,7 +43,7 @@ export class LessonMapper {
     persistenceEntity.course = courseEntity;
     if (domainEntity.videos) {
       persistenceEntity.videos = domainEntity.videos.map((video) => {
-        const videoEntity = new VideoEntity();
+        const videoEntity = new LessonVideoEntity();
         videoEntity.id = video.id;
         return videoEntity;
       });

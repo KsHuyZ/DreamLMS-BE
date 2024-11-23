@@ -5,6 +5,6 @@ export enum StatusEnum {
 }
 
 export enum CourseStatusEnum {
-  DRAFT = 'DRAFT',
-  PUBLIC = 'PUBLIC',
+  DRAFT = 'draft',
+  PUBLIC = 'publish',
 }

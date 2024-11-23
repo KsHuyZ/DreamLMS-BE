@@ -35,12 +35,6 @@ export class Course {
 
   @ApiResponseProperty({
     type: String,
-    example: 'https://example.com/path/to/file.mp4',
-  })
-  videoPreview: string;
-
-  @ApiResponseProperty({
-    type: String,
     example: 'this is description',
   })
   description: string;

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   HttpException,
   HttpStatus,
@@ -11,7 +12,6 @@ import { FilterCourseDto, SortCourseDto } from './dto/query-course.dto';
 import { CourseRepository } from './infrastructure/persistence/course.repository';
 import { Course } from './domain/course';
 import { IPaginationOptions } from '../utils/types/pagination-options';
-import { User } from '../users/domain/user';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { TagsService } from '../tags/tag.service';
@@ -23,6 +23,8 @@ import { RoleEnum } from '../roles/roles.enum';
 import { Image } from '../cloudinary/domain/image';
 import { Transactional } from 'typeorm-transactional';
 import { CourseStatusEnum } from '../statuses/statuses.enum';
+import { CourseVideosService } from '../course-videos/course-videos.service';
+import { User } from '../users/domain/user';
 
 @Injectable()
 export class CoursesService {
@@ -32,18 +34,12 @@ export class CoursesService {
     private readonly tagsService: TagsService,
     private readonly categoriesService: CategoriesService,
     private readonly userService: UsersService,
+    private readonly courseVideoService: CourseVideosService,
   ) {}
 
   @Transactional()
-  async create(
-    createCourseDto: CreateCourseDto & { createdBy: string },
-  ): Promise<Course> {
-    const createdBy = await this.userService.findById(
-      createCourseDto.createdBy,
-    );
-    if (!createdBy) {
-      throw new UnauthorizedException();
-    }
+  async create(createCourseDto: CreateCourseDto): Promise<Course> {
+    const { createdBy } = createCourseDto;
 
     if (createdBy.role === RoleEnum.STUDENT) {
       throw new ForbiddenException();
@@ -60,6 +56,7 @@ export class CoursesService {
       publicId: public_id,
       format,
       size: bytes,
+      createdBy,
     });
     //tag,
     const parseTags = JSON.parse(createCourseDto.tags) as string[];
@@ -151,7 +148,13 @@ export class CoursesService {
     id: Course['id'],
     payload: UpdateCourseDto,
   ): Promise<Course | null> {
-    const createdBy = new User();
+    const { createdBy } = payload;
+
+    if (!createdBy) throw new UnauthorizedException();
+
+    if (createdBy.role === RoleEnum.STUDENT) {
+      throw new ForbiddenException();
+    }
     const imagePayload = JSON.parse(
       payload.image as unknown as string,
     ) as Image;
@@ -172,6 +175,7 @@ export class CoursesService {
         publicId: public_id,
         size: bytes,
         format,
+        createdBy,
       };
     }
 
@@ -225,10 +229,28 @@ export class CoursesService {
     await this.cloudinaryService.removeImage(course.image.id);
   }
 
-  async changeStatus(
-    id: Course['id'],
-    { status }: { status: CourseStatusEnum },
-  ) {
+  changeStatus(id: Course['id'], { status }: { status: CourseStatusEnum }) {
     return this.coursesRepository.update(id, { status });
+  }
+
+  findExceptIds(ids: Course['id'][], name: Course['name']) {
+    return this.coursesRepository.findExceptIds(ids, name);
+  }
+
+  @Transactional()
+  async updateAddition(
+    id: Course['id'],
+    video: Express.Multer.File,
+    relatedCourse: string,
+    createdBy: User,
+  ) {
+    const related = JSON.parse(relatedCourse) as string[];
+    const courseRelated = await this.coursesRepository.findByIds(related);
+    const course = await this.coursesRepository.findById(id);
+    if (!course) throw new BadRequestException('Course not found');
+    await this.courseVideoService.create({ course, video, createdBy });
+    return this.coursesRepository.update(id, {
+      related: courseRelated,
+    });
   }
 }

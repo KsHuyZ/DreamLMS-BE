@@ -1,3 +1,4 @@
+import { UserEntity } from '../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { Image } from '../../domain/image';
 import { ImageEntity } from '../entities/image.entity';
 
@@ -10,6 +11,7 @@ export class ImageMapper {
     domainEntity.publicId = raw.publicId;
     domainEntity.size = raw.size;
     domainEntity.format = raw.format;
+    domainEntity.createdBy = raw.createdBy;
     return domainEntity;
   }
 
@@ -21,6 +23,9 @@ export class ImageMapper {
     persistenceEntity.publicId = domainEntity.publicId;
     persistenceEntity.size = domainEntity.size;
     persistenceEntity.format = domainEntity.format;
+    const userEntity = new UserEntity();
+    userEntity.id = domainEntity.createdBy.id;
+    persistenceEntity.createdBy = userEntity;
     return persistenceEntity;
   }
 }

@@ -12,8 +12,8 @@ import {
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../utils/relational-entity-helper';
 import { CourseEntity } from '../../../courses/infrastructure/persistence/relational/entities/course.entity';
-import { VideoEntity } from '../../../videos/infrastructure/persistence/relational/entities/video.entity';
 import { QuizEntity } from '../../../quizzes/infrastructure/persistence/relational/entities/quiz.entity';
+import { LessonVideoEntity } from '../../../lesson-videos/infrastructure/persistence/relational/entities/lesson-video.entity';
 
 @Entity({
   name: 'lessons',
@@ -50,8 +50,10 @@ export class LessonEntity extends EntityRelationalHelper {
   course: CourseEntity;
 
   @ApiProperty()
-  @OneToMany(() => VideoEntity, (video) => video.lesson)
-  videos: VideoEntity[];
+  @OneToMany(() => LessonVideoEntity, (video) => video.lesson, {
+    cascade: true,
+  })
+  videos: LessonVideoEntity[];
 
   @ApiProperty()
   @OneToMany(() => QuizEntity, (quiz) => quiz.lesson)
@@ -60,12 +62,4 @@ export class LessonEntity extends EntityRelationalHelper {
   @ApiProperty()
   @Column({ default: false })
   disabled: boolean;
-
-  @ApiProperty({
-    type: Boolean,
-    example: false,
-    default: true,
-  })
-  @Column({ type: Boolean, default: false })
-  isFree: boolean;
 }

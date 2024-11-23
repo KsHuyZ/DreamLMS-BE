@@ -3,10 +3,9 @@ import { VideosService } from './videos.service';
 import { VideosController } from './videos.controller';
 import { RelationalVideoPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
 import ApiVideoClient from '@api.video/nodejs-client';
-import { LessonsModule } from '../lessons/lessons.module';
 
 @Module({
-  imports: [RelationalVideoPersistenceModule, LessonsModule],
+  imports: [RelationalVideoPersistenceModule],
   controllers: [VideosController],
   providers: [
     VideosService,
