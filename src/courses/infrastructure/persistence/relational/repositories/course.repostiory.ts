@@ -16,6 +16,10 @@ import { UserEntity } from '../../../../../users/infrastructure/persistence/rela
 import { infinityPagination } from '../../../../../utils/infinity-pagination';
 import { InfinityPaginationResponseDto } from '../../../../../utils/dto/infinity-pagination-response.dto';
 import { CourseStatusEnum } from '../../../../../statuses/statuses.enum';
+import { priceCondition } from '../../../../../utils/course/course-price-mapper';
+import { mapCourseSort } from '../../../../../utils/course/course-sort-mapper';
+import { levelCourseMapper } from '../../../../../utils/course/course-level-mapper';
+import { TCourseQuery } from '../../../../types/course.enum';
 
 @Injectable()
 export class CoursesRelationalRepository implements CourseRepository {
@@ -37,25 +41,37 @@ export class CoursesRelationalRepository implements CourseRepository {
     sortOptions,
     paginationOptions,
     // userId,
+    filterOptions,
   }: {
-    sortOptions?: SortCourseDto[] | null;
+    filterOptions: FilterCourseDto | null;
+    sortOptions?: SortCourseDto | null;
     paginationOptions: IPaginationOptions;
     userId?: string;
-  }): Promise<InfinityPaginationResponseDto<Course>> {
-    const where: FindOptionsWhere<CourseEntity> = {};
+  }): Promise<InfinityPaginationResponseDto<TCourseQuery>> {
+    const where: FindOptionsWhere<CourseEntity> = {
+      name: Like(`%${filterOptions?.name}%`),
+      ...priceCondition(filterOptions?.payType),
+      ...levelCourseMapper(filterOptions?.level),
+    };
     const [coursesEntity, total] = await this.coursesRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       where: where,
-      order: sortOptions?.reduce(
-        (accumulator, sort) => ({
-          ...accumulator,
-          [sort.orderBy]: sort.order,
-        }),
-        {},
-      ),
+      order: mapCourseSort(sortOptions?.sortBy),
+      relations: ['image', 'createdBy', 'lessons', 'lessons.videos'],
     });
-    const data = coursesEntity.map((course) => CourseMapper.toDomain(course));
+    const data = coursesEntity.map((course) => ({
+      ...CourseMapper.toDomain(course),
+      lessons: course.lessons.length,
+      duration: course.lessons.reduce((total, lesson) => {
+        return (
+          total +
+          lesson.videos.reduce((totalVideo, video) => {
+            return totalVideo + video.video.duration;
+          }, 0)
+        );
+      }, 0),
+    }));
 
     return infinityPagination(data, {
       ...paginationOptions,
@@ -70,7 +86,7 @@ export class CoursesRelationalRepository implements CourseRepository {
     teacherId,
   }: {
     filterOptions?: FilterCourseDto | null;
-    sortOptions?: SortCourseDto[] | null;
+    sortOptions?: SortCourseDto | null;
     paginationOptions: IPaginationOptions;
     teacherId: string;
   }): Promise<InfinityPaginationResponseDto<Course>> {
@@ -85,13 +101,7 @@ export class CoursesRelationalRepository implements CourseRepository {
       take: paginationOptions.limit,
       where: where,
       relations: ['tags', 'categories', 'createdBy', 'image'],
-      order: sortOptions?.reduce(
-        (accumulator, sort) => ({
-          ...accumulator,
-          [sort.orderBy]: sort.order,
-        }),
-        {},
-      ),
+      order: mapCourseSort(sortOptions?.sortBy),
     });
 
     const data = coursesEntity.map((course) => CourseMapper.toDomain(course));

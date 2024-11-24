@@ -48,6 +48,7 @@ import { FilterCourseExceptIdsDto } from './dto/query-course-except-ids.dto';
 import path from 'path';
 import { diskStorage } from 'multer';
 import { AdditionCourseDto } from './dto/addition-course.dto';
+import { TCourseQuery } from './types/course.enum';
 
 @ApiTags('Courses')
 @Controller({
@@ -90,13 +91,10 @@ export class CoursesController {
   async findAll(
     @Query() query: QueryCourseDto,
     @Request() request,
-  ): Promise<InfinityPaginationResponseDto<Course>> {
+  ): Promise<InfinityPaginationResponseDto<TCourseQuery>> {
     const user = request.user as User | undefined;
     const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
+    const limit = 40;
 
     return this.coursesService.findManyWithPagination({
       filterOptions: query?.filters,
@@ -121,10 +119,7 @@ export class CoursesController {
   ): Promise<InfinityPaginationResponseDto<Course>> {
     const user = request.user as User | undefined;
     const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
+    const limit = 40;
 
     return this.coursesService.findManyByTeacherWithPagination({
       filterOptions: query?.filters,

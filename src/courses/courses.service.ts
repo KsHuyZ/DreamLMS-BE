@@ -25,6 +25,7 @@ import { Transactional } from 'typeorm-transactional';
 import { CourseStatusEnum } from '../statuses/statuses.enum';
 import { CourseVideosService } from '../course-videos/course-videos.service';
 import { User } from '../users/domain/user';
+import { TCourseQuery } from './types/course.enum';
 
 @Injectable()
 export class CoursesService {
@@ -108,10 +109,10 @@ export class CoursesService {
     userId,
   }: {
     filterOptions?: FilterCourseDto | null;
-    sortOptions?: SortCourseDto[] | null;
+    sortOptions?: SortCourseDto | null;
     paginationOptions: IPaginationOptions;
     userId?: string;
-  }): Promise<InfinityPaginationResponseDto<Course>> {
+  }): Promise<InfinityPaginationResponseDto<TCourseQuery>> {
     return this.coursesRepository.findManyWithPagination({
       filterOptions,
       sortOptions,
@@ -127,7 +128,7 @@ export class CoursesService {
     teacherId,
   }: {
     filterOptions?: FilterCourseDto | null;
-    sortOptions?: SortCourseDto[] | null;
+    sortOptions?: SortCourseDto | null;
     paginationOptions: IPaginationOptions;
     teacherId: string;
   }): Promise<InfinityPaginationResponseDto<Course>> {

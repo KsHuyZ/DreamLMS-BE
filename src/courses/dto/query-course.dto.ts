@@ -1,13 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
-import { Transform, Type, plainToInstance } from 'class-transformer';
-import { Course } from '../domain/course';
-import { CourseStatusEnum } from '../../statuses/statuses.enum';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { ECourseSort, EPayType } from '../types/course.enum';
+import { LevelsEnum } from '../types/levels.enum';
 
 export class FilterCourseDto {
   @ApiPropertyOptional({ type: String })
@@ -15,21 +10,32 @@ export class FilterCourseDto {
   @Type(() => String)
   name?: string;
 
-  @ApiPropertyOptional({ type: CourseStatusEnum })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
   @Type(() => String)
-  status?: CourseStatusEnum;
+  rate?: string;
+
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  @Type(() => String)
+  payType?: EPayType[];
+
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  @Type(() => String)
+  level?: LevelsEnum;
+
+  @ApiPropertyOptional({ type: Number })
+  @IsOptional()
+  @Type(() => Number)
+  duration?: number;
 }
 
 export class SortCourseDto {
   @ApiProperty()
   @Type(() => String)
   @IsString()
-  orderBy: keyof Course;
-
-  @ApiProperty()
-  @IsString()
-  order: string;
+  sortBy: ECourseSort;
 }
 
 export class QueryCourseDto {
@@ -39,29 +45,13 @@ export class QueryCourseDto {
   @IsOptional()
   page?: number;
 
-  @ApiPropertyOptional()
-  @Transform(({ value }) => (value ? Number(value) : 10))
-  @IsNumber()
-  @IsOptional()
-  limit?: number;
-
   @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @Transform(({ value }) =>
-    value ? plainToInstance(FilterCourseDto, JSON.parse(value)) : undefined,
-  )
-  @ValidateNested()
   @Type(() => FilterCourseDto)
   filters?: FilterCourseDto | null;
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @Transform(({ value }) => {
-    return value
-      ? plainToInstance(SortCourseDto, JSON.parse(value))
-      : undefined;
-  })
-  @ValidateNested({ each: true })
   @Type(() => SortCourseDto)
-  sort?: SortCourseDto[] | null;
+  sort?: SortCourseDto | null;
 }

@@ -4,6 +4,7 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Course } from '../../domain/course';
 
 import { FilterCourseDto, SortCourseDto } from '../../dto/query-course.dto';
+import { TCourseQuery } from '../../types/course.enum';
 
 export abstract class CourseRepository {
   abstract create(
@@ -28,10 +29,10 @@ export abstract class CourseRepository {
     userId,
   }: {
     filterOptions?: FilterCourseDto | null;
-    sortOptions?: SortCourseDto[] | null;
+    sortOptions?: SortCourseDto | null;
     paginationOptions: IPaginationOptions;
     userId?: string;
-  }): Promise<InfinityPaginationResponseDto<Course>>;
+  }): Promise<InfinityPaginationResponseDto<TCourseQuery>>;
 
   abstract findManyByTeacherWithPagination({
     filterOptions,
@@ -40,7 +41,7 @@ export abstract class CourseRepository {
     teacherId,
   }: {
     filterOptions?: FilterCourseDto | null;
-    sortOptions?: SortCourseDto[] | null;
+    sortOptions?: SortCourseDto | null;
     paginationOptions: IPaginationOptions;
     teacherId: string;
   });

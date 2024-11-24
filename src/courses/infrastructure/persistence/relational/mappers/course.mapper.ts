@@ -1,5 +1,6 @@
 import { CategoryEntity } from '../../../../../categories/persistence/entities/category.entity';
 import { ImageEntity } from '../../../../../cloudinary/persistence/entities/image.entity';
+import { ImageMapper } from '../../../../../cloudinary/persistence/mappers/image.mapper';
 import { TagEntity } from '../../../../../tags/persistence/entities/tag.entity';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { Course } from '../../../../domain/course';
@@ -21,7 +22,7 @@ export class CourseMapper {
     course.lessons = raw.lessons;
     course.shortDescription = raw.shortDescription;
     course.description = raw.description;
-    course.image = raw.image;
+    course.image = ImageMapper.toDomain(raw.image);
     course.level = raw.level;
     course.createdBy = raw.createdBy;
     course.createdAt = raw.createdAt;
