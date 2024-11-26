@@ -28,8 +28,6 @@ import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.ADMIN, RoleEnum.TEACHER)
-@UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Lessons')
 @Controller({
   path: 'lessons',
@@ -43,6 +41,8 @@ export class LessonsController {
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @Roles(RoleEnum.ADMIN, RoleEnum.TEACHER)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   create(@Body() createLessonDto: CreateLessonDto): Promise<Lesson> {
     return this.lessonsService.create(createLessonDto);
   }
@@ -51,6 +51,8 @@ export class LessonsController {
     type: () => Lesson,
   })
   @Put(':id')
+  @Roles(RoleEnum.ADMIN, RoleEnum.TEACHER)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @HttpCode(HttpStatus.OK)
   update(
     @Body() updateLessonDto: UpdateLessonDto,
@@ -63,6 +65,7 @@ export class LessonsController {
     type: () => Lesson,
   })
   @Put('applicable/:id')
+  @Roles(RoleEnum.ADMIN, RoleEnum.TEACHER)
   @HttpCode(HttpStatus.OK)
   applicable(
     @Body() payload: { disabled: boolean },
@@ -73,9 +76,6 @@ export class LessonsController {
 
   @ApiOkResponse({
     type: () => Lesson,
-  })
-  @SerializeOptions({
-    groups: ['admin'],
   })
   @Get('/course/:id')
   @HttpCode(HttpStatus.OK)
@@ -97,6 +97,8 @@ export class LessonsController {
   @SerializeOptions({
     groups: ['admin', 'teacher'],
   })
+  @Roles(RoleEnum.ADMIN, RoleEnum.TEACHER)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: Lesson['id']): Promise<void> {
     return this.lessonsService.remove(id);

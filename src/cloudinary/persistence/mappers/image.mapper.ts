@@ -5,7 +5,9 @@ import { ImageEntity } from '../entities/image.entity';
 export class ImageMapper {
   static toDomain(raw: ImageEntity): Image {
     const domainEntity = new Image();
-    domainEntity.id = raw.id;
+    if (raw.id) {
+      domainEntity.id = raw.id;
+    }
     domainEntity.name = raw.name;
     domainEntity.url = raw.url;
     domainEntity.publicId = raw.publicId;

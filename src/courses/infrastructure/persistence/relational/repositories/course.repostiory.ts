@@ -112,12 +112,36 @@ export class CoursesRelationalRepository implements CourseRepository {
     });
   }
 
-  async findById(id: Course['id']): Promise<NullableType<Course>> {
+  async findById(
+    id: Course['id'],
+  ): Promise<NullableType<Course & { duration: number }>> {
     const entity = await this.coursesRepository.findOne({
       where: { id },
-      relations: ['tags', 'categories', 'image'],
+      relations: [
+        'tags',
+        'categories',
+        'image',
+        'courseVideo',
+        'createdBy',
+        'lessons.videos',
+        'related',
+      ],
     });
-    return entity ? CourseMapper.toDomain(entity) : null;
+    const result = entity ? CourseMapper.toDomain(entity) : null;
+    if (result) {
+      return {
+        ...result,
+        duration: result.lessons.reduce((total, lesson) => {
+          return (
+            total +
+            lesson.videos.reduce((totalVideo, video) => {
+              return totalVideo + video.video.duration;
+            }, 0)
+          );
+        }, 0),
+      };
+    }
+    return null;
   }
 
   async findByIds(ids: Course['id'][]): Promise<Course[]> {

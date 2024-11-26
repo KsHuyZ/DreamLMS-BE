@@ -19,6 +19,7 @@ export abstract class CourseRepository {
       | 'lessons'
       | 'related'
       | 'status'
+      | 'courseVideo'
     >,
   ): Promise<Course>;
 

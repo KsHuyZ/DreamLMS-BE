@@ -28,33 +28,6 @@ import { AuthGuard } from '@nestjs/passport';
 export class VideosController {
   constructor(private readonly videosService: VideosService) {}
 
-  // @Post()
-  // @ApiCreatedResponse({
-  //   type: Video,
-  // })
-  // @UseInterceptors(
-  //   FileInterceptor('video', {
-  //     storage: diskStorage({
-  //       destination: './temp',
-  //       filename: (req, file, cb) => {
-  //         const uniqueSuffix =
-  //           Date.now() + '-' + Math.round(Math.random() * 1e9);
-  //         const ext = path.extname(file.originalname);
-  //         const filename = `${uniqueSuffix}${ext}`;
-  //         cb(null, filename);
-  //       },
-  //     }),
-  //   }),
-  // )
-  // @ApiConsumes('multipart/form-data')
-  // create(
-  //   @Body() createVideoDto: CreateVideoDto,
-  //   @UploadedFile()
-  //   video: Express.Multer.File,
-  // ) {
-  //   return this.videosService.create({ ...createVideoDto, video });
-  // }
-
   @Get(':id')
   @ApiParam({
     name: 'id',

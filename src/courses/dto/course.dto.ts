@@ -9,6 +9,7 @@ import { CourseStatusEnum } from '../../statuses/statuses.enum';
 import { Tag } from '../../tags/domain/tag';
 import { Category } from '../../categories/domain/category';
 import { ImageDto } from '../../cloudinary/dto/image.dto';
+import { CourseVideo } from '../../course-videos/domain/course-video';
 
 export class CourseDto implements Course {
   @ApiProperty()
@@ -48,6 +49,8 @@ export class CourseDto implements Course {
 
   @ApiProperty()
   enrolledCourses: Enroll[];
+
+  courseVideo: CourseVideo;
 
   @ApiProperty()
   status: CourseStatusEnum;

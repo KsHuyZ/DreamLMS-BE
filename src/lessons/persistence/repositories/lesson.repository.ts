@@ -30,10 +30,10 @@ export class LessonRelationalRepository implements LessonRepository {
       where: {
         course: { id },
       },
-      relations: ['videos', 'quizzes'],
+      relations: ['videos', 'quizzes', 'quizzes.questions'],
     });
 
-    return entities.map((entity) => LessonMapper.toDomain(entity));
+    return entities.map(LessonMapper.toDomain);
   }
 
   async create(data: Lesson): Promise<Lesson> {
@@ -57,12 +57,6 @@ export class LessonRelationalRepository implements LessonRepository {
     if (!entity) {
       throw new Error('Lesson not found');
     }
-    console.log({
-      entity: LessonMapper.toPersistence({
-        ...LessonMapper.toDomain(entity),
-        ...payload,
-      }),
-    });
     const updatedEntity = await this.lessonRepository.save(
       this.lessonRepository.create(
         LessonMapper.toPersistence({

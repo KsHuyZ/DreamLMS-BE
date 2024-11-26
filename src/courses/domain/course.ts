@@ -1,4 +1,3 @@
-import { ManyToMany, OneToMany } from 'typeorm';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { User } from '../../users/domain/user';
 import { Enroll } from '../../enrolls/domain/enroll';
@@ -8,6 +7,8 @@ import { CourseStatusEnum } from '../../statuses/statuses.enum';
 import { Category } from '../../categories/domain/category';
 import { Tag } from '../../tags/domain/tag';
 import { Image } from '../../cloudinary/domain/image';
+import { CourseVideo } from '../../course-videos/domain/course-video';
+import { ManyToMany, OneToMany } from 'typeorm';
 
 export class Course {
   @ApiResponseProperty({
@@ -56,6 +57,8 @@ export class Course {
     example: LevelsEnum.BEGINNER,
   })
   level: LevelsEnum;
+
+  courseVideo: CourseVideo;
 
   @OneToMany(() => Course, (course) => course.related)
   related: Course[];

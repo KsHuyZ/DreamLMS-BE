@@ -249,9 +249,14 @@ export class CoursesService {
     const courseRelated = await this.coursesRepository.findByIds(related);
     const course = await this.coursesRepository.findById(id);
     if (!course) throw new BadRequestException('Course not found');
-    await this.courseVideoService.create({ course, video, createdBy });
+    const courseVideo = await this.courseVideoService.create({
+      course,
+      video,
+      createdBy,
+    });
     return this.coursesRepository.update(id, {
       related: courseRelated,
+      courseVideo,
     });
   }
 }

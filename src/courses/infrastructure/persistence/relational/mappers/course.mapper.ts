@@ -1,6 +1,7 @@
 import { CategoryEntity } from '../../../../../categories/persistence/entities/category.entity';
 import { ImageEntity } from '../../../../../cloudinary/persistence/entities/image.entity';
 import { ImageMapper } from '../../../../../cloudinary/persistence/mappers/image.mapper';
+import { CourseVideoEntity } from '../../../../../course-videos/infrastructure/persistence/relational/entities/course-video.entity';
 import { TagEntity } from '../../../../../tags/persistence/entities/tag.entity';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { Course } from '../../../../domain/course';
@@ -12,17 +13,14 @@ export class CourseMapper {
     course.id = raw.id;
     course.name = raw.name;
     course.price = raw.price;
-    course.related =
-      raw.related?.map((related) => {
-        const relatedCourse = new Course();
-        relatedCourse.id = related.id;
-        return relatedCourse;
-      }) ?? [];
+    course.related = raw.related ?? [];
     course.status = raw.status;
     course.lessons = raw.lessons;
     course.shortDescription = raw.shortDescription;
     course.description = raw.description;
-    course.image = ImageMapper.toDomain(raw.image);
+    if (raw.image) {
+      course.image = ImageMapper.toDomain(raw.image);
+    }
     course.level = raw.level;
     course.createdBy = raw.createdBy;
     course.createdAt = raw.createdAt;
@@ -30,6 +28,7 @@ export class CourseMapper {
     course.deletedAt = raw.deletedAt;
     course.tags = raw.tags;
     course.categories = raw.categories;
+    course.courseVideo = raw.courseVideo;
     return course;
   }
 
@@ -79,6 +78,11 @@ export class CourseMapper {
         categoryEntity.id = category.id;
         return categoryEntity;
       });
+    }
+    if (course.courseVideo) {
+      const courseVideoEntity = new CourseVideoEntity();
+      courseVideoEntity.id = course.courseVideo.id;
+      courseEntity.courseVideo = courseVideoEntity;
     }
 
     return courseEntity;
