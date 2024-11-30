@@ -33,6 +33,7 @@ export class CourseMapper {
   }
 
   static toPersistence(course: Course): CourseEntity {
+    console.log({ course });
     const courseEntity = new CourseEntity();
     courseEntity.id = course.id;
     courseEntity.name = course.name;
@@ -72,7 +73,7 @@ export class CourseMapper {
       });
     }
 
-    if (courseEntity.categories) {
+    if (course.categories) {
       courseEntity.categories = course.categories.map((category) => {
         const categoryEntity = new CategoryEntity();
         categoryEntity.id = category.id;

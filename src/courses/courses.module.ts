@@ -9,6 +9,8 @@ import { TagsModule } from '../tags/tag.module';
 import { CategoriesModule } from '../categories/category.module';
 import { UsersModule } from '../users/users.module';
 import { CourseVideosModule } from '../course-videos/course-videos.module';
+import { EnrollsModule } from '../enrolls/enrolls.module';
+import { PaymentsModule } from '../payments/payments.module';
 @Module({
   imports: [
     RelationalCoursePersistenceModule,
@@ -17,6 +19,8 @@ import { CourseVideosModule } from '../course-videos/course-videos.module';
     CategoriesModule,
     UsersModule,
     CourseVideosModule,
+    EnrollsModule,
+    PaymentsModule,
   ],
   controllers: [CoursesController],
   providers: [CoursesService],

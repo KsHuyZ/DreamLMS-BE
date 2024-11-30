@@ -1,7 +1,9 @@
+import { User } from '../../../users/domain/user';
 import { InfinityPaginationResponseDto } from '../../../utils/dto/infinity-pagination-response.dto';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Course } from '../../domain/course';
+import { CourseGuestDto } from '../../dto/course-guest.dto';
 
 import { FilterCourseDto, SortCourseDto } from '../../dto/query-course.dto';
 import { TCourseQuery } from '../../types/course.enum';
@@ -48,6 +50,11 @@ export abstract class CourseRepository {
   });
 
   abstract findById(id: Course['id']): Promise<NullableType<Course>>;
+
+  abstract findCourseByGuest(
+    id: Course['id'],
+    userId?: User['id'],
+  ): Promise<NullableType<CourseGuestDto>>;
 
   abstract update(
     id: Course['id'],

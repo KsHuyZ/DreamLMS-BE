@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 import { LevelsEnum } from '../types/levels.enum';
 import { User } from '../../users/domain/user';
+import { Transform } from 'class-transformer';
 
 export class CreateCourseDto {
   @ApiProperty({ example: 'React from zero to hero', type: String })
@@ -12,6 +13,9 @@ export class CreateCourseDto {
     type: Number,
     example: '200000',
   })
+  @IsNotEmpty()
+  @IsNumber()
+  @Transform(({ value }) => (value ? Number(value) : 0))
   price: number;
 
   @ApiProperty({

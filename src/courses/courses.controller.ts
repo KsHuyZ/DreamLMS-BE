@@ -12,7 +12,6 @@ import {
   SerializeOptions,
   Request,
   UseInterceptors,
-  UploadedFiles,
   UploadedFile,
   UseGuards,
   Put,
@@ -36,10 +35,7 @@ import { QueryCourseDto } from './dto/query-course.dto';
 import { Course } from './domain/course';
 import { CoursesService } from './courses.service';
 import { User } from '../users/domain/user';
-import {
-  FileFieldsInterceptor,
-  FileInterceptor,
-} from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from '../roles/roles.decorator';
 import { RoleEnum } from '../roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
@@ -49,6 +45,10 @@ import path from 'path';
 import { diskStorage } from 'multer';
 import { AdditionCourseDto } from './dto/addition-course.dto';
 import { TCourseQuery } from './types/course.enum';
+import { CourseGuestDto } from './dto/course-guest.dto';
+import { Enroll } from '../enrolls/domain/enroll';
+import Stripe from 'stripe';
+import { PaymentsService } from '../payments/payments.service';
 
 @ApiTags('Courses')
 @Controller({
@@ -56,7 +56,10 @@ import { TCourseQuery } from './types/course.enum';
   version: '1',
 })
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(
+    private readonly coursesService: CoursesService,
+    private readonly paymentsService: PaymentsService,
+  ) {}
 
   @ApiCreatedResponse({
     type: () => Course,
@@ -150,6 +153,23 @@ export class CoursesController {
   }
 
   @ApiOkResponse({
+    type: () => CourseGuestDto,
+  })
+  @SerializeOptions({
+    groups: ['admin'],
+  })
+  @UseGuards(AuthGuard('jwt'))
+  @Get('guest/:id')
+  @HttpCode(HttpStatus.OK)
+  findCourseByGuest(
+    @Param('id') id: Course['id'],
+    @Request() request,
+  ): Promise<NullableType<CourseGuestDto>> {
+    const userId = request.user?.id as string | undefined;
+    return this.coursesService.findCourseByGuest(id, userId);
+  }
+
+  @ApiOkResponse({
     type: () => Course,
   })
   @SerializeOptions({
@@ -162,20 +182,20 @@ export class CoursesController {
     type: String,
     required: true,
   })
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }]))
+  @UseInterceptors(FileInterceptor('image'))
   @UseGuards(AuthGuard('jwt'))
   @ApiConsumes('multipart/form-data')
   update(
     @Param('id') id: Course['id'],
     @Body() updateCourseDto: UpdateCourseDto,
-    @UploadedFiles()
-    files: { image?: Express.Multer.File },
+    @UploadedFile()
+    image: Express.Multer.File,
     @Request() request,
   ): Promise<Course | null> {
     const createdBy = request.user as User | undefined;
     return this.coursesService.update(id, {
       ...updateCourseDto,
-      ...files,
+      image,
       createdBy,
     });
   }
@@ -253,5 +273,33 @@ export class CoursesController {
     const { related } = payload;
     const createdBy = request.user as User;
     await this.coursesService.updateAddition(id, video, related, createdBy);
+  }
+
+  @ApiCreatedResponse({
+    type: Enroll,
+  })
+  @Get('enroll/:id')
+  @HttpCode(HttpStatus.CREATED)
+  @UseGuards(AuthGuard('jwt'))
+  enrollFreeCourse(
+    @Request() request,
+    @Param('id') courseId: string,
+  ): Promise<Enroll> {
+    const userId = request.user?.id as string;
+    return this.coursesService.enrollFreeCourse({ courseId, userId });
+  }
+
+  @ApiCreatedResponse({
+    type: Promise<Stripe.Response<Stripe.PaymentIntent>>,
+  })
+  @Get('payment/:id')
+  @HttpCode(HttpStatus.CREATED)
+  @UseGuards(AuthGuard('jwt'))
+  enrollCourse(
+    @Request() request,
+    @Param('id') courseId: string,
+  ): Promise<Stripe.Response<Stripe.PaymentIntent>> {
+    const userId = request.user?.id as string;
+    return this.coursesService.enrollCourse({ courseId, userId });
   }
 }

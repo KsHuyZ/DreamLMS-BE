@@ -26,6 +26,10 @@ import { CourseStatusEnum } from '../statuses/statuses.enum';
 import { CourseVideosService } from '../course-videos/course-videos.service';
 import { User } from '../users/domain/user';
 import { TCourseQuery } from './types/course.enum';
+import { CourseGuestDto } from './dto/course-guest.dto';
+import { EnrollsService } from '../enrolls/enrolls.service';
+import { CourseEnrollDto } from './dto/course-enroll.dto';
+import { PaymentsService } from '../payments/payments.service';
 
 @Injectable()
 export class CoursesService {
@@ -36,6 +40,8 @@ export class CoursesService {
     private readonly categoriesService: CategoriesService,
     private readonly userService: UsersService,
     private readonly courseVideoService: CourseVideosService,
+    private readonly enrollsService: EnrollsService,
+    private readonly paymentsService: PaymentsService,
   ) {}
 
   @Transactional()
@@ -144,11 +150,29 @@ export class CoursesService {
     return this.coursesRepository.findById(id);
   }
 
+  async findCourseByGuest(
+    id: Course['id'],
+    userId?: User['id'],
+  ): Promise<NullableType<CourseGuestDto>> {
+    let isEnrolled = false;
+    if (userId) {
+      const enroll = await this.enrollsService.findByCourseAndUserId(
+        userId,
+        id,
+      );
+      isEnrolled = !!enroll;
+    }
+    const course = await this.coursesRepository.findCourseByGuest(id);
+    return course ? { ...course, isEnrolled } : null;
+  }
+
   @Transactional()
   async update(
     id: Course['id'],
-    payload: UpdateCourseDto,
+    payload: UpdateCourseDto & { image: Image | Express.Multer.File },
   ): Promise<Course | null> {
+    const courseExist = await this.coursesRepository.findById(id);
+    if (!courseExist) throw new BadRequestException('Course not found');
     const { createdBy } = payload;
 
     if (!createdBy) throw new UnauthorizedException();
@@ -156,28 +180,24 @@ export class CoursesService {
     if (createdBy.role === RoleEnum.STUDENT) {
       throw new ForbiddenException();
     }
-    const imagePayload = JSON.parse(
-      payload.image as unknown as string,
-    ) as Image;
-
-    let image = imagePayload;
-    if (!image.url) {
-      const imageResponse = await this.cloudinaryService.uploadImage(
-        image as unknown as Express.Multer.File,
-      );
+    const imagePayload = payload.image as Express.Multer.File;
+    let image;
+    if (imagePayload && imagePayload?.buffer) {
+      const imageResponse =
+        await this.cloudinaryService.uploadImage(imagePayload);
       if (imageResponse.http_code) throw new Error('Something went wrong!');
       const { original_filename, url, public_id, bytes, format } =
         imageResponse;
-      image = {
-        id: image.id,
+      image = await this.cloudinaryService.createImage({
         name: original_filename,
         url,
-        course: image.course,
         publicId: public_id,
-        size: bytes,
         format,
+        size: bytes,
         createdBy,
-      };
+      });
+    } else {
+      image = courseExist.image;
     }
 
     //tag
@@ -191,7 +211,7 @@ export class CoursesService {
       ...existTagIds,
       ...newTagIds,
     ]);
-
+    console.log({ payload: payload.categories });
     //category
     const parseCategories = JSON.parse(payload.categories ?? '[]') as string[];
     const existCategoryIds = parseCategories.filter((category) =>
@@ -258,5 +278,40 @@ export class CoursesService {
       related: courseRelated,
       courseVideo,
     });
+  }
+  async enrollFreeCourse(payload: CourseEnrollDto) {
+    const { courseId, userId } = payload;
+    const user = await this.userService.findById(userId);
+    if (!user) {
+      throw new BadRequestException('Please sign in first');
+    }
+    const course = await this.coursesRepository.findById(courseId);
+    if (!course) {
+      throw new BadRequestException('Course not found');
+    }
+    if (course.price > 0) {
+      throw new BadRequestException('Please payment first');
+    }
+    const enroll = await this.enrollsService.findByCourseAndUserId(
+      userId,
+      courseId,
+    );
+    if (enroll) {
+      throw new BadRequestException('Course already enroll');
+    }
+    return this.enrollsService.enrollCourse({ user, course });
+  }
+
+  async enrollCourse(payload: CourseEnrollDto) {
+    const { courseId, userId } = payload;
+    const user = await this.userService.findById(userId);
+    if (!user) {
+      throw new BadRequestException('Please sign in first');
+    }
+    const course = await this.coursesRepository.findById(courseId);
+    if (!course) {
+      throw new BadRequestException('Course not found');
+    }
+    return this.paymentsService.createPaymentIntent(course, userId);
   }
 }

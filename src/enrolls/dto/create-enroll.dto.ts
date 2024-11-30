@@ -1,11 +1,14 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { UserDto } from '../../users/dto/user.dto';
-import { CourseDto } from '../../courses/dto/course.dto';
+import { Course } from '../../courses/domain/course';
+import { User } from '../../users/domain/user';
 
 export class CreateEnrollDto {
+  @ApiProperty()
   @IsNotEmpty()
-  user: UserDto;
+  course: Course;
 
+  @ApiProperty()
   @IsNotEmpty()
-  course: CourseDto;
+  user: User;
 }

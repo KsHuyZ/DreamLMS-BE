@@ -20,6 +20,7 @@ import { priceCondition } from '../../../../../utils/course/course-price-mapper'
 import { mapCourseSort } from '../../../../../utils/course/course-sort-mapper';
 import { levelCourseMapper } from '../../../../../utils/course/course-level-mapper';
 import { TCourseQuery } from '../../../../types/course.enum';
+import { CourseGuestDto } from '../../../../dto/course-guest.dto';
 
 @Injectable()
 export class CoursesRelationalRepository implements CourseRepository {
@@ -112,9 +113,25 @@ export class CoursesRelationalRepository implements CourseRepository {
     });
   }
 
-  async findById(
+  async findById(id: Course['id']): Promise<NullableType<Course>> {
+    const entity = await this.coursesRepository.findOne({
+      where: { id },
+      relations: [
+        'tags',
+        'categories',
+        'courseVideo',
+        'createdBy',
+        'image',
+        'related',
+      ],
+    });
+
+    return entity ? CourseMapper.toDomain(entity) : null;
+  }
+
+  async findCourseByGuest(
     id: Course['id'],
-  ): Promise<NullableType<Course & { duration: number }>> {
+  ): Promise<NullableType<CourseGuestDto>> {
     const entity = await this.coursesRepository.findOne({
       where: { id },
       relations: [
@@ -127,6 +144,7 @@ export class CoursesRelationalRepository implements CourseRepository {
         'related',
       ],
     });
+
     const result = entity ? CourseMapper.toDomain(entity) : null;
     if (result) {
       return {

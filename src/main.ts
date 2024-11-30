@@ -20,6 +20,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: true,
     abortOnError: true,
+    rawBody: true,
   });
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const configService = app.get(ConfigService<AllConfigType>);

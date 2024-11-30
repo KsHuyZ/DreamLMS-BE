@@ -39,7 +39,8 @@ import { AnswersModule } from './answers/answers.module';
 import { LessonVideosModule } from './lesson-videos/lesson-videos.module';
 
 import { CourseVideosModule } from './course-videos/course-videos.module';
-import { StripeModule } from '@golevelup/nestjs-stripe';
+import { PaymentsModule } from './payments/payments.module';
+import { StripeModule } from './stripe/stripe.module';
 @Module({
   imports: [
     CourseVideosModule,
@@ -58,12 +59,8 @@ import { StripeModule } from '@golevelup/nestjs-stripe';
         return await addTransactionalDataSource(new DataSource(options));
       },
     }),
-    StripeModule.forRoot(StripeModule, {
-      apiKey: process.env.STRIPE_PRIVATE_KEY ?? '',
-      // webhookConfig: {
-      //   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? '', // Optional: For validating webhooks
-      // },
-    }),
+    PaymentsModule,
+    StripeModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [

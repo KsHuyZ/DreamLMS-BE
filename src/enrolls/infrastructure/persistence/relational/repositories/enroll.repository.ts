@@ -6,6 +6,8 @@ import { NullableType } from '../../../../../utils/types/nullable.type';
 import { Enroll } from '../../../../domain/enroll';
 import { EnrollRepository } from '../../enroll.repository';
 import { EnrollMapper } from '../mappers/enroll.mapper';
+import { Course } from '../../../../../courses/domain/course';
+import { User } from '../../../../../users/domain/user';
 
 @Injectable()
 export class EnrollRelationalRepository implements EnrollRepository {
@@ -14,7 +16,7 @@ export class EnrollRelationalRepository implements EnrollRepository {
     private readonly enrollRepository: Repository<EnrollEntity>,
   ) {}
 
-  async create(data: Enroll): Promise<Enroll> {
+  async enrollCourse(data: Enroll): Promise<Enroll> {
     const persistenceModel = EnrollMapper.toPersistence(data);
     const newEntity = await this.enrollRepository.save(
       this.enrollRepository.create(persistenceModel),
@@ -27,6 +29,23 @@ export class EnrollRelationalRepository implements EnrollRepository {
       where: { id },
     });
 
+    return entity ? EnrollMapper.toDomain(entity) : null;
+  }
+
+  async findByUserAndCourseId(
+    userId: User['id'],
+    courseId: Course['id'],
+  ): Promise<NullableType<Enroll>> {
+    const entity = await this.enrollRepository.findOne({
+      where: {
+        course: {
+          id: courseId,
+        },
+        user: {
+          id: userId,
+        },
+      },
+    });
     return entity ? EnrollMapper.toDomain(entity) : null;
   }
 }
