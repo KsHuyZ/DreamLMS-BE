@@ -10,6 +10,7 @@ import {
   SerializeOptions,
   Put,
   Delete,
+  Request,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -86,6 +87,25 @@ export class LessonsController {
   })
   findByCourseId(@Param('id') id: string): Promise<Lesson[]> {
     return this.lessonsService.findByCourseId(id);
+  }
+
+  @ApiOkResponse({
+    type: () => Lesson,
+  })
+  @Get('/learn/:id')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  findByCourseLearn(
+    @Param('id') id: string,
+    @Request() request,
+  ): Promise<Lesson[]> {
+    const userId = request.user.id;
+    return this.lessonsService.findByCourseLearn(id, userId);
   }
 
   @Delete(':id')

@@ -4,10 +4,9 @@ import { UsersController } from './users.controller';
 
 import { UsersService } from './users.service';
 import { RelationalUserPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
-import { FilesModule } from '../files/files.module';
 
 @Module({
-  imports: [RelationalUserPersistenceModule, FilesModule],
+  imports: [RelationalUserPersistenceModule],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService, RelationalUserPersistenceModule],

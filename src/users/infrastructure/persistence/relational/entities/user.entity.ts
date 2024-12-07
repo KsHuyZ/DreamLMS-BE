@@ -12,6 +12,7 @@ import {
   Entity,
   Index,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -19,6 +20,7 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 import { EnrollEntity } from '../../../../../enrolls/infrastructure/persistence/relational/entities/enroll.entity';
 import { RoleEnum } from '../../../../../roles/roles.enum';
 import { StatusEnum } from '../../../../../statuses/statuses.enum';
+import { UserVideoEntity } from '../../../../../user-videos/infrastructure/persistence/relational/entities/user-video.entity';
 
 @Entity({
   name: 'users',
@@ -115,6 +117,9 @@ export class UserEntity extends EntityRelationalHelper {
 
   @ManyToMany(() => EnrollEntity, (enrolledCourse) => enrolledCourse.user)
   enrolledCourses: EnrollEntity[];
+
+  @OneToMany(() => UserVideoEntity, (userVideo) => userVideo.user)
+  userVideos: UserVideoEntity[];
 
   @ApiProperty()
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

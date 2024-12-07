@@ -11,6 +11,7 @@ import { UsersModule } from '../users/users.module';
 import { CourseVideosModule } from '../course-videos/course-videos.module';
 import { EnrollsModule } from '../enrolls/enrolls.module';
 import { PaymentsModule } from '../payments/payments.module';
+import { UserVideosModule } from '../user-videos/user-videos.module';
 @Module({
   imports: [
     RelationalCoursePersistenceModule,
@@ -21,6 +22,7 @@ import { PaymentsModule } from '../payments/payments.module';
     CourseVideosModule,
     EnrollsModule,
     PaymentsModule,
+    UserVideosModule,
   ],
   controllers: [CoursesController],
   providers: [CoursesService],

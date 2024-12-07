@@ -16,6 +16,7 @@ export class quizRelationalRepository implements QuizRepository {
 
   async create(data: Quiz): Promise<Quiz> {
     const persistenceModel = QuizMapper.toPersistence(data);
+    console.log({ persistenceModel });
     const newEntity = await this.quizRepository.save(
       this.quizRepository.create(persistenceModel),
     );

@@ -125,7 +125,6 @@ export class CoursesRelationalRepository implements CourseRepository {
         'related',
       ],
     });
-
     return entity ? CourseMapper.toDomain(entity) : null;
   }
 
@@ -141,6 +140,7 @@ export class CoursesRelationalRepository implements CourseRepository {
         'courseVideo',
         'createdBy',
         'lessons.videos',
+        'lessons.quizzes',
         'related',
       ],
     });

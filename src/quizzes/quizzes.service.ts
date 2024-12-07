@@ -3,20 +3,20 @@ import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { QuizRepository } from './infrastructure/persistence/quiz.repository';
 import { Quiz } from './domain/quiz';
-import { LessonRepository } from '../lessons/persistence/lesson.repository';
 import { Transactional } from 'typeorm-transactional';
+import { LessonsService } from '../lessons/lessons.service';
 
 @Injectable()
 export class QuizzesService {
   constructor(
     private readonly quizRepository: QuizRepository,
-    private readonly lessonRepository: LessonRepository,
+    private readonly lessonsService: LessonsService,
   ) {}
 
   @Transactional()
   async create(createQuizDto: CreateQuizDto) {
     const { lessonId } = createQuizDto;
-    const lesson = await this.lessonRepository.findById(lessonId);
+    const lesson = await this.lessonsService.findById(lessonId);
     if (!lesson) {
       throw new BadRequestException('Lesson not found');
     }

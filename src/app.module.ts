@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
-import { FilesModule } from './files/files.module';
 import { AuthModule } from './auth/auth.module';
 import databaseConfig from './database/config/database.config';
 import authConfig from './auth/config/auth.config';
@@ -41,8 +40,15 @@ import { LessonVideosModule } from './lesson-videos/lesson-videos.module';
 import { CourseVideosModule } from './course-videos/course-videos.module';
 import { PaymentsModule } from './payments/payments.module';
 import { StripeModule } from './stripe/stripe.module';
+
+import { UserVideosModule } from './user-videos/user-videos.module';
+
+import { UserQuizzesModule } from './user-quizzes/user-quizzes.module';
+
 @Module({
   imports: [
+    UserQuizzesModule,
+    UserVideosModule,
     CourseVideosModule,
     LessonVideosModule,
     AnswersModule,
@@ -97,7 +103,6 @@ import { StripeModule } from './stripe/stripe.module';
       inject: [ConfigService],
     }),
     UsersModule,
-    FilesModule,
     AuthModule,
     AuthGoogleModule,
     SessionModule,

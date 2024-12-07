@@ -1,5 +1,4 @@
 import { AnswerEntity } from '../../../../../answers/infrastructure/persistence/relational/entities/answer.entity';
-import { QuizEntity } from '../../../../../quizzes/infrastructure/persistence/relational/entities/quiz.entity';
 import { Question } from '../../../../domain/question';
 import { QuestionEntity } from '../entities/question.entity';
 
@@ -18,9 +17,7 @@ export class QuestionMapper {
 
   static toPersistence(domainEntity: Question): QuestionEntity {
     const persistenceEntity = new QuestionEntity();
-    if (domainEntity.id) {
-      persistenceEntity.id = domainEntity.id;
-    }
+    persistenceEntity.id = domainEntity.id;
     persistenceEntity.title = domainEntity.title;
     persistenceEntity.answers = domainEntity.answers.map((answer) => {
       const answerEntity = new AnswerEntity();
@@ -29,12 +26,7 @@ export class QuestionMapper {
       answerEntity.title = answer.title;
       return answerEntity;
     });
-    const quizEntity = new QuizEntity();
-    if (domainEntity.quiz) {
-      quizEntity.id = domainEntity.quiz.id;
-    }
     persistenceEntity.type = domainEntity.type;
-    persistenceEntity.quiz = quizEntity;
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
 

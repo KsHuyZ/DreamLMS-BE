@@ -1,22 +1,29 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { NullableType } from '../utils/types/nullable.type';
 import { DeepPartial } from '../utils/types/deep-partial.type';
 import { Lesson } from './domain/lesson';
 import { LessonRepository } from './persistence/lesson.repository';
 import { CreateLessonDto } from './dto/create-lesson.dto';
-import { CourseRepository } from '../courses/infrastructure/persistence/course.repository';
+import { UserVideosService } from '../user-videos/user-videos.service';
+import { CoursesService } from '../courses/courses.service';
 
 @Injectable()
 export class LessonsService {
   constructor(
     private readonly lessonRepository: LessonRepository,
-    private readonly courseRepository: CourseRepository,
+    @Inject(forwardRef(() => CoursesService))
+    private readonly coursesService: CoursesService,
+    @Inject(forwardRef(() => UserVideosService))
+    private readonly userVideosService: UserVideosService,
   ) {}
 
   async create(createLessonDto: CreateLessonDto): Promise<Lesson> {
-    const course = await this.courseRepository.findById(
-      createLessonDto.courseId,
-    );
+    const course = await this.coursesService.findById(createLessonDto.courseId);
     if (!course) {
       throw new NotFoundException();
     }
@@ -28,8 +35,24 @@ export class LessonsService {
     });
   }
 
-  async findByCourseId(id: string): Promise<Lesson[]> {
+  findByCourseId(id: string): Promise<Lesson[]> {
     return this.lessonRepository.findByCourseId(id);
+  }
+
+  async findByCourseLearn(id: string, userId: string) {
+    const lessons = await this.lessonRepository.findByCourseId(id);
+
+    const completedVideos =
+      await this.userVideosService.findByUserIdAndCourseId(userId, id);
+    return lessons.map((lesson) => {
+      const videos = lesson.videos.map((video) => ({
+        ...video,
+        isCompleted: completedVideos.some(
+          (completeVideo) => completeVideo.video.id === video.id,
+        ),
+      }));
+      return { ...lesson, videos };
+    });
   }
 
   async findById(id: Lesson['id']): Promise<NullableType<Lesson>> {

@@ -49,6 +49,7 @@ import { CourseGuestDto } from './dto/course-guest.dto';
 import { Enroll } from '../enrolls/domain/enroll';
 import Stripe from 'stripe';
 import { PaymentsService } from '../payments/payments.service';
+import { CourseLearningDto } from './dto/course-learning.dto';
 
 @ApiTags('Courses')
 @Controller({
@@ -167,6 +168,23 @@ export class CoursesController {
   ): Promise<NullableType<CourseGuestDto>> {
     const userId = request.user?.id as string | undefined;
     return this.coursesService.findCourseByGuest(id, userId);
+  }
+
+  @ApiOkResponse({
+    type: () => CourseLearningDto,
+  })
+  @SerializeOptions({
+    groups: ['admin'],
+  })
+  @UseGuards(AuthGuard('jwt'))
+  @Get('learn/:id')
+  @HttpCode(HttpStatus.OK)
+  findByLearnLearn(
+    @Param('id') id: Course['id'],
+    @Request() request,
+  ): Promise<NullableType<CourseLearningDto>> {
+    const userId = request.user?.id as string | undefined;
+    return this.coursesService.findByLearn(id, userId);
   }
 
   @ApiOkResponse({

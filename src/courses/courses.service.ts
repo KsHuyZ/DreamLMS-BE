@@ -30,6 +30,8 @@ import { CourseGuestDto } from './dto/course-guest.dto';
 import { EnrollsService } from '../enrolls/enrolls.service';
 import { CourseEnrollDto } from './dto/course-enroll.dto';
 import { PaymentsService } from '../payments/payments.service';
+import { UserVideosService } from '../user-videos/user-videos.service';
+import { CourseLearningDto } from './dto/course-learning.dto';
 
 @Injectable()
 export class CoursesService {
@@ -42,6 +44,7 @@ export class CoursesService {
     private readonly courseVideoService: CourseVideosService,
     private readonly enrollsService: EnrollsService,
     private readonly paymentsService: PaymentsService,
+    private readonly userVideoService: UserVideosService,
   ) {}
 
   @Transactional()
@@ -148,6 +151,33 @@ export class CoursesService {
 
   findById(id: Course['id']): Promise<NullableType<Course>> {
     return this.coursesRepository.findById(id);
+  }
+
+  async findByLearn(
+    id: Course['id'],
+    userId?: User['id'],
+  ): Promise<NullableType<CourseLearningDto>> {
+    if (!userId) throw new BadRequestException('Please sign in first');
+    const course = await this.coursesRepository.findCourseByGuest(id);
+    if (!course) return null;
+    const totalVideos =
+      course.lessons.reduce((acc, lesson) => acc + lesson.videos.length, 0) ??
+      0;
+    const totalQuizzes =
+      course.lessons.reduce((acc, lesson) => acc + lesson.quizzes.length, 0) ??
+      0;
+    const completedVideos =
+      await this.userVideoService.countByUserIdAndCourseId(userId, id);
+    // const completedQuizzes = await this.userQuizzesRepository.count({
+    //   where: {
+    //     user: { id: userId },
+    //     quiz: { lesson: { course: { id: course.id } } },
+    //   },
+    // });
+    const totalTasks = totalVideos + totalQuizzes;
+    const completedTasks = completedVideos;
+    const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+    return { ...course, progress };
   }
 
   async findCourseByGuest(

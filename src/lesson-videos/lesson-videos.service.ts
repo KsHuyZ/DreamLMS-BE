@@ -32,10 +32,12 @@ export class LessonVideosService {
       throw new BadRequestException('Lesson not found');
     }
     const lastVideoOrder =
-      lesson.videos.length > 0 ? lesson.videos[lesson.videos.length].order : 0;
+      lesson.videos.length > 0
+        ? lesson.videos[lesson.videos.length - 1].order
+        : 0;
     const lastQuizOrder =
       lesson.quizzes.length > 0
-        ? lesson.quizzes[lesson.quizzes.length].order
+        ? lesson.quizzes[lesson.quizzes.length - 1].order
         : 0;
     const videoDomain = new Video();
     videoDomain.title = title;
