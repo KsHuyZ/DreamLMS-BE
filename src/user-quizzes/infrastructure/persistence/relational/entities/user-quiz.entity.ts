@@ -32,6 +32,10 @@ export class UserQuizEntity extends EntityRelationalHelper {
   score: number;
 
   @ApiProperty()
+  @Column({ default: false })
+  isCompleted: boolean;
+
+  @ApiProperty()
   @CreateDateColumn()
   createdAt: Date;
 

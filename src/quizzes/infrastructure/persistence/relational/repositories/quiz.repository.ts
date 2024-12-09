@@ -16,7 +16,6 @@ export class quizRelationalRepository implements QuizRepository {
 
   async create(data: Quiz): Promise<Quiz> {
     const persistenceModel = QuizMapper.toPersistence(data);
-    console.log({ persistenceModel });
     const newEntity = await this.quizRepository.save(
       this.quizRepository.create(persistenceModel),
     );
@@ -26,6 +25,7 @@ export class quizRelationalRepository implements QuizRepository {
   async findById(id: Quiz['id']): Promise<NullableType<Quiz>> {
     const entity = await this.quizRepository.findOne({
       where: { id },
+      relations: ['questions.answers'],
     });
 
     return entity ? QuizMapper.toDomain(entity) : null;

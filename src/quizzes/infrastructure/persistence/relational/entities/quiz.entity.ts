@@ -34,6 +34,10 @@ export class QuizEntity extends EntityRelationalHelper {
   order: number;
 
   @ApiProperty()
+  @Column()
+  time: number;
+
+  @ApiProperty()
   @ManyToOne(() => LessonEntity, (lesson) => lesson.quizzes)
   lesson: LessonEntity;
 

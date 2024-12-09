@@ -7,9 +7,9 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { UserQuizzesService } from './user-quizzes.service';
-import { CreateUserQuizDto } from './dto/create-user-quiz.dto';
 import { UpdateUserQuizDto } from './dto/update-user-quiz.dto';
 import {
   ApiBearerAuth,
@@ -29,14 +29,16 @@ import { AuthGuard } from '@nestjs/passport';
   version: '1',
 })
 export class UserQuizzesController {
-  constructor(private readonly user_quizzesService: UserQuizzesService) {}
+  constructor(private readonly userQuizzesService: UserQuizzesService) {}
 
-  @Post()
+  @Post(':id')
   @ApiCreatedResponse({
     type: UserQuiz,
   })
-  create(@Body() createUserQuizDto: CreateUserQuizDto) {
-    return this.user_quizzesService.create(createUserQuizDto);
+  @UseGuards(AuthGuard('jwt'))
+  create(@Request() request, @Param('id') quizId: string) {
+    const userId = request.user.id;
+    return this.userQuizzesService.create({ userId, quizId });
   }
 
   @Get(':id')
@@ -45,8 +47,13 @@ export class UserQuizzesController {
     type: String,
     required: true,
   })
-  findOne(@Param('id') id: string) {
-    return this.user_quizzesService.findOne(id);
+  @UseGuards(AuthGuard('jwt'))
+  findOne(@Param('id') quizId: string, @Request() request) {
+    const userId = request.user.id;
+    return this.userQuizzesService.findByUserIdAndQuizId({
+      quizId,
+      userId,
+    });
   }
 
   @Patch(':id')
@@ -62,7 +69,7 @@ export class UserQuizzesController {
     @Param('id') id: string,
     @Body() updateUserQuizDto: UpdateUserQuizDto,
   ) {
-    return this.user_quizzesService.update(id, updateUserQuizDto);
+    return this.userQuizzesService.update(id, updateUserQuizDto);
   }
 
   @Delete(':id')
@@ -72,6 +79,6 @@ export class UserQuizzesController {
     required: true,
   })
   remove(@Param('id') id: string) {
-    return this.user_quizzesService.remove(id);
+    return this.userQuizzesService.remove(id);
   }
 }

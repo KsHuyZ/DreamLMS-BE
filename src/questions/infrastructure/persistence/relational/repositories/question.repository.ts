@@ -6,7 +6,7 @@ import { NullableType } from '../../../../../utils/types/nullable.type';
 import { Question } from '../../../../domain/question';
 import { QuestionRepository } from '../../question.repository';
 import { QuestionMapper } from '../mappers/question.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Quiz } from '../../../../../quizzes/domain/quiz';
 
 @Injectable()
 export class QuestionRelationalRepository implements QuestionRepository {
@@ -21,19 +21,6 @@ export class QuestionRelationalRepository implements QuestionRepository {
       this.questionRepository.create(persistenceModel),
     );
     return newEntity.map((entity) => QuestionMapper.toDomain(entity));
-  }
-
-  async findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }): Promise<Question[]> {
-    const entities = await this.questionRepository.find({
-      skip: (paginationOptions.page - 1) * paginationOptions.limit,
-      take: paginationOptions.limit,
-    });
-
-    return entities.map((user) => QuestionMapper.toDomain(user));
   }
 
   async findById(id: Question['id']): Promise<NullableType<Question>> {
@@ -70,5 +57,17 @@ export class QuestionRelationalRepository implements QuestionRepository {
 
   async remove(id: Question['id']): Promise<void> {
     await this.questionRepository.delete(id);
+  }
+
+  async findByQuizId(id: Quiz['id']): Promise<Question[]> {
+    const questions = await this.questionRepository.find({
+      where: {
+        quiz: {
+          id,
+        },
+      },
+      relations: ['answers'],
+    });
+    return questions.map(QuestionMapper.toDomain);
   }
 }

@@ -1,37 +1,38 @@
 import {
-  Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 import { QuestionEntity } from '../../../../../questions/infrastructure/persistence/relational/entities/question.entity';
-import { Exclude, Expose } from 'class-transformer';
+import { AnswerEntity } from '../../../../../answers/infrastructure/persistence/relational/entities/answer.entity';
+import { UserQuizEntity } from '../../../../../user-quizzes/infrastructure/persistence/relational/entities/user-quiz.entity';
 
 @Entity({
-  name: 'answer',
+  name: 'user_quiz_answer',
 })
-export class AnswerEntity extends EntityRelationalHelper {
+export class UserQuizAnswerEntity extends EntityRelationalHelper {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ApiProperty()
-  @Column()
-  title: string;
+  @OneToOne(() => UserQuizEntity, (userQuiz) => userQuiz.id)
+  @JoinColumn()
+  userQuiz: UserQuizEntity;
 
   @ApiProperty()
-  @ManyToOne(() => QuestionEntity, (question) => question.answers)
+  @ManyToOne(() => QuestionEntity, (question) => question.id)
   question: QuestionEntity;
 
   @ApiProperty()
-  @Column()
-  @Exclude()
-  isCorrect: boolean;
+  @ManyToOne(() => AnswerEntity, (answer) => answer.id)
+  answer: AnswerEntity;
 
   @ApiProperty()
   @CreateDateColumn()
@@ -40,13 +41,4 @@ export class AnswerEntity extends EntityRelationalHelper {
   @ApiProperty()
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @ApiProperty()
-  @DeleteDateColumn()
-  deletedAt: Date;
-
-  @Expose()
-  getIsCorrect(shouldInclude: boolean): boolean | undefined {
-    return shouldInclude ? this.isCorrect : undefined;
-  }
 }

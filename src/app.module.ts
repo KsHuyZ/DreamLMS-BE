@@ -45,8 +45,11 @@ import { UserVideosModule } from './user-videos/user-videos.module';
 
 import { UserQuizzesModule } from './user-quizzes/user-quizzes.module';
 
+import { UserQuizAnswersModule } from './user-quiz-answers/user-quiz-answers.module';
+
 @Module({
   imports: [
+    UserQuizAnswersModule,
     UserQuizzesModule,
     UserVideosModule,
     CourseVideosModule,

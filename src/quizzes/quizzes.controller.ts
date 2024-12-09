@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { QuizzesService } from './quizzes.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
@@ -20,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { Quiz } from './domain/quiz';
 import { AuthGuard } from '@nestjs/passport';
+import { SubmitQuizDto } from './dto/submit-quiz.dto';
 
 @ApiTags('Quizzes')
 @ApiBearerAuth()
@@ -70,5 +72,21 @@ export class QuizzesController {
   })
   remove(@Param('id') id: string) {
     return this.quizzesService.remove(id);
+  }
+
+  @Post(':id')
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  @UseGuards(AuthGuard('jwt'))
+  submitQuiz(
+    @Body() payload: SubmitQuizDto[],
+    @Param('id') id: string,
+    @Request() request,
+  ) {
+    const userId = request.user.id as string;
+    return this.quizzesService.submitQuiz(id, userId, payload);
   }
 }

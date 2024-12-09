@@ -1,28 +1,36 @@
 import { Injectable } from '@nestjs/common';
-// import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { QuestionRepository } from './infrastructure/persistence/question.repository';
-import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Question } from './domain/question';
 import { AnswersService } from '../answers/answers.service';
+import { Quiz } from '../quizzes/domain/quiz';
+import { User } from '../users/domain/user';
+import { UserQuizAnswersService } from '../user-quiz-answers/user-quiz-answers.service';
 
 @Injectable()
 export class QuestionsService {
   constructor(
     private readonly questionRepository: QuestionRepository,
     private readonly answerService: AnswersService,
+    private readonly userQuizAnswerService: UserQuizAnswersService,
   ) {}
 
-  findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }) {
-    return this.questionRepository.findAllWithPagination({
-      paginationOptions: {
-        page: paginationOptions.page,
-        limit: paginationOptions.limit,
-      },
+  findByQuizId(id: Quiz['id']) {
+    return this.questionRepository.findByQuizId(id);
+  }
+
+  async findByQuizIdResult(id: Quiz['id'], userId: User['id']) {
+    const userQuizAnswers =
+      await this.userQuizAnswerService.findByUserIdAndQuizId(userId, id);
+    const questions = await this.questionRepository.findByQuizId(id);
+    return questions.map((question) => {
+      const answers = question.answers.map((answer) => ({
+        ...answer,
+        isSelected: userQuizAnswers.some((quizAnswer) => {
+          return quizAnswer.answer.id === answer.id;
+        }),
+      }));
+      return { ...question, answers };
     });
   }
 

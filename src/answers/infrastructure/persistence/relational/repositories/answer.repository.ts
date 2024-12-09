@@ -6,7 +6,6 @@ import { NullableType } from '../../../../../utils/types/nullable.type';
 import { Answer } from '../../../../domain/answer';
 import { AnswerRepository } from '../../answer.repository';
 import { AnswerMapper } from '../mappers/answer.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 
 @Injectable()
 export class AnswerRelationalRepository implements AnswerRepository {
@@ -21,19 +20,6 @@ export class AnswerRelationalRepository implements AnswerRepository {
       this.answerRepository.create(persistenceModel),
     );
     return newEntity.map((entity) => AnswerMapper.toDomain(entity));
-  }
-
-  async findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }): Promise<Answer[]> {
-    const entities = await this.answerRepository.find({
-      skip: (paginationOptions.page - 1) * paginationOptions.limit,
-      take: paginationOptions.limit,
-    });
-
-    return entities.map((user) => AnswerMapper.toDomain(user));
   }
 
   async findById(id: Answer['id']): Promise<NullableType<Answer>> {

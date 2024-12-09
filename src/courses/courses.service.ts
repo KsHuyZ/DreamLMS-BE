@@ -32,6 +32,7 @@ import { CourseEnrollDto } from './dto/course-enroll.dto';
 import { PaymentsService } from '../payments/payments.service';
 import { UserVideosService } from '../user-videos/user-videos.service';
 import { CourseLearningDto } from './dto/course-learning.dto';
+import { UserQuizzesService } from '../user-quizzes/user-quizzes.service';
 
 @Injectable()
 export class CoursesService {
@@ -45,6 +46,7 @@ export class CoursesService {
     private readonly enrollsService: EnrollsService,
     private readonly paymentsService: PaymentsService,
     private readonly userVideoService: UserVideosService,
+    private readonly userQuizzesService: UserQuizzesService,
   ) {}
 
   @Transactional()
@@ -168,14 +170,10 @@ export class CoursesService {
       0;
     const completedVideos =
       await this.userVideoService.countByUserIdAndCourseId(userId, id);
-    // const completedQuizzes = await this.userQuizzesRepository.count({
-    //   where: {
-    //     user: { id: userId },
-    //     quiz: { lesson: { course: { id: course.id } } },
-    //   },
-    // });
+    const completedQuizzes =
+      await this.userQuizzesService.countByUserIdAndCourseId(userId, id);
     const totalTasks = totalVideos + totalQuizzes;
-    const completedTasks = completedVideos;
+    const completedTasks = completedVideos + completedQuizzes;
     const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
     return { ...course, progress };
   }
@@ -241,7 +239,6 @@ export class CoursesService {
       ...existTagIds,
       ...newTagIds,
     ]);
-    console.log({ payload: payload.categories });
     //category
     const parseCategories = JSON.parse(payload.categories ?? '[]') as string[];
     const existCategoryIds = parseCategories.filter((category) =>

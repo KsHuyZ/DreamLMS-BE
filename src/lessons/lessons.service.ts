@@ -11,6 +11,7 @@ import { LessonRepository } from './persistence/lesson.repository';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UserVideosService } from '../user-videos/user-videos.service';
 import { CoursesService } from '../courses/courses.service';
+import { UserQuizzesService } from '../user-quizzes/user-quizzes.service';
 
 @Injectable()
 export class LessonsService {
@@ -20,6 +21,7 @@ export class LessonsService {
     private readonly coursesService: CoursesService,
     @Inject(forwardRef(() => UserVideosService))
     private readonly userVideosService: UserVideosService,
+    private readonly userQuizzesService: UserQuizzesService,
   ) {}
 
   async create(createLessonDto: CreateLessonDto): Promise<Lesson> {
@@ -44,6 +46,10 @@ export class LessonsService {
 
     const completedVideos =
       await this.userVideosService.findByUserIdAndCourseId(userId, id);
+
+    const completedQuizzes =
+      await this.userQuizzesService.findByUserIdAndCourseId(userId, id);
+
     return lessons.map((lesson) => {
       const videos = lesson.videos.map((video) => ({
         ...video,
@@ -51,7 +57,13 @@ export class LessonsService {
           (completeVideo) => completeVideo.video.id === video.id,
         ),
       }));
-      return { ...lesson, videos };
+      const quizzes = lesson.quizzes.map((quiz) => ({
+        ...quiz,
+        isCompleted: completedQuizzes.some(
+          (completedQuiz) => completedQuiz.quiz.id === quiz.id,
+        ),
+      }));
+      return { ...lesson, videos, quizzes };
     });
   }
 

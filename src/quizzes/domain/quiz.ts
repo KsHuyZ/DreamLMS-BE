@@ -19,9 +19,12 @@ export class Quiz {
   description: string;
 
   @ApiProperty({
-    type: String,
+    type: Number,
   })
   order: number;
+
+  @ApiProperty()
+  time: number;
 
   @ApiProperty()
   disabled: boolean;

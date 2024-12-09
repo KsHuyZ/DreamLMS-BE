@@ -1,19 +1,17 @@
 import {
   Controller,
   Get,
-  // Post,
   Body,
   Patch,
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
-// import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import {
   ApiBearerAuth,
-  // ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
@@ -31,14 +29,6 @@ import { AuthGuard } from '@nestjs/passport';
 export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
 
-  // @Post()
-  // @ApiCreatedResponse({
-  //   type: Question,
-  // })
-  // create(@Body() createQuestionDto: CreateQuestionDto) {
-  //   return this.questionsService.create(createQuestionDto);
-  // }
-
   @Get(':id')
   @ApiParam({
     name: 'id',
@@ -47,6 +37,28 @@ export class QuestionsController {
   })
   findOne(@Param('id') id: string) {
     return this.questionsService.findOne(id);
+  }
+
+  @Get('quiz/:id')
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  findByQuizId(@Param('id') id: string) {
+    return this.questionsService.findByQuizId(id);
+  }
+
+  @Get('result/:id')
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  @UseGuards(AuthGuard('jwt'))
+  findByQuizIdResult(@Param('id') id: string, @Request() request) {
+    const userId = request.user.id;
+    return this.questionsService.findByQuizIdResult(id, userId);
   }
 
   @Patch(':id')

@@ -12,6 +12,7 @@ export class QuizMapper {
     domainEntity.description = raw.description;
     domainEntity.disabled = raw.disabled;
     domainEntity.lesson = raw.lesson;
+    domainEntity.time = raw.time;
     domainEntity.questions = raw.questions;
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
@@ -33,6 +34,7 @@ export class QuizMapper {
     );
     persistenceEntity.order = domainEntity.order;
     persistenceEntity.disabled = domainEntity.disabled;
+    persistenceEntity.time = domainEntity.time;
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
 
