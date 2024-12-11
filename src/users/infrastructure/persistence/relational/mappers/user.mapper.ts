@@ -18,6 +18,13 @@ export class UserMapper {
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
     domainEntity.deletedAt = raw.deletedAt;
+    domainEntity.facebook = raw.facebook;
+    domainEntity.instagram = raw.instagram;
+    domainEntity.x = raw.x;
+    domainEntity.github = raw.github;
+    domainEntity.description = raw.description;
+    domainEntity.banner = raw.banner;
+    domainEntity.walletAddress = raw.walletAddress;
     return domainEntity;
   }
 
@@ -37,6 +44,13 @@ export class UserMapper {
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
     persistenceEntity.deletedAt = domainEntity.deletedAt;
+    persistenceEntity.github = domainEntity.github;
+    persistenceEntity.facebook = domainEntity.facebook;
+    persistenceEntity.x = domainEntity.x;
+    persistenceEntity.instagram = domainEntity.instagram;
+    persistenceEntity.description = domainEntity.description;
+    persistenceEntity.banner = domainEntity.banner;
+    persistenceEntity.walletAddress = domainEntity.walletAddress;
     return persistenceEntity;
   }
 }

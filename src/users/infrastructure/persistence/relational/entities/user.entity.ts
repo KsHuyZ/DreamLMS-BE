@@ -132,4 +132,25 @@ export class UserEntity extends EntityRelationalHelper {
   @ApiProperty()
   @DeleteDateColumn({ type: 'timestamp' })
   deletedAt: Date | null;
+
+  @Column({ nullable: true })
+  facebook?: string;
+
+  @Column({ nullable: true })
+  instagram?: string;
+
+  @Column({ nullable: true })
+  github?: string;
+
+  @Column({ nullable: true })
+  x?: string;
+
+  @Column({ nullable: true })
+  description?: string;
+
+  @Column({ nullable: true })
+  banner?: string;
+
+  @Column({ nullable: true })
+  walletAddress?: string;
 }

@@ -10,6 +10,7 @@ import { UserMapper } from '../mappers/user.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { infinityPagination } from '../../../../../utils/infinity-pagination';
 import { InfinityPaginationResponseDto } from '../../../../../utils/dto/infinity-pagination-response.dto';
+import { UpdateProfileDto } from '../../../../dto/update-profile.dto';
 
 @Injectable()
 export class UsersRelationalRepository implements UserRepository {
@@ -116,5 +117,25 @@ export class UsersRelationalRepository implements UserRepository {
 
   async remove(id: User['id']): Promise<void> {
     await this.usersRepository.softDelete(id);
+  }
+
+  async updateProfile(
+    id: User['id'],
+    payload: UpdateProfileDto,
+  ): Promise<void> {
+    const entity = await this.usersRepository.findOne({
+      where: { id },
+    });
+    if (!entity) {
+      throw new Error('User not found');
+    }
+    await this.usersRepository.save(
+      this.usersRepository.create(
+        UserMapper.toPersistence({
+          ...UserMapper.toDomain(entity),
+          ...payload,
+        }),
+      ),
+    );
   }
 }

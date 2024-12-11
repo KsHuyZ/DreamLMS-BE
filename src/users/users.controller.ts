@@ -11,9 +11,9 @@ import {
   HttpStatus,
   HttpCode,
   SerializeOptions,
+  Request,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -21,8 +21,6 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { Roles } from '../roles/roles.decorator';
-import { RoleEnum } from '../roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
 
 import {
@@ -33,10 +31,9 @@ import { NullableType } from '../utils/types/nullable.type';
 import { QueryUserDto } from './dto/query-user.dto';
 import { User } from './domain/user';
 import { UsersService } from './users.service';
-import { RolesGuard } from '../roles/roles.guard';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 @ApiBearerAuth()
-@Roles(RoleEnum.ADMIN)
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+@UseGuards(AuthGuard('jwt'))
 @ApiTags('Users')
 @Controller({
   path: 'users',
@@ -84,6 +81,17 @@ export class UsersController {
     });
   }
 
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  @SerializeOptions({
+    groups: ['me'],
+  })
+  @HttpCode(HttpStatus.OK)
+  getMe(@Request() request): Promise<NullableType<User>> {
+    const id = request.user.id;
+    return this.usersService.findById(id);
+  }
+
   @ApiOkResponse({
     type: User,
   })
@@ -107,18 +115,14 @@ export class UsersController {
   @SerializeOptions({
     groups: ['admin'],
   })
-  @Patch(':id')
+  @Patch()
   @HttpCode(HttpStatus.OK)
-  @ApiParam({
-    name: 'id',
-    type: String,
-    required: true,
-  })
   update(
-    @Param('id') id: User['id'],
-    @Body() updateProfileDto: UpdateUserDto,
-  ): Promise<User | null> {
-    return this.usersService.update(id, updateProfileDto);
+    @Request() request,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ): Promise<void> {
+    const id = request.user.id;
+    return this.usersService.updateProfile(id, updateProfileDto);
   }
 
   @Delete(':id')

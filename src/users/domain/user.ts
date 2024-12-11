@@ -76,4 +76,25 @@ export class User {
 
   @ApiResponseProperty()
   deletedAt: Date | null;
+
+  @ApiResponseProperty()
+  facebook?: string;
+
+  @ApiResponseProperty()
+  instagram?: string;
+
+  @ApiResponseProperty()
+  github?: string;
+
+  @ApiResponseProperty()
+  x?: string;
+
+  @ApiResponseProperty()
+  description?: string;
+
+  @ApiResponseProperty()
+  banner?: string;
+
+  @ApiResponseProperty()
+  walletAddress?: string;
 }

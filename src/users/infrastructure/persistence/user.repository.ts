@@ -5,6 +5,7 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { User } from '../../domain/user';
 
 import { FilterUserDto, SortUserDto } from '../../dto/query-user.dto';
+import { UpdateProfileDto } from '../../dto/update-profile.dto';
 
 export abstract class UserRepository {
   abstract create(
@@ -40,4 +41,9 @@ export abstract class UserRepository {
   ): Promise<User | null>;
 
   abstract remove(id: User['id']): Promise<void>;
+
+  abstract updateProfile(
+    id: User['id'],
+    payload: UpdateProfileDto,
+  ): Promise<void>;
 }

@@ -13,6 +13,7 @@ import { AuthProvidersEnum } from '../auth/auth-providers.enum';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { DeepPartial } from '../utils/types/deep-partial.type';
 import { InfinityPaginationResponseDto } from '../utils/dto/infinity-pagination-response.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -116,5 +117,9 @@ export class UsersService {
 
   async remove(id: User['id']): Promise<void> {
     await this.usersRepository.remove(id);
+  }
+
+  updateProfile(id: User['id'], payload: UpdateProfileDto) {
+    return this.usersRepository.updateProfile(id, payload);
   }
 }
