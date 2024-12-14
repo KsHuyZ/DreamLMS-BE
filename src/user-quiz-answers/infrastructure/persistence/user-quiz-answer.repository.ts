@@ -1,4 +1,7 @@
+import { Answer } from '../../../answers/domain/answer';
+import { Question } from '../../../questions/domain/question';
 import { Quiz } from '../../../quizzes/domain/quiz';
+import { UserQuiz } from '../../../user-quizzes/domain/user-quiz';
 import { User } from '../../../users/domain/user';
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
@@ -30,5 +33,9 @@ export abstract class UserQuizAnswerRepository {
   abstract findByUserIdAndQuizId(
     userId: User['id'],
     quizId: Quiz['id'],
+  ): Promise<UserQuizAnswer[]>;
+
+  abstract createMany(
+    quizzes: { question: Question; answer: Answer; userQuiz: UserQuiz }[],
   ): Promise<UserQuizAnswer[]>;
 }

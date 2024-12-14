@@ -48,4 +48,9 @@ export class EnrollRelationalRepository implements EnrollRepository {
     });
     return entity ? EnrollMapper.toDomain(entity) : null;
   }
+  async updateCertificate(id: Enroll['id']): Promise<void> {
+    await this.enrollRepository.update(id, {
+      haveCertificate: true,
+    });
+  }
 }

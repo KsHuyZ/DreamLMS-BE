@@ -21,4 +21,8 @@ export class EnrollsService {
   findByCourseAndUserId(userId: User['id'], courseId: Course['id']) {
     return this.enrollsRepository.findByUserAndCourseId(userId, courseId);
   }
+
+  updateCertificate(id: Enroll['id']) {
+    return this.enrollsRepository.updateCertificate(id);
+  }
 }

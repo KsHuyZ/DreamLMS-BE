@@ -6,6 +6,7 @@ import authConfig from './auth/config/auth.config';
 import appConfig from './config/app.config';
 import mailConfig from './mail/config/mail.config';
 import fileConfig from './files/config/file.config';
+import certificateConfig from './certificate/config/certificate.config';
 import googleConfig from './auth-google/config/google.config';
 import path from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -46,6 +47,7 @@ import { UserVideosModule } from './user-videos/user-videos.module';
 import { UserQuizzesModule } from './user-quizzes/user-quizzes.module';
 
 import { UserQuizAnswersModule } from './user-quiz-answers/user-quiz-answers.module';
+import { CertificateModule } from './certificate/certificate.module';
 
 @Module({
   imports: [
@@ -70,6 +72,7 @@ import { UserQuizAnswersModule } from './user-quiz-answers/user-quiz-answers.mod
     }),
     PaymentsModule,
     StripeModule,
+    CertificateModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
@@ -79,6 +82,7 @@ import { UserQuizAnswersModule } from './user-quiz-answers/user-quiz-answers.mod
         mailConfig,
         fileConfig,
         googleConfig,
+        certificateConfig,
       ],
       envFilePath: ['.env'],
     }),

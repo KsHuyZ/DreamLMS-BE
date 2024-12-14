@@ -93,20 +93,16 @@ export class QuizzesService {
     });
 
     if (score > 50) {
-      const promise = submitQuizDto.map((quiz) => {
+      const userAnswerLists = submitQuizDto.map((quiz) => {
         const question = new Question();
         question.id = quiz.questionId;
+        const answer = new Answer();
         if (quiz.answerId) {
-          const answer = new Answer();
           answer.id = quiz.answerId;
-          return this.userQuizAnswersService.create({
-            userQuiz,
-            question,
-            answer,
-          });
         }
+        return { question, answer, userQuiz };
       });
-      await Promise.all(promise);
+      await this.userQuizAnswersService.createMany(userAnswerLists);
     }
 
     return score;

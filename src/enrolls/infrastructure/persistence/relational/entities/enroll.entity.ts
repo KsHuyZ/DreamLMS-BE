@@ -4,6 +4,7 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
@@ -43,4 +44,7 @@ export class EnrollEntity extends EntityRelationalHelper {
   @ApiProperty()
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column({ default: false })
+  haveCertificate?: boolean;
 }
