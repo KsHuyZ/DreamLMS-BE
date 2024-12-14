@@ -12,4 +12,6 @@ export abstract class EnrollRepository {
     userId: User['id'],
     courseId: Course['id'],
   ): Promise<NullableType<Enroll>>;
+
+  abstract updateCertificate(id: Enroll['id']): Promise<void>;
 }

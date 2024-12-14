@@ -172,10 +172,11 @@ export class CoursesService {
       await this.userVideoService.countByUserIdAndCourseId(userId, id);
     const completedQuizzes =
       await this.userQuizzesService.countByUserIdAndCourseId(userId, id);
+    const enroll = await this.enrollsService.findByCourseAndUserId(userId, id);
     const totalTasks = totalVideos + totalQuizzes;
     const completedTasks = completedVideos + completedQuizzes;
     const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-    return { ...course, progress };
+    return { ...course, progress, haveCertificate: enroll?.haveCertificate };
   }
 
   async findCourseByGuest(

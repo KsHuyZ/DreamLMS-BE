@@ -9,6 +9,7 @@ export class EnrollMapper {
     domainEntity.id = raw.id;
     domainEntity.user = raw.user;
     domainEntity.course = raw.course;
+    domainEntity.haveCertificate = raw.haveCertificate;
     return domainEntity;
   }
 
@@ -21,6 +22,7 @@ export class EnrollMapper {
     const course = new CourseEntity();
     course.id = domainEntity.course.id;
     persistenceEntity.course = course;
+    persistenceEntity.haveCertificate = domainEntity.haveCertificate;
     return persistenceEntity;
   }
 }
