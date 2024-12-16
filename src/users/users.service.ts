@@ -122,4 +122,8 @@ export class UsersService {
   updateProfile(id: User['id'], payload: UpdateProfileDto) {
     return this.usersRepository.updateProfile(id, payload);
   }
+
+  upgradePlans(id: User['id'], diskSize: number) {
+    return this.usersRepository.upgradePlans(id, diskSize);
+  }
 }

@@ -304,7 +304,10 @@ export class CoursesController {
     @Param('id') courseId: string,
   ): Promise<Enroll> {
     const userId = request.user?.id as string;
-    return this.coursesService.enrollFreeCourse({ courseId, userId });
+    return this.coursesService.enrollFreeCourse({
+      courseId,
+      userId,
+    });
   }
 
   @ApiCreatedResponse({

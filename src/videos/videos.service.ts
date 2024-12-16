@@ -7,6 +7,7 @@ import { UploadVideoPayload } from './types/upload-video';
 import * as fs from 'fs';
 import * as path from 'path';
 import getVideoDurationInSeconds from 'get-video-duration';
+import { User } from '../users/domain/user';
 
 @Injectable()
 export class VideosService {
@@ -47,5 +48,8 @@ export class VideosService {
 
   remove(id: VideoDomain['id']) {
     return this.videoRepository.remove(id);
+  }
+  getTotalSize(userId: User['id']) {
+    return this.videoRepository.getTotalSize(userId);
   }
 }

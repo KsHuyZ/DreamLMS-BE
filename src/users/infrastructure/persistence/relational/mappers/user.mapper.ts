@@ -25,6 +25,8 @@ export class UserMapper {
     domainEntity.description = raw.description;
     domainEntity.banner = raw.banner;
     domainEntity.walletAddress = raw.walletAddress;
+    domainEntity.totalStorage = raw.totalStorage;
+    domainEntity.unit = raw.unit;
     return domainEntity;
   }
 
@@ -51,6 +53,8 @@ export class UserMapper {
     persistenceEntity.description = domainEntity.description;
     persistenceEntity.banner = domainEntity.banner;
     persistenceEntity.walletAddress = domainEntity.walletAddress;
+    persistenceEntity.totalStorage = domainEntity.totalStorage;
+    persistenceEntity.unit = domainEntity.unit;
     return persistenceEntity;
   }
 }

@@ -4,6 +4,7 @@ import { ManyToMany } from 'typeorm';
 import { Enroll } from '../../enrolls/domain/enroll';
 import { RoleEnum } from '../../roles/roles.enum';
 import { StatusEnum } from '../../statuses/statuses.enum';
+import { DiskEnum } from '../types/disk.enum';
 
 export class User {
   @ApiResponseProperty({
@@ -97,4 +98,10 @@ export class User {
 
   @ApiResponseProperty()
   walletAddress?: string;
+
+  @ApiResponseProperty()
+  totalStorage: number;
+
+  @ApiResponseProperty()
+  unit: DiskEnum;
 }

@@ -11,7 +11,13 @@ export abstract class UserRepository {
   abstract create(
     data: Omit<
       User,
-      'id' | 'createdAt' | 'deletedAt' | 'updatedAt' | 'enrolledCourses'
+      | 'id'
+      | 'createdAt'
+      | 'deletedAt'
+      | 'updatedAt'
+      | 'enrolledCourses'
+      | 'unit'
+      | 'totalStorage'
     >,
   ): Promise<User>;
 
@@ -46,4 +52,6 @@ export abstract class UserRepository {
     id: User['id'],
     payload: UpdateProfileDto,
   ): Promise<void>;
+
+  abstract upgradePlans(id: User['id'], diskSize: number): Promise<void>;
 }

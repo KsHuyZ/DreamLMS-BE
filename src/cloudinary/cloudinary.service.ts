@@ -31,4 +31,8 @@ export class CloudinaryService {
     await v2.uploader.destroy(image.publicId);
     return this.imageRepository.remove(image.id);
   }
+
+  getTotalSize(userId: string) {
+    return this.imageRepository.getTotalSize(userId);
+  }
 }

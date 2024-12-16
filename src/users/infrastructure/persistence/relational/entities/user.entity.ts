@@ -21,6 +21,7 @@ import { EnrollEntity } from '../../../../../enrolls/infrastructure/persistence/
 import { RoleEnum } from '../../../../../roles/roles.enum';
 import { StatusEnum } from '../../../../../statuses/statuses.enum';
 import { UserVideoEntity } from '../../../../../user-videos/infrastructure/persistence/relational/entities/user-video.entity';
+import { DiskEnum } from '../../../../types/disk.enum';
 
 @Entity({
   name: 'users',
@@ -153,4 +154,10 @@ export class UserEntity extends EntityRelationalHelper {
 
   @Column({ nullable: true })
   walletAddress?: string;
+
+  @Column({ default: 1 })
+  totalStorage: number;
+
+  @Column({ default: DiskEnum.GB, enum: DiskEnum })
+  unit: DiskEnum;
 }

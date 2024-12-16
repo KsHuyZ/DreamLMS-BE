@@ -6,6 +6,7 @@ import { NullableType } from '../../../../../utils/types/nullable.type';
 import { Video } from '../../../../domain/video';
 import { VideoRepository } from '../../video.repository';
 import { VideoMapper } from '../mappers/video.mapper';
+import { User } from '../../../../../users/domain/user';
 
 @Injectable()
 export class VideoRelationalRepository implements VideoRepository {
@@ -67,5 +68,12 @@ export class VideoRelationalRepository implements VideoRepository {
 
   async remove(id: Video['id']): Promise<void> {
     await this.videoRepository.delete(id);
+  }
+  getTotalSize(userId: User['id']): Promise<NullableType<number>> {
+    return this.videoRepository.sum('size', {
+      createdBy: {
+        id: userId,
+      },
+    });
   }
 }

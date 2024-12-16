@@ -5,6 +5,7 @@ import { ImageRepository } from '../image.repository';
 import { Image } from '../../domain/image';
 import { ImageEntity } from '../entities/image.entity';
 import { ImageMapper } from '../mappers/image.mapper';
+import { NullableType } from '../../../utils/types/nullable.type';
 
 @Injectable()
 export class ImageRelationalRepository implements ImageRepository {
@@ -26,6 +27,13 @@ export class ImageRelationalRepository implements ImageRepository {
   findById(id: string): Promise<Image | null> {
     return this.imageRepository.findOne({
       where: { id },
+    });
+  }
+  getTotalSize(userId: string): Promise<NullableType<number>> {
+    return this.imageRepository.sum('size', {
+      createdBy: {
+        id: userId,
+      },
     });
   }
 }

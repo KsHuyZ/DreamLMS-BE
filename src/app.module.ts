@@ -48,6 +48,7 @@ import { UserQuizzesModule } from './user-quizzes/user-quizzes.module';
 
 import { UserQuizAnswersModule } from './user-quiz-answers/user-quiz-answers.module';
 import { CertificateModule } from './certificate/certificate.module';
+import { StoragesModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { CertificateModule } from './certificate/certificate.module';
     PaymentsModule,
     StripeModule,
     CertificateModule,
+    StoragesModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [

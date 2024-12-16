@@ -1,3 +1,4 @@
+import { User } from '../../../users/domain/user';
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { Video } from '../../domain/video';
@@ -21,4 +22,6 @@ export abstract class VideoRepository {
   ): Promise<Video | null>;
 
   abstract remove(id: Video['id']): Promise<void>;
+
+  abstract getTotalSize(userId: User['id']): Promise<NullableType<number>>;
 }
