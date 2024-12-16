@@ -6,6 +6,9 @@ import { IPaginationOptions } from '../utils/types/pagination-options';
 import { UserQuizAnswer } from './domain/user-quiz-answer';
 import { User } from '../users/domain/user';
 import { Quiz } from '../quizzes/domain/quiz';
+import { Answer } from '../answers/domain/answer';
+import { UserQuiz } from '../user-quizzes/domain/user-quiz';
+import { Question } from '../questions/domain/question';
 
 @Injectable()
 export class UserQuizAnswersService {
@@ -47,5 +50,11 @@ export class UserQuizAnswersService {
 
   findByUserIdAndQuizId(userId: User['id'], quizId: Quiz['id']) {
     return this.userQuizAnswerRepository.findByUserIdAndQuizId(userId, quizId);
+  }
+
+  createMany(
+    quizzes: { question: Question; answer: Answer; userQuiz: UserQuiz }[],
+  ) {
+    return this.userQuizAnswerRepository.createMany(quizzes);
   }
 }

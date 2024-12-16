@@ -9,6 +9,9 @@ import { UserQuizAnswerMapper } from '../mappers/user-quiz-answer.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Quiz } from '../../../../../quizzes/domain/quiz';
 import { User } from '../../../../../users/domain/user';
+import { Answer } from '../../../../../answers/domain/answer';
+import { UserQuiz } from '../../../../../user-quizzes/domain/user-quiz';
+import { Question } from '../../../../../questions/domain/question';
 
 @Injectable()
 export class UserQuizAnswerRelationalRepository
@@ -95,5 +98,15 @@ export class UserQuizAnswerRelationalRepository
       relations: ['answer', 'question'],
     });
     return entities.map(UserQuizAnswerMapper.toDomain);
+  }
+
+  async createMany(
+    quizzes: { question: Question; answer: Answer; userQuiz: UserQuiz }[],
+  ): Promise<UserQuizAnswer[]> {
+    const persistenceModel = quizzes.map(UserQuizAnswerMapper.toDomain);
+    const newEntity = await this.userQuizAnswerRepository.save(
+      this.userQuizAnswerRepository.create(persistenceModel),
+    );
+    return newEntity.map(UserQuizAnswerMapper.toDomain);
   }
 }

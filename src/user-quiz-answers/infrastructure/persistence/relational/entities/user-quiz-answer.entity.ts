@@ -1,9 +1,7 @@
 import {
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,8 +20,7 @@ export class UserQuizAnswerEntity extends EntityRelationalHelper {
   id: string;
 
   @ApiProperty()
-  @OneToOne(() => UserQuizEntity, (userQuiz) => userQuiz.id)
-  @JoinColumn()
+  @ManyToOne(() => UserQuizEntity, (userQuiz) => userQuiz.id)
   userQuiz: UserQuizEntity;
 
   @ApiProperty()
