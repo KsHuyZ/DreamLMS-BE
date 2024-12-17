@@ -47,6 +47,7 @@ import { UserVideosModule } from './user-videos/user-videos.module';
 import { UserQuizzesModule } from './user-quizzes/user-quizzes.module';
 
 import { UserQuizAnswersModule } from './user-quiz-answers/user-quiz-answers.module';
+import { CertificateModule } from './certificate/certificate.module';
 
 @Module({
   imports: [
@@ -107,6 +108,7 @@ import { UserQuizAnswersModule } from './user-quiz-answers/user-quiz-answers.mod
       imports: [ConfigModule],
       inject: [ConfigService],
     }),
+    CertificateModule,
     UsersModule,
     AuthModule,
     AuthGoogleModule,

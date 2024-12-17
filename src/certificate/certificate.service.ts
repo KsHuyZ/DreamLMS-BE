@@ -41,23 +41,27 @@ export class CertificateService {
 
   async getCertificateByUserId(userId: string) {
     const certificates = await this.contractInstance.getResultsByUserId(userId);
+    const courseIds: string[] = certificates.map(
+      (certificate) => certificate[1],
+    );
 
-    return certificates.map((certificate) => ({
-      userId: certificate[0],
-      courseId: certificate[1],
-      timestamp: Number(certificate[3]) * 1000,
+    const courses = await this.coursesService.findManyByIds(courseIds);
+
+    return courses.map((course, index) => ({
+      course,
+      timestamp: Number(certificates[index][2]) * 1000,
     }));
   }
 
   async getCertificateByCourseId(courseId: string) {
     const certificates =
       await this.contractInstance.getResultsByCourseId(courseId);
-
     return certificates.map((certificate) => ({
       userId: certificate[0],
       courseId: certificate[1],
       timestamp: Number(certificate[3]) * 1000,
     }));
+    return;
   }
 
   async getCertificateByUserIdAndCourseId(userId: string, courseId: string) {

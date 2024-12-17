@@ -342,4 +342,8 @@ export class CoursesService {
     }
     return this.paymentsService.createPaymentIntent(course, userId);
   }
+
+  findManyByIds = (ids: string[]) => {
+    return this.coursesRepository.findByIds(ids);
+  };
 }

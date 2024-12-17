@@ -12,8 +12,8 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller({ path: 'certificate', version: '1' })
 export class CertificateController {
   constructor(private certificateService: CertificateService) {}
-  @Get('course/:id')
-  getCertificateByCourse(@Param(':id') courseId: string) {
+  @Get(':courseId')
+  getCertificateByCourse(@Param(':courseId') courseId: string) {
     return this.certificateService.getCertificateByCourseId(courseId);
   }
 

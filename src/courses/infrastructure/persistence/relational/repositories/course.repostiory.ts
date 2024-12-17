@@ -165,6 +165,7 @@ export class CoursesRelationalRepository implements CourseRepository {
   async findByIds(ids: Course['id'][]): Promise<Course[]> {
     const entities = await this.coursesRepository.find({
       where: { id: In(ids) },
+      relations: ['image'],
     });
     return entities.map(CourseMapper.toDomain);
   }
