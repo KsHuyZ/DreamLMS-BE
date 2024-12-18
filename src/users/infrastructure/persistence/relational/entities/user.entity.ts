@@ -11,8 +11,10 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  JoinColumn,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,6 +24,7 @@ import { RoleEnum } from '../../../../../roles/roles.enum';
 import { StatusEnum } from '../../../../../statuses/statuses.enum';
 import { UserVideoEntity } from '../../../../../user-videos/infrastructure/persistence/relational/entities/user-video.entity';
 import { DiskEnum } from '../../../../types/disk.enum';
+import { CartEntity } from '../../../../../carts/infrastructure/persistence/relational/entities/cart.entity';
 
 @Entity({
   name: 'users',
@@ -160,4 +163,8 @@ export class UserEntity extends EntityRelationalHelper {
 
   @Column({ default: DiskEnum.GB, enum: DiskEnum })
   unit: DiskEnum;
+
+  @OneToOne(() => CartEntity, (cart) => cart.user, { cascade: true })
+  @JoinColumn()
+  cart: CartEntity;
 }

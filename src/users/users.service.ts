@@ -14,15 +14,23 @@ import { IPaginationOptions } from '../utils/types/pagination-options';
 import { DeepPartial } from '../utils/types/deep-partial.type';
 import { InfinityPaginationResponseDto } from '../utils/dto/infinity-pagination-response.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { CartsService } from '../carts/carts.service';
+import { Cart } from '../carts/domain/cart';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UserRepository) {}
+  constructor(
+    private readonly usersRepository: UserRepository,
+    private readonly cartsService: CartsService,
+  ) {}
 
+  @Transactional()
   async create(createProfileDto: CreateUserDto): Promise<User> {
     const clonedPayload = {
       provider: AuthProvidersEnum.email,
       ...createProfileDto,
+      cart: new Cart(),
     };
 
     if (clonedPayload.password) {
@@ -43,7 +51,9 @@ export class UsersService {
         });
       }
     }
-    return this.usersRepository.create(clonedPayload);
+    const user = await this.usersRepository.create(clonedPayload);
+    await this.cartsService.create({ userId: user.id });
+    return user;
   }
 
   findManyWithPagination({

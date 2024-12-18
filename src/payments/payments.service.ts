@@ -23,6 +23,19 @@ export class PaymentsService {
     });
   }
 
+  createPaymentCartIntent(cartId: string, amount: number, currency = 'usd') {
+    return this.stripeClient.paymentIntents.create({
+      amount: amount * 100,
+      currency,
+      confirm: false,
+      payment_method_types: ['card'],
+      metadata: {
+        cartId,
+        type: Payment.PayCart,
+      },
+    });
+  }
+
   createPaymentUpgradePlans(
     plan: Plan,
     userId: string,

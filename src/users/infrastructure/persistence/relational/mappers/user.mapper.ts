@@ -1,3 +1,4 @@
+import { CartEntity } from '../../../../../carts/infrastructure/persistence/relational/entities/cart.entity';
 import { User } from '../../../../domain/user';
 import { UserEntity } from '../entities/user.entity';
 
@@ -27,6 +28,7 @@ export class UserMapper {
     domainEntity.walletAddress = raw.walletAddress;
     domainEntity.totalStorage = raw.totalStorage;
     domainEntity.unit = raw.unit;
+    domainEntity.cart = raw.cart;
     return domainEntity;
   }
 
@@ -55,6 +57,11 @@ export class UserMapper {
     persistenceEntity.walletAddress = domainEntity.walletAddress;
     persistenceEntity.totalStorage = domainEntity.totalStorage;
     persistenceEntity.unit = domainEntity.unit;
+    if (domainEntity.cart && domainEntity.cart.id) {
+      const cartEntity = new CartEntity();
+      cartEntity.id = domainEntity.cart.id;
+      persistenceEntity.cart = cartEntity;
+    }
     return persistenceEntity;
   }
 }

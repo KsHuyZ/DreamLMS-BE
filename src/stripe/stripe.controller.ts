@@ -16,15 +16,21 @@ export class StripeController {
     if (event.type !== 'payment_intent.succeeded') return;
     const metadata = event.data.object.metadata;
     const type = metadata.type as Payment;
+    console.log(type);
     switch (type) {
       case Payment.PayCourse: {
         const { courseId, userId } = metadata;
         return this.stripeService.paymentCourseSuccess(courseId, userId);
       }
-      case Payment.UpgradePlans:
+      case Payment.UpgradePlans: {
         const { userId } = metadata;
         const plans = metadata.plan as Plan;
         return this.stripeService.upgradePlans(userId, plans);
+      }
+      case Payment.PayCart: {
+        const { cartId } = metadata;
+        return this.stripeService.payCartSuccess(cartId);
+      }
     }
 
     // Update database or send email

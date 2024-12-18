@@ -53,4 +53,11 @@ export class EnrollRelationalRepository implements EnrollRepository {
       haveCertificate: true,
     });
   }
+  async enrollCourses(data: Omit<Enroll, 'id'>[]): Promise<Enroll[]> {
+    const persistenceModel = data.map(EnrollMapper.toPersistence);
+    const newEntity = await this.enrollRepository.save(
+      this.enrollRepository.create(persistenceModel),
+    );
+    return newEntity.map(EnrollMapper.toDomain);
+  }
 }

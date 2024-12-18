@@ -61,7 +61,6 @@ export class CertificateService {
       courseId: certificate[1],
       timestamp: Number(certificate[3]) * 1000,
     }));
-    return;
   }
 
   async getCertificateByUserIdAndCourseId(userId: string, courseId: string) {

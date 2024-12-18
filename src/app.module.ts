@@ -49,8 +49,14 @@ import { UserQuizzesModule } from './user-quizzes/user-quizzes.module';
 import { UserQuizAnswersModule } from './user-quiz-answers/user-quiz-answers.module';
 import { CertificateModule } from './certificate/certificate.module';
 
+import { CartsModule } from './carts/carts.module';
+
+import { CartItemsModule } from './cart-items/cart-items.module';
+
 @Module({
   imports: [
+    CartItemsModule,
+    CartsModule,
     UserQuizAnswersModule,
     UserQuizzesModule,
     UserVideosModule,

@@ -5,6 +5,7 @@ import { Enroll } from '../../enrolls/domain/enroll';
 import { RoleEnum } from '../../roles/roles.enum';
 import { StatusEnum } from '../../statuses/statuses.enum';
 import { DiskEnum } from '../types/disk.enum';
+import { Cart } from '../../carts/domain/cart';
 
 export class User {
   @ApiResponseProperty({
@@ -104,4 +105,7 @@ export class User {
 
   @ApiResponseProperty()
   unit: DiskEnum;
+
+  // @ApiResponseProperty()
+  cart: Cart;
 }

@@ -3,6 +3,7 @@ import { User } from '../domain/user';
 import { IsDate, IsString } from 'class-validator';
 import { EnrollDto } from '../../enrolls/dto/enroll.dto';
 import { DiskEnum } from '../types/disk.enum';
+import { Cart } from '../../carts/domain/cart';
 
 export class UserDto implements User {
   @ApiProperty()
@@ -45,4 +46,7 @@ export class UserDto implements User {
 
   @ApiProperty()
   unit: DiskEnum;
+
+  // @ApiProperty()
+  cart: Cart;
 }

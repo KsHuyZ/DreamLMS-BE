@@ -5,9 +5,18 @@ import { StripeController } from './stripe.controller';
 import { UsersModule } from '../users/users.module';
 import { EnrollsModule } from '../enrolls/enrolls.module';
 import { StoragesModule } from '../storage/storage.module';
+import { CartsModule } from '../carts/carts.module';
+import { CartItemsModule } from '../cart-items/cart-items.module';
 
 @Module({
-  imports: [CoursesModule, UsersModule, EnrollsModule, StoragesModule],
+  imports: [
+    CoursesModule,
+    UsersModule,
+    EnrollsModule,
+    StoragesModule,
+    CartsModule,
+    CartItemsModule,
+  ],
   controllers: [StripeController],
   providers: [StripeService],
   exports: [StripeService],

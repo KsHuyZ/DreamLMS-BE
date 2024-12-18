@@ -14,6 +14,10 @@ export class EnrollsService {
     return this.enrollsRepository.enrollCourse(createEnrollDto);
   }
 
+  enrollCourses(payload: CreateEnrollDto[]): Promise<Enroll[]> {
+    return this.enrollsRepository.enrollCourses(payload);
+  }
+
   findById(id: Enroll['id']): Promise<NullableType<Enroll>> {
     return this.enrollsRepository.findById(id);
   }
