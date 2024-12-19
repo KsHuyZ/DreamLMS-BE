@@ -20,7 +20,7 @@ export class UserVideosService {
     const { userId, videoId } = createUserVideoDto;
     const user = await this.usersService.findById(userId);
     if (!user) throw new BadRequestException('User not found');
-    const video = await this.lessonVideoService.findOne(videoId);
+    const video = await this.lessonVideoService.findByVideoId(videoId);
     if (!video) throw new BadRequestException('Video not found');
     const userVideo = await this.userVideoRepository.findByUserIdAndVideoId(
       userId,

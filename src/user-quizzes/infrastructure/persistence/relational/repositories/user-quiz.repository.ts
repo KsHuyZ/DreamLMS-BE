@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import { UserQuizEntity } from '../entities/user-quiz.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { UserQuiz } from '../../../../domain/user-quiz';
@@ -112,7 +112,7 @@ export class UserQuizRelationalRepository implements UserQuizRepository {
             },
           },
         },
-        score: MoreThan(50),
+        score: MoreThanOrEqual(50),
         isCompleted: true,
       },
       relations: ['quiz'],
@@ -134,7 +134,7 @@ export class UserQuizRelationalRepository implements UserQuizRepository {
             },
           },
         },
-        score: MoreThan(50),
+        score: MoreThanOrEqual(50),
         isCompleted: true,
       },
       relations: ['quiz'],

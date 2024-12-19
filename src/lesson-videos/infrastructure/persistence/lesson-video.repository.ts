@@ -22,4 +22,6 @@ export abstract class LessonVideoRepository {
   ): Promise<LessonVideo | null>;
 
   abstract remove(id: LessonVideo['id']): Promise<void>;
+
+  abstract findByVideoId(videoId: string): Promise<NullableType<LessonVideo>>;
 }

@@ -32,7 +32,7 @@ export class UserVideosController {
   @ApiCreatedResponse({
     type: UserVideo,
   })
-  create(@Param(':videoId') videoId: string, @Request() request) {
+  create(@Param('videoId') videoId: string, @Request() request) {
     const userId = request.user?.id;
     return this.userVideosService.create({ videoId, userId });
   }

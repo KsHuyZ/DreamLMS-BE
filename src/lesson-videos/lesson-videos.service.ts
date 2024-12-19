@@ -70,6 +70,10 @@ export class LessonVideosService {
     });
   }
 
+  findByVideoId(videoId: Video['id']) {
+    return this.lessonVideoRepository.findByVideoId(videoId);
+  }
+
   findOne(id: LessonVideo['id']) {
     return this.lessonVideoRepository.findById(id);
   }

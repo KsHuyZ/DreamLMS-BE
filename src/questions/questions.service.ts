@@ -22,6 +22,7 @@ export class QuestionsService {
   async findByQuizIdResult(id: Quiz['id'], userId: User['id']) {
     const userQuizAnswers =
       await this.userQuizAnswerService.findByUserIdAndQuizId(userId, id);
+    console.log({ userQuizAnswers });
     const questions = await this.questionRepository.findByQuizId(id);
     return questions.map((question) => {
       const answers = question.answers.map((answer) => ({

@@ -71,4 +71,13 @@ export class LessonVideoRelationalRepository implements LessonVideoRepository {
   async remove(id: LessonVideo['id']): Promise<void> {
     await this.lessonVideoRepository.delete(id);
   }
+  findByVideoId(videoId: string): Promise<NullableType<LessonVideo>> {
+    return this.lessonVideoRepository.findOne({
+      where: {
+        video: {
+          id: videoId,
+        },
+      },
+    });
+  }
 }

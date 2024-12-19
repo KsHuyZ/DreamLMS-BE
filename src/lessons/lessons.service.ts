@@ -44,6 +44,8 @@ export class LessonsService {
   async findByCourseLearn(id: string, userId: string) {
     const lessons = await this.lessonRepository.findByCourseId(id);
 
+    console.log('lessons:', lessons);
+
     const completedVideos =
       await this.userVideosService.findByUserIdAndCourseId(userId, id);
 

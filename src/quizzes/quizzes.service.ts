@@ -92,7 +92,7 @@ export class QuizzesService {
       isCompleted: true,
     });
 
-    if (score > 50) {
+    if (score >= 50) {
       const userAnswerLists = submitQuizDto.map((quiz) => {
         const question = new Question();
         question.id = quiz.questionId;
