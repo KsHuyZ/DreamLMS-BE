@@ -33,6 +33,7 @@ import { PaymentsService } from '../payments/payments.service';
 import { UserVideosService } from '../user-videos/user-videos.service';
 import { CourseLearningDto } from './dto/course-learning.dto';
 import { UserQuizzesService } from '../user-quizzes/user-quizzes.service';
+import { CartsService } from '../carts/carts.service';
 
 @Injectable()
 export class CoursesService {
@@ -47,6 +48,7 @@ export class CoursesService {
     private readonly paymentsService: PaymentsService,
     private readonly userVideoService: UserVideosService,
     private readonly userQuizzesService: UserQuizzesService,
+    private readonly cartsService: CartsService,
   ) {}
 
   @Transactional()
@@ -184,15 +186,21 @@ export class CoursesService {
     userId?: User['id'],
   ): Promise<NullableType<CourseGuestDto>> {
     let isEnrolled = false;
+    let alreadyCart = false;
     if (userId) {
       const enroll = await this.enrollsService.findByCourseAndUserId(
         userId,
         id,
       );
+      const cart = await this.cartsService.findCartItemsByUserIdAndCourseId(
+        userId,
+        id,
+      );
       isEnrolled = !!enroll;
+      alreadyCart = !!cart;
     }
     const course = await this.coursesRepository.findCourseByGuest(id);
-    return course ? { ...course, isEnrolled } : null;
+    return course ? { ...course, isEnrolled, alreadyCart } : null;
   }
 
   @Transactional()

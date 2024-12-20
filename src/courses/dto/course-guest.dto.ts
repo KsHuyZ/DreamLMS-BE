@@ -11,4 +11,8 @@ export class CourseGuestDto extends CourseDto {
   @ApiProperty()
   @IsOptional()
   isEnrolled?: boolean;
+
+  @ApiProperty()
+  @IsOptional()
+  alreadyCart?: boolean;
 }

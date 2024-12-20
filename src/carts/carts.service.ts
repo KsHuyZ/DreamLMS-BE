@@ -11,6 +11,7 @@ import { Cart } from './domain/cart';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/domain/user';
 import { PaymentsService } from '../payments/payments.service';
+import { Course } from '../courses/domain/course';
 
 @Injectable()
 export class CartsService {
@@ -51,6 +52,10 @@ export class CartsService {
 
   remove(id: Cart['id']) {
     return this.cartRepository.remove(id);
+  }
+
+  findCartItemsByUserIdAndCourseId(userId: User['id'], course: Course['id']) {
+    return this.cartRepository.findCartItemByUserIdAndCourseId(userId, course);
   }
 
   async payCart(userId: User['id']) {

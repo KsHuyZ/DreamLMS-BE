@@ -25,4 +25,9 @@ export abstract class CartRepository {
   abstract remove(id: Cart['id']): Promise<void>;
 
   abstract findByUserId(id: User['id']): Promise<NullableType<Cart>>;
+
+  abstract findCartItemByUserIdAndCourseId(
+    userId: User['id'],
+    courseId: string,
+  ): Promise<NullableType<Cart>>;
 }

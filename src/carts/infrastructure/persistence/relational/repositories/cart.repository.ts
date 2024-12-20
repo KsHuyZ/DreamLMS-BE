@@ -86,4 +86,22 @@ export class CartRelationalRepository implements CartRepository {
       relations: ['cartItems.course.image', 'cartItems.course.createdBy'],
     });
   }
+  findCartItemByUserIdAndCourseId(
+    userId: User['id'],
+    courseId: string,
+  ): Promise<NullableType<Cart>> {
+    return this.cartRepository.findOne({
+      where: {
+        user: {
+          id: userId,
+        },
+        cartItems: {
+          course: {
+            id: courseId,
+          },
+        },
+      },
+      relations: ['cartItems.course', 'cartItems.course'],
+    });
+  }
 }
