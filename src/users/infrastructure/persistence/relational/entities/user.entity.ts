@@ -25,6 +25,7 @@ import { StatusEnum } from '../../../../../statuses/statuses.enum';
 import { UserVideoEntity } from '../../../../../user-videos/infrastructure/persistence/relational/entities/user-video.entity';
 import { DiskEnum } from '../../../../types/disk.enum';
 import { CartEntity } from '../../../../../carts/infrastructure/persistence/relational/entities/cart.entity';
+import { RateEntity } from '../../../../../rates/infrastructure/persistence/relational/entities/rate.entity';
 
 @Entity({
   name: 'users',
@@ -167,4 +168,7 @@ export class UserEntity extends EntityRelationalHelper {
   @OneToOne(() => CartEntity, (cart) => cart.user, { cascade: true })
   @JoinColumn()
   cart: CartEntity;
+
+  @OneToMany(() => RateEntity, (rate) => rate.user)
+  rates: RateEntity[];
 }

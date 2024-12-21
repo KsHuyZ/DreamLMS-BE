@@ -5,7 +5,7 @@ import { RelatedCourseRepository } from './infrastructure/persistence/related-co
 import { RelatedCourse } from './domain/related-course';
 
 @Injectable()
-export class UsersService {
+export class RelatedCoursesService {
   constructor(
     private readonly relatedCoursesRepository: RelatedCourseRepository,
   ) {}

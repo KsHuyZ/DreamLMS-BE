@@ -53,8 +53,11 @@ import { CartsModule } from './carts/carts.module';
 
 import { CartItemsModule } from './cart-items/cart-items.module';
 
+import { RatesModule } from './rates/rates.module';
+
 @Module({
   imports: [
+    RatesModule,
     CartItemsModule,
     CartsModule,
     UserQuizAnswersModule,

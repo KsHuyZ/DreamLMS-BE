@@ -27,6 +27,7 @@ import { TagEntity } from '../../../../../tags/persistence/entities/tag.entity';
 import { CategoryEntity } from '../../../../../categories/persistence/entities/category.entity';
 import { ImageEntity } from '../../../../../cloudinary/persistence/entities/image.entity';
 import { CourseVideoEntity } from '../../../../../course-videos/infrastructure/persistence/relational/entities/course-video.entity';
+import { RateEntity } from '../../../../../rates/infrastructure/persistence/relational/entities/rate.entity';
 
 @Entity({
   name: 'courses',
@@ -140,6 +141,10 @@ export class CourseEntity extends EntityRelationalHelper {
     },
   })
   categories: CategoryEntity[];
+
+  @ApiResponseProperty()
+  @OneToMany(() => RateEntity, (rate) => rate.course)
+  rates: RateEntity[];
 
   @ApiProperty()
   @CreateDateColumn()
