@@ -1,8 +1,10 @@
 import {
   BadRequestException,
   ForbiddenException,
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -44,6 +46,7 @@ export class CoursesService {
     private readonly categoriesService: CategoriesService,
     private readonly userService: UsersService,
     private readonly courseVideoService: CourseVideosService,
+    @Inject(forwardRef(() => EnrollsService))
     private readonly enrollsService: EnrollsService,
     private readonly paymentsService: PaymentsService,
     private readonly userVideoService: UserVideosService,
@@ -179,6 +182,26 @@ export class CoursesService {
     const completedTasks = completedVideos + completedQuizzes;
     const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
     return { ...course, progress, haveCertificate: enroll?.haveCertificate };
+  }
+
+  async getCourseProgress(courseId: Course['id'], userId: User['id']) {
+    const course = await this.coursesRepository.findCourseByGuest(courseId);
+    if (!course) return 0;
+    const totalVideos =
+      course.lessons.reduce((acc, lesson) => acc + lesson.videos.length, 0) ??
+      0;
+    const totalQuizzes =
+      course.lessons.reduce((acc, lesson) => acc + lesson.quizzes.length, 0) ??
+      0;
+    const completedVideos =
+      await this.userVideoService.countByUserIdAndCourseId(userId, courseId);
+    const completedQuizzes =
+      await this.userQuizzesService.countByUserIdAndCourseId(userId, courseId);
+    const totalTasks = totalVideos + totalQuizzes;
+    const completedTasks = completedVideos + completedQuizzes;
+
+    const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+    return progress;
   }
 
   async findCourseByGuest(

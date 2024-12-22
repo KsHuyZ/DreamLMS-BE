@@ -60,4 +60,19 @@ export class EnrollRelationalRepository implements EnrollRepository {
     );
     return newEntity.map(EnrollMapper.toDomain);
   }
+
+  async findByUserId(id: User['id']): Promise<Enroll[]> {
+    const entities = await this.enrollRepository.find({
+      where: {
+        user: {
+          id,
+        },
+      },
+      order: {
+        createdAt: -1,
+      },
+      relations: ['course.image', 'course.createdBy'],
+    });
+    return entities.map(EnrollMapper.toDomain);
+  }
 }

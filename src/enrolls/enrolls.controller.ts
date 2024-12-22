@@ -19,13 +19,23 @@ import { NullableType } from '../utils/types/nullable.type';
   path: 'enrolls',
   version: '1',
 })
+@UseGuards(AuthGuard('jwt'))
 export class EnrollsController {
   constructor(private readonly enrollsService: EnrollsService) {}
 
   @ApiOkResponse({
     type: Enroll,
   })
-  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  findByUserId(@Request() request) {
+    const userId = request.user.id as string;
+    return this.enrollsService.findByUserId(userId);
+  }
+  @Get()
+  @ApiOkResponse({
+    type: Enroll,
+  })
   @Get(':courseId')
   @HttpCode(HttpStatus.FOUND)
   create(

@@ -16,4 +16,6 @@ export abstract class EnrollRepository {
   ): Promise<NullableType<Enroll>>;
 
   abstract updateCertificate(id: Enroll['id']): Promise<void>;
+
+  abstract findByUserId(userId: User['id']): Promise<Enroll[]>;
 }

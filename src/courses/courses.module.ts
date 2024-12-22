@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 import { CoursesController } from './courses.controller';
 
@@ -22,7 +22,7 @@ import { CartsModule } from '../carts/carts.module';
     CategoriesModule,
     UsersModule,
     CourseVideosModule,
-    EnrollsModule,
+    forwardRef(() => EnrollsModule),
     PaymentsModule,
     UserVideosModule,
     UserQuizzesModule,
