@@ -66,4 +66,8 @@ export class CourseDto implements Course {
   @ApiProperty()
   @IsDate()
   deletedAt: Date;
+
+  @ApiProperty()
+  @IsNumber()
+  ethPrice?: number | undefined;
 }

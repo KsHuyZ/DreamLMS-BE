@@ -29,6 +29,7 @@ export class CourseMapper {
     course.tags = raw.tags;
     course.categories = raw.categories;
     course.courseVideo = raw.courseVideo;
+    course.ethPrice = raw.ethPrice;
     return course;
   }
 
@@ -84,6 +85,7 @@ export class CourseMapper {
       courseVideoEntity.id = course.courseVideo.id;
       courseEntity.courseVideo = courseVideoEntity;
     }
+    courseEntity.ethPrice = course.ethPrice;
 
     return courseEntity;
   }

@@ -7,6 +7,7 @@ import appConfig from './config/app.config';
 import mailConfig from './mail/config/mail.config';
 import fileConfig from './files/config/file.config';
 import certificateConfig from './certificate/config/certificate.config';
+import enrollConfig from './enrolls/config/enroll.config';
 import googleConfig from './auth-google/config/google.config';
 import path from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -91,6 +92,7 @@ import { RatesModule } from './rates/rates.module';
         fileConfig,
         googleConfig,
         certificateConfig,
+        enrollConfig,
       ],
       envFilePath: ['.env'],
     }),

@@ -89,4 +89,7 @@ export class Course {
 
   @ApiResponseProperty()
   categories: Category[];
+
+  @ApiResponseProperty()
+  ethPrice?: number;
 }

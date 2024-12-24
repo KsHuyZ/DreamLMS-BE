@@ -32,6 +32,16 @@ export class EnrollsController {
     const userId = request.user.id as string;
     return this.enrollsService.findByUserId(userId);
   }
+  @ApiOkResponse({
+    type: Enroll,
+  })
+  @Get('enroll-contract/:courseId')
+  @HttpCode(HttpStatus.OK)
+  enrollContract(@Request() request, @Param('courseId') courseId: string) {
+    const userId = request.user.id;
+    return this.enrollsService.checkAlreadyPay(userId, courseId);
+  }
+
   @Get()
   @ApiOkResponse({
     type: Enroll,

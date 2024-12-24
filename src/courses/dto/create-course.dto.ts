@@ -62,4 +62,9 @@ export class CreateCourseDto {
 
   @ApiProperty()
   createdBy: User;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }) => (value ? Number(value) : 0))
+  ethPrice: number;
 }

@@ -199,7 +199,6 @@ export class CoursesService {
       await this.userQuizzesService.countByUserIdAndCourseId(userId, courseId);
     const totalTasks = totalVideos + totalQuizzes;
     const completedTasks = completedVideos + completedQuizzes;
-
     const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
     return progress;
   }

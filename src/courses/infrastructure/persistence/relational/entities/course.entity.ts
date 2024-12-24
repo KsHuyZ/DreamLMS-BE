@@ -157,4 +157,8 @@ export class CourseEntity extends EntityRelationalHelper {
   @ApiResponseProperty()
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @ApiResponseProperty()
+  @Column('decimal', { nullable: true })
+  ethPrice?: number;
 }
