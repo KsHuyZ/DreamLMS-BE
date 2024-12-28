@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Like, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { TagEntity } from '../entities/tag.entity';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { TagRepository } from '../tag.repository';
@@ -27,7 +27,7 @@ export class TagRelationalRepository implements TagRepository {
   async findByName(name: Tag['name']): Promise<Tag[]> {
     const entities = await this.tagRepository.find({
       where: {
-        name: Like(`%${name}%`),
+        name: ILike(`%${name}%`),
       },
       take: 10,
     });

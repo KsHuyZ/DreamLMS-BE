@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { ECourseSort, EPayType } from '../types/course.enum';
+import { ECourseDuration, ECourseSort, EPayType } from '../types/course.enum';
 import { LevelsEnum } from '../types/levels.enum';
 
 export class FilterCourseDto {
@@ -28,7 +28,7 @@ export class FilterCourseDto {
   @ApiPropertyOptional({ type: Number })
   @IsOptional()
   @Type(() => Number)
-  duration?: number;
+  duration?: ECourseDuration[];
 }
 
 export class SortCourseDto {

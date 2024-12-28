@@ -11,7 +11,7 @@ import { CourseEntity } from '../entities/course.entity';
 import { CourseMapper } from '../mappers/course.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, FindOptionsWhere, In, Like, Not, Repository } from 'typeorm';
+import { Between, FindOptionsWhere, ILike, In, Not, Repository } from 'typeorm';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { infinityPagination } from '../../../../../utils/infinity-pagination';
 import { InfinityPaginationResponseDto } from '../../../../../utils/dto/infinity-pagination-response.dto';
@@ -23,6 +23,7 @@ import { TCourseQuery } from '../../../../types/course.enum';
 import { CourseGuestDto } from '../../../../dto/course-guest.dto';
 import { User } from '../../../../../users/domain/user';
 import { endOfMonth, startOfMonth, subMonths } from 'date-fns';
+import { mapDuration } from '../../../../utils';
 
 @Injectable()
 export class CoursesRelationalRepository implements CourseRepository {
@@ -52,17 +53,99 @@ export class CoursesRelationalRepository implements CourseRepository {
     userId?: string;
   }): Promise<InfinityPaginationResponseDto<TCourseQuery>> {
     const where: FindOptionsWhere<CourseEntity> = {
-      name: Like(`%${filterOptions?.name}%`),
+      name: ILike(`%${filterOptions?.name}%`),
       ...priceCondition(filterOptions?.payType),
       ...levelCourseMapper(filterOptions?.level),
     };
-    const [coursesEntity, total] = await this.coursesRepository.findAndCount({
-      skip: (paginationOptions.page - 1) * paginationOptions.limit,
-      take: paginationOptions.limit,
-      where: where,
-      order: mapCourseSort(sortOptions?.sortBy),
-      relations: ['image', 'createdBy', 'lessons', 'lessons.videos'],
-    });
+
+    const orderByConditions: Record<
+      string,
+      { column: string; order: 'ASC' | 'DESC' }
+    > = {
+      createdAt: { column: 'course.createdAt', order: 'DESC' },
+      avgStar: { column: 'avgStar', order: 'DESC' },
+      totalReviewed: { column: 'totalReviewed', order: 'DESC' },
+    };
+
+    const sortOption = sortOptions?.sortBy || 'createdAt'; // sortParam là tham số đầu vào (ví dụ từ query string hoặc body request)
+    const orderByCondition =
+      orderByConditions[sortOption] || orderByConditions['createdAt'];
+
+    const durations = filterOptions?.duration || [];
+
+    let durationConditions = '';
+    let durationParams = {};
+
+    if (durations.length > 0) {
+      durationConditions = durations
+        .map((duration, index) => {
+          const [, max] = mapDuration(duration);
+          if (max) {
+            return `(SUM(video.duration) BETWEEN :minDuration${index} AND :maxDuration${index})`;
+          }
+          return `(SUM(video.duration) >= :minDuration${index})`;
+        })
+        .join(' OR ');
+      durationParams = durations.reduce((params, duration, index) => {
+        const [min, max] = mapDuration(duration);
+        params[`minDuration${index}`] = min;
+        params[`maxDuration${index}`] = max;
+        return params;
+      }, {});
+    }
+    const havingConditions: string[] = [];
+    if (durationConditions) {
+      havingConditions.push(`(${durationConditions})`);
+    }
+    const query = this.coursesRepository.createQueryBuilder('course');
+    if (filterOptions?.rate) {
+      query.having('AVG(rate.star) >= :minRating', {
+        minRating: filterOptions.rate,
+      });
+    }
+    if (durationConditions && filterOptions?.rate) {
+      query.andHaving(durationConditions, durationParams);
+    } else if (!filterOptions?.rate) {
+      query.having(durationConditions, durationParams);
+    }
+
+    const [coursesEntity, total] = await query
+      .leftJoinAndSelect('course.image', 'image')
+      .leftJoinAndSelect('course.lessons', 'lessons')
+      .leftJoinAndSelect('lessons.videos', 'videos')
+      .leftJoinAndSelect('videos.video', 'video')
+      .leftJoinAndSelect('lessons.quizzes', 'quizzes')
+      .leftJoinAndSelect('course.tags', 'tags')
+      .leftJoinAndSelect('course.categories', 'categories')
+      .leftJoinAndSelect('course.rates', 'rates')
+      .leftJoinAndSelect('course.related', 'related')
+      .leftJoinAndSelect('course.createdBy', 'createdBy')
+      .leftJoin('course.rates', 'rate')
+      .select([
+        'course',
+        'image',
+        'lessons',
+        'videos',
+        'video',
+        'quizzes',
+        'tags',
+        'categories',
+        'rates',
+        'related',
+        'createdBy',
+        'AVG(rate.star) as avgStar',
+      ])
+      .addSelect('AVG(rate.star)', 'avgStar')
+      .addSelect('COUNT(rate.id)', 'totalReviewed')
+      .where(where)
+      .groupBy(
+        'course.id, image.id, lessons.id, tags.id, categories.id, rates.id, related.id, createdBy.id, videos.id, quizzes.id, video.id',
+      )
+      .skip((paginationOptions.page - 1) * paginationOptions.limit)
+      .take(paginationOptions.limit)
+      .orderBy(orderByCondition.column, orderByCondition.order)
+      .getManyAndCount();
+
     const data = coursesEntity.map((course) => ({
       ...CourseMapper.toDomain(course),
       lessons: course.lessons.length,
@@ -74,6 +157,11 @@ export class CoursesRelationalRepository implements CourseRepository {
           }, 0)
         );
       }, 0),
+      star:
+        course.rates.length > 0
+          ? course.rates.reduce((total, rate) => total + rate.star, 0) /
+            course.rates.length
+          : 0,
     }));
 
     return infinityPagination(data, {
@@ -206,7 +294,7 @@ export class CoursesRelationalRepository implements CourseRepository {
     const courses = await this.coursesRepository.find({
       where: {
         id: Not(In(ids)),
-        name: Like(`%${name}%`),
+        name: ILike(`%${name}%`),
         status: CourseStatusEnum.PUBLIC,
       },
       take: 10,

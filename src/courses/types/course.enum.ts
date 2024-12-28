@@ -13,4 +13,13 @@ export enum EPayType {
 
 export type TCourseQuery = Omit<Course, 'lessons'> & {
   lessons: number;
+  star: number;
 };
+
+export enum ECourseDuration {
+  LessThanOneHour,
+  OneToThreeHours,
+  ThreeToSixHours,
+  SixToSevenTeenHours,
+  MoreThanSevenTeenHours,
+}
