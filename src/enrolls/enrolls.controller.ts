@@ -6,6 +6,7 @@ import {
   HttpCode,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
@@ -42,7 +43,27 @@ export class EnrollsController {
     return this.enrollsService.checkAlreadyPay(userId, courseId);
   }
 
-  @Get()
+  @Get('duration')
+  @HttpCode(HttpStatus.OK)
+  getDuration(@Query('duration') duration: string, @Request() request) {
+    const userId = request.user.id;
+    return this.enrollsService.getEnrollCoursePriceDuration(duration, userId);
+  }
+
+  @Get('enroll-analyzing')
+  @HttpCode(HttpStatus.OK)
+  getTeacherEnrollAnalyzing(@Request() request) {
+    const userId: string = request.user.id;
+    return this.enrollsService.getEnrollAnalyzing(userId);
+  }
+
+  @Get('completed-analyzing')
+  @HttpCode(HttpStatus.OK)
+  getTeacherCompletedCourseAnalyzing(@Request() request) {
+    const userId: string = request.user.id;
+    return this.enrollsService.getEnrollCompletedCourse(userId);
+  }
+
   @ApiOkResponse({
     type: Enroll,
   })

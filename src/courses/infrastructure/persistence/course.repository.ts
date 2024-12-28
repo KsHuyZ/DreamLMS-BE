@@ -69,4 +69,10 @@ export abstract class CourseRepository {
   ): Promise<Course[]>;
 
   abstract findByIds(ids: Course['id'][]): Promise<Course[]>;
+
+  abstract getActiveCoursesInMonth(userId: User['id']): Promise<number>;
+  abstract getPercentActiveCourses(userId: User['id']): Promise<number>;
+
+  abstract getTotalCourseInMonth(userId: string): Promise<number>;
+  abstract getTotalCourseLastMonth(userId: string): Promise<number>;
 }

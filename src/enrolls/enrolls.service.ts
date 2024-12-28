@@ -70,14 +70,16 @@ export class EnrollsService {
 
   async findByUserId(id: User['id']) {
     const enrolls = await this.enrollsRepository.findByUserId(id);
-    return enrolls.map(async (enroll) => {
-      const courseId = enroll.course.id;
-      const progress = await this.coursesService.getCourseProgress(
-        courseId,
-        id,
-      );
-      return { ...enroll.course, progress };
-    });
+    return Promise.all(
+      enrolls.map(async (enroll) => {
+        const courseId = enroll.course.id;
+        const progress = await this.coursesService.getCourseProgress(
+          courseId,
+          id,
+        );
+        return { ...enroll.course, progress };
+      }),
+    );
   }
 
   async checkAlreadyPay(userId: User['id'], courseId: Course['id']) {
@@ -90,5 +92,39 @@ export class EnrollsService {
     const user = await this.usersService.findById(userId);
     if (!user) throw new BadRequestException('User not found!');
     return this.enrollsRepository.enrollCourse({ course, user });
+  }
+
+  getEnrollCoursePriceDuration(duration: string, userId: string) {
+    if (duration === 'day') {
+      return this.enrollsRepository.getTotalEnrolledCoursePriceByDay(userId);
+    }
+    if (duration === 'week') {
+      return this.enrollsRepository.getTotalEnrolledCoursePriceByWeek(userId);
+    }
+    return this.enrollsRepository.getTotalEnrolledCoursePriceByDayInMonth(
+      userId,
+    );
+  }
+
+  async getEnrollAnalyzing(userId: User['id']) {
+    const total =
+      await this.enrollsRepository.getEnrolledCourseByTeacher(userId);
+    const percentage =
+      await this.enrollsRepository.getEnrolledLastMonthByTeacher(userId);
+    return {
+      total,
+      percentage,
+    };
+  }
+
+  async getEnrollCompletedCourse(userId: User['id']) {
+    const total =
+      await this.enrollsRepository.getCompletedCourseInMonth(userId);
+    const percentage =
+      await this.enrollsRepository.getAnalyzingCompletedCourse(userId);
+    return {
+      total,
+      percentage,
+    };
   }
 }

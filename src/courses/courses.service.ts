@@ -376,4 +376,24 @@ export class CoursesService {
   findManyByIds = (ids: string[]) => {
     return this.coursesRepository.findByIds(ids);
   };
+
+  async getAnalyzingActiveCourse(userId: User['id']) {
+    const total = await this.coursesRepository.getActiveCoursesInMonth(userId);
+    const percentage =
+      await this.coursesRepository.getPercentActiveCourses(userId);
+    return {
+      total,
+      percentage,
+    };
+  }
+
+  async getAnalyzingTotalCourse(userId: string) {
+    const total = await this.coursesRepository.getTotalCourseInMonth(userId);
+    const totalLastMonth =
+      (await this.coursesRepository.getTotalCourseLastMonth(userId)) || 1;
+    return {
+      total,
+      percentage: (total / totalLastMonth) * 100,
+    };
+  }
 }

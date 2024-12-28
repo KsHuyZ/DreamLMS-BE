@@ -18,4 +18,19 @@ export abstract class EnrollRepository {
   abstract updateCertificate(id: Enroll['id']): Promise<void>;
 
   abstract findByUserId(userId: User['id']): Promise<Enroll[]>;
+
+  abstract getTotalEnrolledCoursePriceByWeek(userId: string): Promise<number[]>;
+
+  abstract getTotalEnrolledCoursePriceByDay(userId: string): Promise<number[]>;
+
+  abstract getTotalEnrolledCoursePriceByDayInMonth(
+    userId: string,
+  ): Promise<number[]>;
+
+  abstract getEnrolledCourseByTeacher(userId: User['id']): Promise<number>;
+  abstract getEnrolledLastMonthByTeacher(userId: User['id']): Promise<number>;
+
+  abstract getCompletedCourseInMonth(userId: User['id']): Promise<number>;
+
+  abstract getAnalyzingCompletedCourse(userId: User['id']): Promise<number>;
 }

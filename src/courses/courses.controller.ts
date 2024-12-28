@@ -136,6 +136,22 @@ export class CoursesController {
     });
   }
 
+  @Get('active-course')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  getAnalyzingActiveCourse(@Request() request) {
+    const userId = request.user.id;
+    return this.coursesService.getAnalyzingActiveCourse(userId);
+  }
+
+  @Get('total-course')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  getAnalyzingTotalCourse(@Request() request) {
+    const userId = request.user.id;
+    return this.coursesService.getAnalyzingTotalCourse(userId);
+  }
+
   @ApiOkResponse({
     type: () => Course,
   })
