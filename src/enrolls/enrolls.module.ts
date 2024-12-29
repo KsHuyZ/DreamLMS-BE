@@ -6,12 +6,14 @@ import { RelationalEnrollPersistenceModule } from './infrastructure/persistence/
 import { UsersModule } from '../users/users.module';
 import { EnrollsController } from './enrolls.controller';
 import { CoursesModule } from '../courses/courses.module';
+import { TransactionsModule } from '../transactions/transactions.module';
 
 @Module({
   imports: [
     RelationalEnrollPersistenceModule,
     UsersModule,
     forwardRef(() => CoursesModule),
+    TransactionsModule,
   ],
   providers: [EnrollsService],
   controllers: [EnrollsController],

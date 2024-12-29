@@ -15,6 +15,8 @@ import { ethers } from 'ethers';
 import { ConfigService } from '@nestjs/config';
 import fetchContract from '../utils/fetch-contract';
 import { UsersService } from '../users/users.service';
+import { TransactionsService } from '../transactions/transactions.service';
+import { AmountUnit } from '../transactions/types/amount.unit';
 
 @Injectable()
 export class EnrollsService {
@@ -25,6 +27,7 @@ export class EnrollsService {
     @Inject(forwardRef(() => CoursesService))
     private readonly coursesService: CoursesService,
     private readonly usersService: UsersService,
+    private readonly transactionsService: TransactionsService,
   ) {
     const contractAddress = this.configService.get<string>(
       'enroll.contractAddress',
@@ -48,12 +51,29 @@ export class EnrollsService {
     this.contractInstance = contractInstance;
   }
 
-  enrollCourse(createEnrollDto: CreateEnrollDto): Promise<Enroll> {
-    return this.enrollsRepository.enrollCourse(createEnrollDto);
+  async enrollCourse(createEnrollDto: CreateEnrollDto): Promise<Enroll> {
+    const enroll = await this.enrollsRepository.enrollCourse(createEnrollDto);
+    const amount = createEnrollDto.course.price;
+    await this.transactionsService.create({
+      ...createEnrollDto,
+      amount,
+      amountUnit: AmountUnit.Dollar,
+    });
+    return enroll;
   }
 
-  enrollCourses(payload: CreateEnrollDto[]): Promise<Enroll[]> {
-    return this.enrollsRepository.enrollCourses(payload);
+  async enrollCourses(payload: CreateEnrollDto[]): Promise<Enroll[]> {
+    const enrolls = await this.enrollsRepository.enrollCourses(payload);
+    const promises = enrolls.map((enroll) => {
+      const amount = enroll.course.price;
+      return this.transactionsService.create({
+        ...enroll,
+        amount,
+        amountUnit: AmountUnit.Dollar,
+      });
+    });
+    await Promise.all(promises);
+    return enrolls;
   }
 
   findById(id: Enroll['id']): Promise<NullableType<Enroll>> {
@@ -91,6 +111,13 @@ export class EnrollsService {
     if (!course) throw new BadRequestException('Course not found!');
     const user = await this.usersService.findById(userId);
     if (!user) throw new BadRequestException('User not found!');
+    const amount = course.price;
+    await this.transactionsService.create({
+      user,
+      course,
+      amount,
+      amountUnit: AmountUnit.ETH,
+    });
     return this.enrollsRepository.enrollCourse({ course, user });
   }
 

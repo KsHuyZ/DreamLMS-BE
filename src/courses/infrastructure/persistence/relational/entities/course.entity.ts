@@ -28,6 +28,7 @@ import { CategoryEntity } from '../../../../../categories/persistence/entities/c
 import { ImageEntity } from '../../../../../cloudinary/persistence/entities/image.entity';
 import { CourseVideoEntity } from '../../../../../course-videos/infrastructure/persistence/relational/entities/course-video.entity';
 import { RateEntity } from '../../../../../rates/infrastructure/persistence/relational/entities/rate.entity';
+import { TransactionEntity } from '../../../../../transactions/infrastructure/persistence/relational/entities/transaction.entity';
 
 @Entity({
   name: 'courses',
@@ -161,4 +162,8 @@ export class CourseEntity extends EntityRelationalHelper {
   @ApiResponseProperty()
   @Column('decimal', { nullable: true })
   ethPrice?: number;
+
+  @ApiResponseProperty()
+  @OneToMany(() => TransactionEntity, (transaction) => transaction.course)
+  transactions: TransactionEntity[];
 }

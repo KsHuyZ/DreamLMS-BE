@@ -26,6 +26,7 @@ import { UserVideoEntity } from '../../../../../user-videos/infrastructure/persi
 import { DiskEnum } from '../../../../types/disk.enum';
 import { CartEntity } from '../../../../../carts/infrastructure/persistence/relational/entities/cart.entity';
 import { RateEntity } from '../../../../../rates/infrastructure/persistence/relational/entities/rate.entity';
+import { TransactionEntity } from '../../../../../transactions/infrastructure/persistence/relational/entities/transaction.entity';
 
 @Entity({
   name: 'users',
@@ -171,4 +172,7 @@ export class UserEntity extends EntityRelationalHelper {
 
   @OneToMany(() => RateEntity, (rate) => rate.user)
   rates: RateEntity[];
+
+  @OneToMany(() => TransactionEntity, (transaction) => transaction.user)
+  transactions: TransactionEntity[];
 }

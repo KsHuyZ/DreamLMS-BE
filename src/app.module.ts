@@ -56,8 +56,11 @@ import { CartItemsModule } from './cart-items/cart-items.module';
 
 import { RatesModule } from './rates/rates.module';
 
+import { TransactionsModule } from './transactions/transactions.module';
+
 @Module({
   imports: [
+    TransactionsModule,
     RatesModule,
     CartItemsModule,
     CartsModule,
