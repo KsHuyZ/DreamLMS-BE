@@ -50,6 +50,7 @@ import { Enroll } from '../enrolls/domain/enroll';
 import Stripe from 'stripe';
 import { PaymentsService } from '../payments/payments.service';
 import { CourseLearningDto } from './dto/course-learning.dto';
+import { OptionalJwtAuthGuard } from '../utils/optional-auth-guard';
 
 @ApiTags('Courses')
 @Controller({
@@ -175,7 +176,7 @@ export class CoursesController {
   @SerializeOptions({
     groups: ['admin'],
   })
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(OptionalJwtAuthGuard)
   @Get('guest/:id')
   @HttpCode(HttpStatus.OK)
   findCourseByGuest(
@@ -184,6 +185,16 @@ export class CoursesController {
   ): Promise<NullableType<CourseGuestDto>> {
     const userId = request.user?.id as string | undefined;
     return this.coursesService.findCourseByGuest(id, userId);
+  }
+
+  @ApiOkResponse({
+    type: () => CourseGuestDto,
+  })
+  @UseGuards(OptionalJwtAuthGuard)
+  @Get('related/:id')
+  @HttpCode(HttpStatus.OK)
+  findCourseRelated(@Param('id') id: Course['id']): Promise<TCourseQuery[]> {
+    return this.coursesService.findCourseRelated(id);
   }
 
   @ApiOkResponse({
@@ -300,13 +311,13 @@ export class CoursesController {
   @ApiConsumes('multipart/form-data')
   async additionInfoCourse(
     @Request() request,
-    @UploadedFile() video: Express.Multer.File,
     @Body() payload: AdditionCourseDto,
     @Param('id') id: string,
+    @UploadedFile() video?: Express.Multer.File,
   ) {
     const { related } = payload;
     const createdBy = request.user as User;
-    await this.coursesService.updateAddition(id, video, related, createdBy);
+    await this.coursesService.updateAddition(id, related, createdBy, video);
   }
 
   @ApiCreatedResponse({

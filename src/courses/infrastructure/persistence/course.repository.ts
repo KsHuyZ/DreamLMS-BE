@@ -75,4 +75,6 @@ export abstract class CourseRepository {
 
   abstract getTotalCourseInMonth(userId: string): Promise<number>;
   abstract getTotalCourseLastMonth(userId: string): Promise<number>;
+
+  abstract findCourseRelated(id: Course['id']): Promise<TCourseQuery[]>;
 }

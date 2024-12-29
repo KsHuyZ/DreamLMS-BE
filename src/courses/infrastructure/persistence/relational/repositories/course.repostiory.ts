@@ -170,6 +170,65 @@ export class CoursesRelationalRepository implements CourseRepository {
     });
   }
 
+  async findCourseRelated(id: Course['id']): Promise<TCourseQuery[]> {
+    const query = this.coursesRepository.createQueryBuilder('course');
+    const where = {
+      id,
+    };
+    const courseEntities = await query
+      .leftJoinAndSelect('course.related', 'related')
+      .leftJoinAndSelect('related.image', 'image')
+      .leftJoinAndSelect('related.lessons', 'lessons')
+      .leftJoinAndSelect('lessons.videos', 'videos')
+      .leftJoinAndSelect('videos.video', 'video')
+      .leftJoinAndSelect('lessons.quizzes', 'quizzes')
+      .leftJoinAndSelect('related.tags', 'tags')
+      .leftJoinAndSelect('related.categories', 'categories')
+      .leftJoinAndSelect('related.rates', 'rates')
+      .leftJoinAndSelect('related.createdBy', 'createdBy')
+      .leftJoin('related.rates', 'rate')
+      .select([
+        'course',
+        'image',
+        'lessons',
+        'videos',
+        'video',
+        'quizzes',
+        'tags',
+        'categories',
+        'rates',
+        'related',
+        'createdBy',
+        'AVG(rate.star) as avgStar',
+      ])
+      .addSelect('AVG(rate.star)', 'avgStar')
+      .where(where)
+      .groupBy(
+        'course.id, image.id, lessons.id, tags.id, categories.id, rates.id, related.id, createdBy.id, videos.id, quizzes.id, video.id',
+      )
+      .take(5)
+      .getOne();
+    const courseRelated = courseEntities?.related || [];
+    const courses = courseRelated.map((course) => ({
+      ...CourseMapper.toDomain(course),
+      lessons: course.lessons.length,
+      duration: course.lessons.reduce((total, lesson) => {
+        return (
+          total +
+          lesson.videos.reduce((totalVideo, video) => {
+            return totalVideo + video.video.duration;
+          }, 0)
+        );
+      }, 0),
+      star:
+        course.rates.length > 0
+          ? course.rates.reduce((total, rate) => total + rate.star, 0) /
+            course.rates.length
+          : 0,
+    }));
+    return courses;
+  }
+
   async findManyByTeacherWithPagination({
     filterOptions,
     sortOptions,
@@ -212,7 +271,8 @@ export class CoursesRelationalRepository implements CourseRepository {
         'courseVideo',
         'createdBy',
         'image',
-        'related',
+        'related.image',
+        'related.createdBy',
       ],
     });
     return entity ? CourseMapper.toDomain(entity) : null;

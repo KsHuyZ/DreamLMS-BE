@@ -316,25 +316,36 @@ export class CoursesService {
     return this.coursesRepository.findExceptIds(ids, name);
   }
 
+  async findCourseRelated(id: Course['id']) {
+    return this.coursesRepository.findCourseRelated(id);
+  }
+
   @Transactional()
   async updateAddition(
     id: Course['id'],
-    video: Express.Multer.File,
     relatedCourse: string,
     createdBy: User,
+    video?: Express.Multer.File,
   ) {
     const related = JSON.parse(relatedCourse) as string[];
+    console.log({ related });
     const courseRelated = await this.coursesRepository.findByIds(related);
+    console.log({ courseRelated });
     const course = await this.coursesRepository.findById(id);
     if (!course) throw new BadRequestException('Course not found');
-    const courseVideo = await this.courseVideoService.create({
-      course,
-      video,
-      createdBy,
-    });
+    if (video) {
+      const courseVideo = await this.courseVideoService.create({
+        course,
+        video,
+        createdBy,
+      });
+      return this.coursesRepository.update(id, {
+        related: courseRelated,
+        courseVideo,
+      });
+    }
     return this.coursesRepository.update(id, {
       related: courseRelated,
-      courseVideo,
     });
   }
   async enrollFreeCourse(payload: CourseEnrollDto) {
