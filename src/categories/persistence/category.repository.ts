@@ -7,9 +7,15 @@ export abstract class CategoryRepository {
     data: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[],
   ): Promise<Category[]>;
 
+  abstract create(
+    data: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>,
+  ): Promise<Category>;
+
   abstract findById(id: Category['id']): Promise<NullableType<Category>>;
 
   abstract findByName(name: string): Promise<Category[]>;
+
+  abstract findAll(): Promise<Category[]>;
 
   abstract findManyByIds(ids: Category['id'][]): Promise<Category[]>;
 

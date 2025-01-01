@@ -51,6 +51,7 @@
     "@nestjs/swagger": "7.3.1",
     "@nestjs/typeorm": "10.0.2",
     "@nestjs/websockets": "^10.4.11",
+    "@tanstack/react-virtual": "^3.11.2",
     "@types/multer-s3": "3.0.3",
     "bcryptjs": "2.4.3",
     "buffer-to-stream": "^1.0.0",

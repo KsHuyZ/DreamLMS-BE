@@ -39,8 +39,8 @@ export class TagRelationalRepository implements TagRepository {
     return entities.map(TagMapper.toDomain);
   }
 
-  create(data: Tag[]): Promise<Tag[]> {
-    const persistenceModel = data.map((d) => TagMapper.toPersistence(d));
+  create(data: Tag): Promise<Tag> {
+    const persistenceModel = TagMapper.toPersistence(data);
     return this.tagRepository.save(this.tagRepository.create(persistenceModel));
   }
 
@@ -70,5 +70,10 @@ export class TagRelationalRepository implements TagRepository {
 
   async remove(id: Tag['id']): Promise<void> {
     await this.tagRepository.softDelete({ id });
+  }
+
+  async findAll(): Promise<Tag[]> {
+    const entities = await this.tagRepository.find();
+    return entities.map(TagMapper.toDomain);
   }
 }

@@ -4,8 +4,8 @@ import { Tag } from '../domain/tag';
 
 export abstract class TagRepository {
   abstract create(
-    data: Omit<Tag, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[],
-  ): Promise<Tag[]>;
+    data: Omit<Tag, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>,
+  ): Promise<Tag>;
 
   abstract findById(id: Tag['id']): Promise<NullableType<Tag>>;
 
@@ -19,4 +19,6 @@ export abstract class TagRepository {
   ): Promise<Tag | null>;
 
   abstract remove(id: Tag['id']): Promise<void>;
+
+  abstract findAll(): Promise<Tag[]>;
 }

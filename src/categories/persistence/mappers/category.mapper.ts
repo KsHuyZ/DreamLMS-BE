@@ -6,6 +6,7 @@ export class CategoryMapper {
     const domainEntity = new Category();
     domainEntity.id = raw.id;
     domainEntity.name = raw.name;
+    domainEntity.image = raw.image;
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
     domainEntity.deletedAt = raw.deletedAt;
@@ -16,6 +17,7 @@ export class CategoryMapper {
     const persistenceEntity = new CategoryEntity();
     persistenceEntity.id = domainEntity.id;
     persistenceEntity.name = domainEntity.name;
+    persistenceEntity.image = domainEntity.image;
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
     persistenceEntity.deletedAt = domainEntity.deletedAt;

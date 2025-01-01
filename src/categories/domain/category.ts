@@ -12,6 +12,11 @@ export class Category {
   name: string;
 
   @ApiResponseProperty({
+    type: String,
+  })
+  image: string;
+
+  @ApiResponseProperty({
     type: Date,
   })
   createdAt: Date;

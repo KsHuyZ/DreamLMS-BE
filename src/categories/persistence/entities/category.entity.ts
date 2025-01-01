@@ -29,6 +29,9 @@ export class CategoryEntity extends EntityRelationalHelper {
   @OneToMany(() => CourseEntity, (course) => course.categories)
   courses: CourseEntity[];
 
+  @Column({ nullable: true })
+  image: string;
+
   @ApiProperty()
   @CreateDateColumn()
   createdAt: Date;

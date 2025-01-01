@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { FindOptionsWhere, Not, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { FilterUserDto, SortUserDto } from '../../../../dto/query-user.dto';
@@ -11,6 +11,7 @@ import { IPaginationOptions } from '../../../../../utils/types/pagination-option
 import { infinityPagination } from '../../../../../utils/infinity-pagination';
 import { InfinityPaginationResponseDto } from '../../../../../utils/dto/infinity-pagination-response.dto';
 import { UpdateProfileDto } from '../../../../dto/update-profile.dto';
+import { RoleEnum } from '../../../../../roles/roles.enum';
 
 @Injectable()
 export class UsersRelationalRepository implements UserRepository {
@@ -39,6 +40,8 @@ export class UsersRelationalRepository implements UserRepository {
     const where: FindOptionsWhere<UserEntity> = {};
     if (filterOptions?.role) {
       where.role = filterOptions.role;
+    } else {
+      where.role = Not(RoleEnum.ADMIN);
     }
 
     const [usersEntity, total] = await this.usersRepository.findAndCount({

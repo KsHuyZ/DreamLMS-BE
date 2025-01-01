@@ -6,6 +6,7 @@ export class TagMapper {
     const domainEntity = new Tag();
     domainEntity.id = raw.id;
     domainEntity.name = raw.name;
+    domainEntity.image = raw.image;
     return domainEntity;
   }
 
@@ -13,6 +14,7 @@ export class TagMapper {
     const persistenceEntity = new TagEntity();
     persistenceEntity.id = domainEntity.id;
     persistenceEntity.name = domainEntity.name;
+    persistenceEntity.image = domainEntity.image;
     return persistenceEntity;
   }
 }

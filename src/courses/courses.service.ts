@@ -17,7 +17,6 @@ import { IPaginationOptions } from '../utils/types/pagination-options';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { TagsService } from '../tags/tag.service';
-import { validate as isValidUUID } from 'uuid';
 import { CategoriesService } from '../categories/category.service';
 import { InfinityPaginationResponseDto } from '../utils/dto/infinity-pagination-response.dto';
 import { UsersService } from '../users/users.service';
@@ -76,35 +75,13 @@ export class CoursesService {
       createdBy,
     });
     //tag,
-    const parseTags = JSON.parse(createCourseDto.tags) as string[];
-    const existTagIds = parseTags.filter((tag) => isValidUUID(tag));
-    const newTags = parseTags.filter((tag) => !isValidUUID(tag));
-    const newTagsMapper = newTags.map((tag) => ({ name: tag }));
-    const newTagsDto = await this.tagsService.createMany(newTagsMapper);
-    const newTagIds = newTagsDto.map((tag) => tag.id);
-    const tags = await this.tagsService.findManyByIds([
-      ...existTagIds,
-      ...newTagIds,
-    ]);
+    const tagIds = JSON.parse(createCourseDto.tags) as string[];
+    const tags = await this.tagsService.findManyByIds(tagIds);
 
     //category
-    const parseCategories = JSON.parse(createCourseDto.categories) as string[];
-    const existCategoryIds = parseCategories.filter((category) =>
-      isValidUUID(category),
-    );
-    const newCategories = parseCategories.filter(
-      (category) => !isValidUUID(category),
-    );
-    const newCategoryMapper = newCategories.map((category) => ({
-      name: category,
-    }));
-    const newCategoriesDto =
-      await this.categoriesService.createMany(newCategoryMapper);
-    const newCategoryIds = newCategoriesDto.map((category) => category.id);
-    const categories = await this.categoriesService.findManyByIds([
-      ...existCategoryIds,
-      ...newCategoryIds,
-    ]);
+    const categoryIds = JSON.parse(createCourseDto.categories) as string[];
+
+    const categories = await this.categoriesService.findManyByIds(categoryIds);
 
     const clonedPayload = {
       ...createCourseDto,
@@ -134,6 +111,22 @@ export class CoursesService {
       sortOptions,
       paginationOptions,
       userId,
+    });
+  }
+
+  findManyWithPaginationByAdmin({
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+  }: {
+    filterOptions?: FilterCourseDto | null;
+    sortOptions?: SortCourseDto | null;
+    paginationOptions: IPaginationOptions;
+  }) {
+    return this.coursesRepository.findManyWithPaginationByAdmin({
+      filterOptions,
+      sortOptions,
+      paginationOptions,
     });
   }
 
@@ -260,34 +253,11 @@ export class CoursesService {
     }
 
     //tag
-    const parseTags = JSON.parse(payload.tags ?? '[]') as string[];
-    const existTagIds = parseTags.filter((tag) => isValidUUID(tag));
-    const newTags = parseTags.filter((tag) => !isValidUUID(tag));
-    const newTagsMapper = newTags.map((tag) => ({ name: tag }));
-    const newTagsDto = await this.tagsService.createMany(newTagsMapper);
-    const newTagIds = newTagsDto.map((tag) => tag.id);
-    const tags = await this.tagsService.findManyByIds([
-      ...existTagIds,
-      ...newTagIds,
-    ]);
+    const tagIds = JSON.parse(payload.tags ?? '[]') as string[];
+    const tags = await this.tagsService.findManyByIds(tagIds);
     //category
-    const parseCategories = JSON.parse(payload.categories ?? '[]') as string[];
-    const existCategoryIds = parseCategories.filter((category) =>
-      isValidUUID(category),
-    );
-    const newCategories = parseCategories.filter(
-      (category) => !isValidUUID(category),
-    );
-    const newCategoryMapper = newCategories.map((category) => ({
-      name: category,
-    }));
-    const newCategoriesDto =
-      await this.categoriesService.createMany(newCategoryMapper);
-    const newCategoryIds = newCategoriesDto.map((category) => category.id);
-    const categories = await this.categoriesService.findManyByIds([
-      ...existCategoryIds,
-      ...newCategoryIds,
-    ]);
+    const categoryIds = JSON.parse(payload.categories ?? '[]') as string[];
+    const categories = await this.categoriesService.findManyByIds(categoryIds);
 
     const clonedPayload = {
       ...payload,

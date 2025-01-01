@@ -8,19 +8,20 @@ import {
   Delete,
   HttpStatus,
   HttpCode,
+  UseInterceptors,
+  UseGuards,
+  UploadedFile,
 } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import {
-  ApiBody,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiParam,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiConsumes, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 
 import { Category } from './domain/category';
 import { CategoriesService } from './category.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { RoleEnum } from '../roles/roles.enum';
+import { Roles } from '../roles/roles.decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Categories')
 @Controller({
@@ -30,18 +31,29 @@ import { CategoriesService } from './category.service';
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
-  @ApiCreatedResponse({
+  @ApiConsumes('multipart/form-data')
+  @HttpCode(HttpStatus.CREATED)
+  @Roles(RoleEnum.ADMIN)
+  @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FileInterceptor('image'))
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  create(
+    @Body() createCategoryDto: CreateCategoryDto,
+    @UploadedFile()
+    image: Express.Multer.File,
+  ): Promise<Category> {
+    return this.categoriesService.create({ ...createCategoryDto, image });
+  }
+
+  @Get()
+  @ApiOkResponse({
     type: Category,
     isArray: true,
   })
-  @ApiBody({
-    type: CreateCategoryDto,
-    isArray: true,
-  })
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  create(@Body() createCategoryDto: CreateCategoryDto[]): Promise<Category[]> {
-    return this.categoriesService.createMany(createCategoryDto);
+  @HttpCode(HttpStatus.OK)
+  findAll(): Promise<Category[]> {
+    return this.categoriesService.findAll();
   }
 
   @ApiOkResponse({

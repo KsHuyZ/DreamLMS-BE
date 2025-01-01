@@ -4,13 +4,30 @@ import { DeepPartial } from '../utils/types/deep-partial.type';
 import { Tag } from './domain/tag';
 import { TagRepository } from './persistence/tag.repository';
 import { CreateTagDto } from './dto/create-tag.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class TagsService {
-  constructor(private readonly tagRepository: TagRepository) {}
+  constructor(
+    private readonly tagRepository: TagRepository,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
-  createMany(createTagDto: CreateTagDto[]): Promise<Tag[]> {
-    return this.tagRepository.create(createTagDto);
+  async create(
+    createTagDto: CreateTagDto & { image: Express.Multer.File },
+  ): Promise<Tag> {
+    const imagePayload = createTagDto.image;
+    const imageResponse =
+      await this.cloudinaryService.uploadImage(imagePayload);
+    if (imageResponse.http_code) throw new Error('Something went wrong!');
+    return this.tagRepository.create({
+      ...createTagDto,
+      image: imageResponse.url,
+    });
+  }
+
+  findAll(): Promise<Tag[]> {
+    return this.tagRepository.findAll();
   }
 
   findById(id: Tag['id']): Promise<NullableType<Tag>> {

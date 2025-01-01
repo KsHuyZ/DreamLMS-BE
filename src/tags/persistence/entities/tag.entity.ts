@@ -33,6 +33,12 @@ export class TagEntity extends EntityRelationalHelper {
   @ManyToMany(() => CourseEntity, (course) => course.tags)
   courses: CourseEntity[];
 
+  @Column({ nullable: true })
+  @ApiProperty({
+    type: String,
+  })
+  image: string;
+
   @ApiProperty()
   @CreateDateColumn()
   createdAt: Date;

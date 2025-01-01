@@ -56,6 +56,7 @@ export class CoursesRelationalRepository implements CourseRepository {
       name: ILike(`%${filterOptions?.name}%`),
       ...priceCondition(filterOptions?.payType),
       ...levelCourseMapper(filterOptions?.level),
+      status: CourseStatusEnum.PUBLIC,
     };
 
     const orderByConditions: Record<
@@ -146,6 +147,63 @@ export class CoursesRelationalRepository implements CourseRepository {
       .orderBy(orderByCondition.column, orderByCondition.order)
       .getManyAndCount();
 
+    const data = coursesEntity.map((course) => ({
+      ...CourseMapper.toDomain(course),
+      lessons: course.lessons.length,
+      duration: course.lessons.reduce((total, lesson) => {
+        return (
+          total +
+          lesson.videos.reduce((totalVideo, video) => {
+            return totalVideo + video.video.duration;
+          }, 0)
+        );
+      }, 0),
+      star:
+        course.rates.length > 0
+          ? course.rates.reduce((total, rate) => total + rate.star, 0) /
+            course.rates.length
+          : 0,
+    }));
+
+    return infinityPagination(data, {
+      ...paginationOptions,
+      total,
+    });
+  }
+
+  async findManyWithPaginationByAdmin({
+    // sortOptions,
+    paginationOptions,
+    // userId,
+    filterOptions,
+  }: {
+    filterOptions: FilterCourseDto | null;
+    sortOptions?: SortCourseDto | null;
+    paginationOptions: IPaginationOptions;
+    userId?: string;
+  }): Promise<InfinityPaginationResponseDto<TCourseQuery>> {
+    let where: FindOptionsWhere<CourseEntity> = {};
+    if (filterOptions?.name) {
+      where = {
+        ...where,
+        name: ILike(`%${filterOptions?.name}%`),
+      };
+    }
+    const [coursesEntity, total] = await this.coursesRepository.findAndCount({
+      where,
+      skip: (paginationOptions.page - 1) * paginationOptions.limit,
+      take: paginationOptions.limit,
+      relations: [
+        'tags',
+        'categories',
+        'createdBy',
+        'image',
+        'rates',
+        'lessons',
+        'lessons.videos',
+        'lessons.quizzes',
+      ],
+    });
     const data = coursesEntity.map((course) => ({
       ...CourseMapper.toDomain(course),
       lessons: course.lessons.length,

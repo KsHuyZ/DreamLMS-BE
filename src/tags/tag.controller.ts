@@ -8,11 +8,15 @@ import {
   Delete,
   HttpStatus,
   HttpCode,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import {
   ApiBody,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
@@ -21,6 +25,10 @@ import {
 
 import { Tag } from './domain/tag';
 import { TagsService } from './tag.service';
+import { RoleEnum } from '../roles/roles.enum';
+import { Roles } from '../roles/roles.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Tags')
 @Controller({
@@ -32,16 +40,29 @@ export class TagsController {
 
   @ApiCreatedResponse({
     type: Tag,
-    isArray: true,
   })
   @ApiBody({
     type: CreateTagDto,
-    isArray: true,
   })
+  @ApiConsumes('multipart/form-data')
+  @HttpCode(HttpStatus.CREATED)
+  @Roles(RoleEnum.ADMIN)
+  @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FileInterceptor('image'))
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  createMany(@Body() createTagDto: CreateTagDto[]): Promise<Tag[]> {
-    return this.tagsService.createMany(createTagDto);
+  create(
+    @Body() createTagDto: CreateTagDto,
+    @UploadedFile()
+    image: Express.Multer.File,
+  ): Promise<Tag> {
+    return this.tagsService.create({ ...createTagDto, image });
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  findAll(): Promise<Tag[]> {
+    return this.tagsService.findAll();
   }
 
   @ApiOkResponse({

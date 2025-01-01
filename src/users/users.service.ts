@@ -93,6 +93,10 @@ export class UsersService {
     });
   }
 
+  updateStatus(id: User['id'], status: User['status']) {
+    return this.usersRepository.update(id, { status });
+  }
+
   async update(
     id: User['id'],
     payload: DeepPartial<User>,

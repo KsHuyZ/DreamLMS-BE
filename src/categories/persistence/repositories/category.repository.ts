@@ -75,4 +75,17 @@ export class TagRelationalRepository implements CategoryRepository {
   async remove(id: Category['id']): Promise<void> {
     await this.categoryRepository.softDelete({ id });
   }
+
+  findAll(): Promise<Category[]> {
+    return this.categoryRepository
+      .find()
+      .then((entities) => entities.map(CategoryMapper.toDomain));
+  }
+
+  create(data: Category): Promise<Category> {
+    const persistenceModel = CategoryMapper.toPersistence(data);
+    return this.categoryRepository.save(
+      this.categoryRepository.create(persistenceModel),
+    );
+  }
 }

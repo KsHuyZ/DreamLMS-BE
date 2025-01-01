@@ -15,6 +15,7 @@ import {
   UploadedFile,
   UseGuards,
   Put,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -109,6 +110,32 @@ export class CoursesController {
         limit,
       },
       userId: user?.id,
+    });
+  }
+
+  @ApiOkResponse({
+    type: InfinityPaginationResponse(Course),
+  })
+  @Get('admin')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  async findAllByAdmin(
+    @Query() query: QueryCourseDto,
+    @Request() request,
+  ): Promise<InfinityPaginationResponseDto<TCourseQuery>> {
+    const user = request.user as User | undefined;
+    const page = query?.page ?? 1;
+    const limit = 40;
+    console.log({ role: user });
+    if (user?.role !== RoleEnum.ADMIN)
+      throw new BadRequestException('You are not admin');
+    return this.coursesService.findManyWithPaginationByAdmin({
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
+      paginationOptions: {
+        page,
+        limit,
+      },
     });
   }
 

@@ -12,6 +12,7 @@ import {
   HttpCode,
   SerializeOptions,
   Request,
+  Put,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import {
@@ -134,5 +135,19 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: User['id']): Promise<void> {
     return this.usersService.remove(id);
+  }
+
+  @Put(':id/status')
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  @HttpCode(HttpStatus.OK)
+  updateStatus(
+    @Param('id') id: User['id'],
+    @Body('status') status: User['status'],
+  ): Promise<NullableType<User>> {
+    return this.usersService.updateStatus(id, status);
   }
 }

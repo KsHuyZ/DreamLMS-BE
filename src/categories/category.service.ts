@@ -4,13 +4,26 @@ import { DeepPartial } from '../utils/types/deep-partial.type';
 import { Category } from './domain/category';
 import { CategoryRepository } from './persistence/category.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private readonly categoryRepository: CategoryRepository) {}
+  constructor(
+    private readonly categoryRepository: CategoryRepository,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
-  createMany(createCategoryDto: CreateCategoryDto[]): Promise<Category[]> {
-    return this.categoryRepository.createMany(createCategoryDto);
+  async create(
+    createCategoryDto: CreateCategoryDto & { image: Express.Multer.File },
+  ): Promise<Category> {
+    const imagePayload = createCategoryDto.image;
+    const imageResponse =
+      await this.cloudinaryService.uploadImage(imagePayload);
+    if (imageResponse.http_code) throw new Error('Something went wrong!');
+    return this.categoryRepository.create({
+      ...createCategoryDto,
+      image: imageResponse.url,
+    });
   }
 
   findById(id: Category['id']): Promise<NullableType<Category>> {
@@ -34,5 +47,9 @@ export class CategoriesService {
 
   async remove(id: Category['id']): Promise<void> {
     await this.categoryRepository.remove(id);
+  }
+
+  findAll(): Promise<Category[]> {
+    return this.categoryRepository.findAll();
   }
 }

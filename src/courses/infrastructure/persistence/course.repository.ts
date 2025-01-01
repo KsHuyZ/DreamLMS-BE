@@ -77,4 +77,14 @@ export abstract class CourseRepository {
   abstract getTotalCourseLastMonth(userId: string): Promise<number>;
 
   abstract findCourseRelated(id: Course['id']): Promise<TCourseQuery[]>;
+
+  abstract findManyWithPaginationByAdmin({
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+  }: {
+    filterOptions?: FilterCourseDto | null;
+    sortOptions?: SortCourseDto | null;
+    paginationOptions: IPaginationOptions;
+  }): Promise<InfinityPaginationResponseDto<TCourseQuery>>;
 }
