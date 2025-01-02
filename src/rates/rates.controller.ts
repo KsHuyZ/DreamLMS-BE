@@ -24,6 +24,7 @@ import { Rate } from './domain/rate';
 import { AuthGuard } from '@nestjs/passport';
 import { FindAllRatesDto } from './dto/find-all-rates.dto';
 import { InfinityPaginationResponseDto } from '../utils/dto/infinity-pagination-response.dto';
+import { OptionalAuthGuard } from '../auth/strategies/jwt-optional.strategy';
 
 @ApiTags('Rates')
 @ApiBearerAuth()
@@ -45,7 +46,7 @@ export class RatesController {
   }
 
   @Get('course-pagination/:courseId')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(OptionalAuthGuard)
   @ApiParam({
     name: 'courseId',
     type: String,
@@ -61,8 +62,8 @@ export class RatesController {
       alreadyRated: boolean;
     }
   > {
-    const userId = request.user.id;
-    const { page = 10, limit = 4, stars = [1, 2, 3, 4, 5] } = query;
+    const userId = request.user?.id as string | undefined;
+    const { page = 1, limit = 4, stars = [1, 2, 3, 4, 5] } = query;
     return this.ratesService.findByCourseIdWithPagination({
       courseId: id,
       paginationOptions: { page, limit },

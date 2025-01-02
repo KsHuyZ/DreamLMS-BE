@@ -73,6 +73,7 @@ export class RatesService {
           userId,
         ))
       : false;
+    console.log({ ...ratePagination, avgRate, alreadyRated });
     return { ...ratePagination, avgRate, alreadyRated };
   }
 

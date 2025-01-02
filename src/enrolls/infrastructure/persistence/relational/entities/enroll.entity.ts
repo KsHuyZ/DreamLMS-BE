@@ -7,6 +7,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -28,13 +29,15 @@ export class EnrollEntity extends EntityRelationalHelper {
   @ApiProperty({
     type: () => UserEntity,
   })
-  @ManyToOne(() => UserEntity, (user) => user.id)
+  @ManyToOne(() => UserEntity, (user) => user.enrolledCourses)
+  @JoinColumn()
   user: UserEntity;
 
   @ApiProperty({
     type: () => CourseEntity,
   })
-  @ManyToOne(() => CourseEntity, (course) => course.id)
+  @ManyToOne(() => CourseEntity, (course) => course.enrolledCourses)
+  @JoinColumn()
   course: CourseEntity;
 
   @ApiProperty()

@@ -78,6 +78,8 @@ export abstract class CourseRepository {
 
   abstract findCourseRelated(id: Course['id']): Promise<TCourseQuery[]>;
 
+  abstract findCoursePreview(name: string): Promise<Course[]>;
+
   abstract findManyWithPaginationByAdmin({
     filterOptions,
     sortOptions,
@@ -87,4 +89,6 @@ export abstract class CourseRepository {
     sortOptions?: SortCourseDto | null;
     paginationOptions: IPaginationOptions;
   }): Promise<InfinityPaginationResponseDto<TCourseQuery>>;
+
+  abstract getTrendingCourses(): Promise<TCourseQuery[]>;
 }

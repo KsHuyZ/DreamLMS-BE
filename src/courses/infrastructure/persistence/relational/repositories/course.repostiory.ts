@@ -228,6 +228,17 @@ export class CoursesRelationalRepository implements CourseRepository {
     });
   }
 
+  findCoursePreview(name: string): Promise<Course[]> {
+    return this.coursesRepository.find({
+      where: {
+        name: ILike(`%${name}%`),
+        status: CourseStatusEnum.PUBLIC,
+      },
+      relations: ['image', 'createdBy'],
+      take: 5,
+    });
+  }
+
   async findCourseRelated(id: Course['id']): Promise<TCourseQuery[]> {
     const query = this.coursesRepository.createQueryBuilder('course');
     const where = {
@@ -478,5 +489,54 @@ export class CoursesRelationalRepository implements CourseRepository {
         createdAt: Between(startDate, endDate),
       },
     });
+  }
+
+  async getTrendingCourses(): Promise<TCourseQuery[]> {
+    const topCourses = await this.coursesRepository
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.enrolledCourses', 'enroll')
+      .leftJoinAndSelect('course.image', 'image')
+      .leftJoinAndSelect('course.lessons', 'lessons')
+      .leftJoinAndSelect('lessons.videos', 'videos')
+      .leftJoinAndSelect('videos.video', 'video')
+      .leftJoinAndSelect('lessons.quizzes', 'quizzes')
+      .leftJoinAndSelect('course.rates', 'rates')
+      .leftJoinAndSelect('course.createdBy', 'createdBy')
+      .select([
+        'course',
+        'image',
+        'lessons',
+        'videos',
+        'video',
+        'quizzes',
+        'rates',
+        'createdBy',
+        'COUNT(enroll.id) AS enrollCount',
+      ])
+      .where({
+        status: CourseStatusEnum.PUBLIC,
+      })
+      .groupBy(
+        'course.id, image.id, lessons.id, videos.id, video.id, quizzes.id, rates.id, createdBy.id',
+      )
+      .take(6)
+      .getMany();
+    return topCourses.map((course) => ({
+      ...CourseMapper.toDomain(course),
+      lessons: course.lessons.length,
+      duration: course.lessons.reduce((total, lesson) => {
+        return (
+          total +
+          lesson.videos.reduce((totalVideo, video) => {
+            return totalVideo + video.video.duration;
+          }, 0)
+        );
+      }, 0),
+      star:
+        course.rates.length > 0
+          ? course.rates.reduce((total, rate) => total + rate.star, 0) /
+            course.rates.length
+          : 0,
+    }));
   }
 }

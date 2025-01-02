@@ -9,6 +9,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { MailModule } from '../mail/mail.module';
 import { SessionModule } from '../session/session.module';
 import { UsersModule } from '../users/users.module';
+import { OptionalAuthGuard } from './strategies/jwt-optional.strategy';
 
 @Module({
   imports: [
@@ -19,7 +20,13 @@ import { UsersModule } from '../users/users.module';
     JwtModule.register({}),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtRefreshStrategy, AnonymousStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    JwtRefreshStrategy,
+    AnonymousStrategy,
+    OptionalAuthGuard,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

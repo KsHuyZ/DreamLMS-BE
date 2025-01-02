@@ -97,7 +97,7 @@ export class CourseEntity extends EntityRelationalHelper {
   @JoinTable()
   related: CourseEntity[];
 
-  @ManyToMany(() => EnrollEntity, (enrolledCourse) => enrolledCourse.course)
+  @OneToMany(() => EnrollEntity, (enrolledCourse) => enrolledCourse.course)
   enrolledCourses: EnrollEntity[];
 
   @ApiResponseProperty({
@@ -129,18 +129,7 @@ export class CourseEntity extends EntityRelationalHelper {
   })
   tags: TagEntity[];
 
-  @ManyToMany(() => CategoryEntity)
-  @JoinTable({
-    name: 'courseCategory',
-    joinColumn: {
-      name: 'courseId',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'categoryId',
-      referencedColumnName: 'id',
-    },
-  })
+  @ManyToMany(() => CategoryEntity, (category) => category.courses)
   categories: CategoryEntity[];
 
   @ApiResponseProperty()

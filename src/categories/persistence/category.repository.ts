@@ -7,6 +7,8 @@ export abstract class CategoryRepository {
     data: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[],
   ): Promise<Category[]>;
 
+  abstract findTopCategory(): Promise<Category[]>;
+
   abstract create(
     data: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>,
   ): Promise<Category>;

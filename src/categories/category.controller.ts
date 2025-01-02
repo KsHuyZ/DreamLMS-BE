@@ -55,6 +55,14 @@ export class CategoriesController {
   findAll(): Promise<Category[]> {
     return this.categoriesService.findAll();
   }
+  @Get('top')
+  @ApiOkResponse({
+    type: Category,
+    isArray: true,
+  })
+  findTopCategory(): Promise<Category[]> {
+    return this.categoriesService.findTopCategory();
+  }
 
   @ApiOkResponse({
     type: Category,

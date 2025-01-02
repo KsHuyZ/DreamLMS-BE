@@ -4,7 +4,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  OneToMany,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -26,7 +27,9 @@ export class CategoryEntity extends EntityRelationalHelper {
   })
   @Column()
   name: string;
-  @OneToMany(() => CourseEntity, (course) => course.categories)
+
+  @ManyToMany(() => CourseEntity, (course) => course.categories)
+  @JoinTable()
   courses: CourseEntity[];
 
   @Column({ nullable: true })

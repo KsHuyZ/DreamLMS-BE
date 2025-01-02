@@ -51,7 +51,7 @@ import { Enroll } from '../enrolls/domain/enroll';
 import Stripe from 'stripe';
 import { PaymentsService } from '../payments/payments.service';
 import { CourseLearningDto } from './dto/course-learning.dto';
-import { OptionalJwtAuthGuard } from '../utils/optional-auth-guard';
+import { OptionalAuthGuard } from '../auth/strategies/jwt-optional.strategy';
 
 @ApiTags('Courses')
 @Controller({
@@ -87,6 +87,12 @@ export class CoursesController {
       image,
       createdBy: request.user as User,
     });
+  }
+
+  @Get('preview')
+  @HttpCode(HttpStatus.OK)
+  findCoursePreview(@Query('name') name: string) {
+    return this.coursesService.findCoursePreview(name);
   }
 
   @ApiOkResponse({
@@ -180,6 +186,12 @@ export class CoursesController {
     return this.coursesService.getAnalyzingTotalCourse(userId);
   }
 
+  @Get('trending')
+  @HttpCode(HttpStatus.OK)
+  getTrendingCourses() {
+    return this.coursesService.getTrendingCourse();
+  }
+
   @ApiOkResponse({
     type: () => Course,
   })
@@ -203,7 +215,7 @@ export class CoursesController {
   @SerializeOptions({
     groups: ['admin'],
   })
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(OptionalAuthGuard)
   @Get('guest/:id')
   @HttpCode(HttpStatus.OK)
   findCourseByGuest(
@@ -217,7 +229,7 @@ export class CoursesController {
   @ApiOkResponse({
     type: () => CourseGuestDto,
   })
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(OptionalAuthGuard)
   @Get('related/:id')
   @HttpCode(HttpStatus.OK)
   findCourseRelated(@Param('id') id: Course['id']): Promise<TCourseQuery[]> {

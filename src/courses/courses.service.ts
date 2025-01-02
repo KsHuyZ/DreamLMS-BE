@@ -53,6 +53,10 @@ export class CoursesService {
     private readonly cartsService: CartsService,
   ) {}
 
+  findCoursePreview(name: string) {
+    return this.coursesRepository.findCoursePreview(name);
+  }
+
   @Transactional()
   async create(createCourseDto: CreateCourseDto): Promise<Course> {
     const { createdBy } = createCourseDto;
@@ -214,6 +218,7 @@ export class CoursesService {
       isEnrolled = !!enroll;
       alreadyCart = !!cart;
     }
+    console.log({ isEnrolled, alreadyCart });
     const course = await this.coursesRepository.findCourseByGuest(id);
     return course ? { ...course, isEnrolled, alreadyCart } : null;
   }
@@ -376,5 +381,9 @@ export class CoursesService {
       total,
       percentage: (total / totalLastMonth) * 100,
     };
+  }
+
+  getTrendingCourse() {
+    return this.coursesRepository.getTrendingCourses();
   }
 }

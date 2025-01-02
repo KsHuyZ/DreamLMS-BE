@@ -88,4 +88,16 @@ export class TagRelationalRepository implements CategoryRepository {
       this.categoryRepository.create(persistenceModel),
     );
   }
+
+  async findTopCategory(): Promise<Category[]> {
+    const entities = await this.categoryRepository
+      .createQueryBuilder('category')
+      .leftJoinAndSelect('category.courses', 'course')
+      .select(['category', 'COUNT(course.id) AS courseCount'])
+      .groupBy('category.id')
+      .orderBy('courseCount', 'DESC')
+      .limit(4)
+      .getMany();
+    return entities.map(CategoryMapper.toDomain);
+  }
 }

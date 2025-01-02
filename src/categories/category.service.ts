@@ -26,6 +26,10 @@ export class CategoriesService {
     });
   }
 
+  findTopCategory(): Promise<Category[]> {
+    return this.categoryRepository.findTopCategory();
+  }
+
   findById(id: Category['id']): Promise<NullableType<Category>> {
     return this.categoryRepository.findById(id);
   }

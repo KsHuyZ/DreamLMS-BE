@@ -69,9 +69,9 @@ export class CertificateService {
         userId,
         courseId,
       );
-
-    const course = await this.coursesService.findById(certificate[1]);
-    const user = await this.usersService.findById(certificate[0]);
+    if (!certificate) throw new BadRequestException('Certificate not found');
+    const course = await this.coursesService.findById(courseId);
+    const user = await this.usersService.findById(userId);
     return {
       user,
       course,
