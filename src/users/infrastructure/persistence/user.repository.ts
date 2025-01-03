@@ -54,4 +54,6 @@ export abstract class UserRepository {
   ): Promise<void>;
 
   abstract upgradePlans(id: User['id'], diskSize: number): Promise<void>;
+
+  abstract uploadAvatar(id: User['id'], photo: string): Promise<void>;
 }

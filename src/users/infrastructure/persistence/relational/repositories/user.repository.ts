@@ -145,4 +145,10 @@ export class UsersRelationalRepository implements UserRepository {
   async upgradePlans(id: User['id'], diskSize: number): Promise<void> {
     await this.usersRepository.increment({ id }, 'totalStorage', +diskSize);
   }
+
+  async uploadAvatar(id: User['id'], photo: string): Promise<void> {
+    await this.usersRepository.update(id, {
+      photo,
+    });
+  }
 }

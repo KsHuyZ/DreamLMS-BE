@@ -93,6 +93,14 @@ export class UsersController {
     return this.usersService.findById(id);
   }
 
+  @Post('photo')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  updateAvatar(@Request() request, @Body('photo') photo: string) {
+    const userId = request.user.id as string;
+    return this.usersService.uploadAvatar(userId, photo);
+  }
+
   @ApiOkResponse({
     type: User,
   })

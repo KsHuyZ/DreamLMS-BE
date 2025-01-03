@@ -72,6 +72,10 @@ export class UsersService {
     });
   }
 
+  uploadAvatar(id: User['id'], photo: string) {
+    return this.usersRepository.uploadAvatar(id, photo);
+  }
+
   findById(id: User['id']): Promise<NullableType<User>> {
     return this.usersRepository.findById(id);
   }
