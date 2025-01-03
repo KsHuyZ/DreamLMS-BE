@@ -38,4 +38,16 @@ export class TransactionsService {
   remove(id: Transaction['id']) {
     return this.transactionRepository.remove(id);
   }
+
+  async findTransaction(id: string) {
+    return this.transactionRepository.findTransaction(id);
+  }
+
+  getTotalTransaction(id: string) {
+    return this.transactionRepository.getTotalAmount(id);
+  }
+
+  getTotalReceived(id: string) {
+    return this.transactionRepository.getTotalReceived(id);
+  }
 }

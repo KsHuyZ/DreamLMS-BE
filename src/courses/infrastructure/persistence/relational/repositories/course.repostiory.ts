@@ -11,7 +11,7 @@ import { CourseEntity } from '../entities/course.entity';
 import { CourseMapper } from '../mappers/course.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, FindOptionsWhere, ILike, In, Not, Repository } from 'typeorm';
+import { FindOptionsWhere, ILike, In, Not, Repository } from 'typeorm';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { infinityPagination } from '../../../../../utils/infinity-pagination';
 import { InfinityPaginationResponseDto } from '../../../../../utils/dto/infinity-pagination-response.dto';
@@ -22,7 +22,6 @@ import { levelCourseMapper } from '../../../../../utils/course/course-level-mapp
 import { TCourseQuery } from '../../../../types/course.enum';
 import { CourseGuestDto } from '../../../../dto/course-guest.dto';
 import { User } from '../../../../../users/domain/user';
-import { endOfMonth, startOfMonth, subMonths } from 'date-fns';
 import { mapDuration } from '../../../../utils';
 
 @Injectable()
@@ -432,61 +431,43 @@ export class CoursesRelationalRepository implements CourseRepository {
     return courses.map(CourseMapper.toDomain);
   }
   getActiveCoursesInMonth(userId: User['id']): Promise<number> {
-    const now = new Date();
-    const startDate = startOfMonth(now);
-    const endDate = endOfMonth(now);
     return this.coursesRepository.count({
       where: {
         createdBy: {
           id: userId,
         },
         status: CourseStatusEnum.PUBLIC,
-        createdAt: Between(startDate, endDate),
       },
     });
   }
   async getPercentActiveCourses(userId: User['id']): Promise<number> {
-    const now = new Date();
-    const lastMonthDate = subMonths(now, 1);
-    const startDate = startOfMonth(lastMonthDate);
-    const endDate = endOfMonth(lastMonthDate);
     const totalActiveThisMonth = await this.getActiveCoursesInMonth(userId);
     const totalActiveLastMonth = await this.coursesRepository.count({
       where: {
         createdBy: {
           id: userId,
         },
-        createdAt: Between(startDate, endDate),
       },
     });
     return (totalActiveThisMonth / (totalActiveLastMonth || 1)) * 100;
   }
 
   getTotalCourseInMonth(userId: string): Promise<number> {
-    const now = new Date();
-    const startDate = startOfMonth(now);
-    const endDate = endOfMonth(now);
     return this.coursesRepository.count({
       where: {
         createdBy: {
           id: userId,
         },
-        createdAt: Between(startDate, endDate),
       },
     });
   }
 
   getTotalCourseLastMonth(userId: string): Promise<number> {
-    const now = new Date();
-    const lastMonthDate = subMonths(now, 1);
-    const startDate = startOfMonth(lastMonthDate);
-    const endDate = endOfMonth(lastMonthDate);
     return this.coursesRepository.count({
       where: {
         createdBy: {
           id: userId,
         },
-        createdAt: Between(startDate, endDate),
       },
     });
   }

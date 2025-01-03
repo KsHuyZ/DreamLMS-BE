@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { EnrollEntity } from '../entities/enroll.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { Enroll } from '../../../../domain/enroll';
@@ -19,7 +19,6 @@ import {
   startOfDay,
   startOfMonth,
   startOfWeek,
-  subMonths,
 } from 'date-fns';
 
 @Injectable()
@@ -105,7 +104,6 @@ export class EnrollRelationalRepository implements EnrollRepository {
     });
     const enrollments = await this.enrollRepository.find({
       where: {
-        createdAt: Between(startDate, endDate),
         user: {
           id: userId,
         },
@@ -143,7 +141,6 @@ export class EnrollRelationalRepository implements EnrollRepository {
     // Fetch enrollments within the day
     const enrollments = await this.enrollRepository.find({
       where: {
-        createdAt: Between(startOfTheDay, endOfTheDay),
         user: {
           id: userId,
         },
@@ -187,7 +184,6 @@ export class EnrollRelationalRepository implements EnrollRepository {
     // Fetch enrollments within the month
     const enrollments = await this.enrollRepository.find({
       where: {
-        createdAt: Between(startOfTheMonth, endOfTheMonth),
         user: {
           id: userId,
         },
@@ -206,9 +202,6 @@ export class EnrollRelationalRepository implements EnrollRepository {
   }
 
   getEnrolledCourseByTeacher(userId: User['id']): Promise<number> {
-    const now = new Date();
-    const startDate = startOfMonth(now);
-    const endDate = endOfMonth(now);
     return this.enrollRepository.count({
       where: {
         course: {
@@ -216,15 +209,10 @@ export class EnrollRelationalRepository implements EnrollRepository {
             id: userId,
           },
         },
-        createdAt: Between(startDate, endDate),
       },
     });
   }
   async getEnrolledLastMonthByTeacher(userId: User['id']): Promise<number> {
-    const now = new Date();
-    const lastMonthDate = subMonths(now, 1);
-    const startDate = startOfMonth(lastMonthDate);
-    const endDate = endOfMonth(lastMonthDate);
     const totalEnrollThisMonth = await this.getEnrolledCourseByTeacher(userId);
     const totalEnrollLastMonth = await this.enrollRepository.count({
       where: {
@@ -233,15 +221,11 @@ export class EnrollRelationalRepository implements EnrollRepository {
             id: userId,
           },
         },
-        createdAt: Between(startDate, endDate),
       },
     });
     return (totalEnrollThisMonth / (totalEnrollLastMonth || 1)) * 100;
   }
   getCompletedCourseInMonth(userId: User['id']): Promise<number> {
-    const now = new Date();
-    const startDate = startOfMonth(now);
-    const endDate = endOfMonth(now);
     return this.enrollRepository.count({
       where: {
         course: {
@@ -250,16 +234,11 @@ export class EnrollRelationalRepository implements EnrollRepository {
           },
         },
         haveCertificate: true,
-        createdAt: Between(startDate, endDate),
       },
     });
   }
 
   async getAnalyzingCompletedCourse(userId: string) {
-    const now = new Date();
-    const lastMonthDate = subMonths(now, 1);
-    const startDate = startOfMonth(lastMonthDate);
-    const endDate = endOfMonth(lastMonthDate);
     const totalEnrollThisMonth = await this.getCompletedCourseInMonth(userId);
     const totalEnrollLastMonth = await this.enrollRepository.count({
       where: {
@@ -269,7 +248,6 @@ export class EnrollRelationalRepository implements EnrollRepository {
           },
         },
         haveCertificate: true,
-        createdAt: Between(startDate, endDate),
       },
     });
     return (totalEnrollThisMonth / (totalEnrollLastMonth || 1)) * 100;

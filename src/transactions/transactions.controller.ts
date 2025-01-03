@@ -7,6 +7,9 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
@@ -37,6 +40,27 @@ export class TransactionsController {
   })
   create(@Body() createTransactionDto: CreateTransactionDto) {
     return this.transactionsService.create(createTransactionDto);
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  findTransactions(@Request() request) {
+    const userId = request.user.id;
+    return this.transactionsService.findTransaction(userId);
+  }
+
+  @Get('total')
+  @HttpCode(HttpStatus.OK)
+  getTotalTransaction(@Request() request) {
+    const userId = request.user.id;
+    return this.transactionsService.getTotalTransaction(userId);
+  }
+
+  @Get('received')
+  @HttpCode(HttpStatus.OK)
+  getTotalReceived(@Request() request) {
+    const userId = request.user.id;
+    return this.transactionsService.getTotalReceived(userId);
   }
 
   @Get(':id')

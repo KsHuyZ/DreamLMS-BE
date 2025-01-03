@@ -7,6 +7,8 @@ import { Transaction } from '../../../../domain/transaction';
 import { TransactionRepository } from '../../transaction.repository';
 import { TransactionMapper } from '../mappers/transaction.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { User } from '../../../../../users/domain/user';
+import { AmountUnit } from '../../../../types/amount.unit';
 
 @Injectable()
 export class TransactionRelationalRepository implements TransactionRepository {
@@ -70,5 +72,56 @@ export class TransactionRelationalRepository implements TransactionRepository {
 
   async remove(id: Transaction['id']): Promise<void> {
     await this.transactionRepository.delete(id);
+  }
+
+  async findTransaction(id: User['id']): Promise<Transaction[]> {
+    const transactions = await this.transactionRepository.find({
+      where: {
+        user: {
+          id,
+        },
+      },
+      relations: ['course.image'],
+    });
+    return transactions.map(TransactionMapper.toDomain);
+  }
+
+  async getTotalAmount(userId: User['id']) {
+    const transactions = await this.transactionRepository.find({
+      where: { user: { id: userId } },
+    });
+    let eth = 0;
+    let dollar = 0;
+    transactions.forEach((transaction) => {
+      if (transaction.amountUnit === AmountUnit.Dollar) {
+        dollar += +transaction.amount;
+      } else {
+        eth += +transaction.amount;
+      }
+    });
+    return { dollar, eth };
+  }
+
+  async getTotalReceived(id: string) {
+    const transactions = await this.transactionRepository.find({
+      where: {
+        course: {
+          createdBy: {
+            id,
+          },
+        },
+      },
+      relations: ['user', 'course.image'],
+    });
+    let eth = 0;
+    let dollar = 0;
+    transactions.forEach((transaction) => {
+      if (transaction.amountUnit === AmountUnit.Dollar) {
+        dollar += +transaction.amount;
+      } else {
+        eth += +transaction.amount;
+      }
+    });
+    return { dollar, eth };
   }
 }

@@ -1,3 +1,4 @@
+import { User } from '../../../users/domain/user';
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
@@ -22,4 +23,10 @@ export abstract class TransactionRepository {
   ): Promise<Transaction | null>;
 
   abstract remove(id: Transaction['id']): Promise<void>;
+
+  abstract findTransaction(id: User['id']): Promise<Transaction[]>;
+
+  abstract getTotalAmount(userId: User['id']);
+
+  abstract getTotalReceived(id: User['id']);
 }
